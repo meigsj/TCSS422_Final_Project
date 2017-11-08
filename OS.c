@@ -8,14 +8,19 @@ Shaun Coleman
 */
 
 #include <time.h>
+#include <pthread.h>
 #include "OS.h"
 
 unsigned int sysStack;
 unsigned int currentPC;
 unsigned int iterationCount;
 unsigned int quantum_post_reset;
+
+// Too Remove
 PCB_p privilegedPCBs[MAX_PRIVILEGED];
 unsigned int numPrivileged;
+////
+
 
 int timer;
 int IO_1_counter;
@@ -25,7 +30,7 @@ PROCESS_QUEUES_p processes;
 
 // Updated for Problem 4
 // The top level of the OS simulator
-int OS_Simulator() {
+void * OS_Simulator(void *arg) {
     char* buffer[MAX_BUFFER_SIZE];
     // Main Loop
     // One cycle is one instruction
@@ -510,7 +515,8 @@ void freeProcessQueues() {
 }
 
 int main() {
-    
+	pthread_t os;
+
     // Seed RNG
     srand(time(NULL));
     
@@ -547,8 +553,9 @@ int main() {
         createNewProcesses();
     }
     
-    // main loop
-    OS_Simulator();
+    // Start OS Thread
+	pthread_create(&os, NULL, OS_Simulator,  NULL);
+	pthread_join(os, NULL);
     
     // free resources
     freeProcessQueues();

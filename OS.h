@@ -9,6 +9,7 @@ Shaun Coleman
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
 #include "FIFOq.h"
 #include "pcb.h"
 #include "PQueue.h"
@@ -78,7 +79,7 @@ typedef struct process_queues {
 typedef PROCESS_QUEUES_s* PROCESS_QUEUES_p;
 
 // A function to act as the main loop for the simulator
-int OS_Simulator();
+//void OS_Simulator();
 
 // A function to simulate an ISR
 int pseudoISR();
