@@ -48,6 +48,7 @@ void * OS_Simulator(void *arg) {
             createNewProcesses(processes->newProcesses);
         }
         
+		//// TO REMOVE AND REPLACE WITH CHECK CONDITION FOR TIMER INTERUPT
         // Trigger timer and check for timer interupt
         if(timerDownCounter() == TIMER_INTERUPT) {
             int state = RUNNING;
@@ -62,6 +63,7 @@ void * OS_Simulator(void *arg) {
                 printInterupt(TIMER_INTERUPT);
             }
         }
+		/////
         
         // Trigger IO1 counter and check for IO1 interupt
         if(IO_1_DownCounter() == IO_1_INTERUPT && !q_is_empty(processes->IO_1_Processes)) {
@@ -94,6 +96,27 @@ void * OS_Simulator(void *arg) {
     }
 
 }
+
+// To Complete
+
+void * timer_thread(void *) {
+
+
+
+}
+
+void * io1_thread(void *) {
+
+
+
+}
+
+void * io2_thread(void *) {
+
+
+}
+
+//////
 
 // Function used to simulate an ISR call
 int pseudoISR() {
@@ -520,7 +543,7 @@ int main() {
     // Seed RNG
     srand(time(NULL));
     
-    // Initialize Vars
+    // Initialize Queues
     initializeProcessQueues();
     
     
@@ -532,6 +555,7 @@ int main() {
       setQuantum(processes->readyProcesses, i, (i+1)*(i+1)*10);
     }
     
+	// Initialize Global Vars
     currentPC = 0;
     sysStack = 0;
     iterationCount = 0;
@@ -555,6 +579,7 @@ int main() {
     
     // Start OS Thread
 	pthread_create(&os, NULL, OS_Simulator,  NULL);
+	// Wait until the OS Thread completes
 	pthread_join(os, NULL);
     
     // free resources
