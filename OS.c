@@ -99,19 +99,19 @@ void * OS_Simulator(void *arg) {
 
 // To Complete
 
-void * timer_thread(void *) {
+void * timer_thread(void * arg) {
 
 
 
 }
 
-void * io1_thread(void *) {
+void * io1_thread(void * arg) {
 
 
 
 }
 
-void * io2_thread(void *) {
+void * io2_thread(void * arg) {
 
 
 }
@@ -375,13 +375,48 @@ int createNewProcesses() {
         q_enqueue(processes->newProcesses, node);
     }
     
-    // updated for problem 4
+    // to be removed
     // Sets a PCB to privileged if under maximum allowed privileged PCBs 
     if (numPrivileged < MAX_PRIVILEGED && pcb) {
         privilegedPCBs[numPrivileged] = pcb;
         setTerminate(pcb, 0);
         numPrivileged++;
     }
+	//////
+}
+
+int createConsumerProducerPair() {
+	PCB_p producer = NULL;
+	PCB_p consumer = NULL;
+	Node_p pro_node;
+	Node_p con_code;
+
+	producer = pcbConstruct();
+	consumer = pcbConstruct();
+	initialize_pcb(producer);
+	initialize_pcb(consumer);
+
+	// give PCB random Max PC, and Traps
+	// TODO - Need small Max PC + need better trap method for here?
+	setRandomMaxPC(producer);
+	setRandomMaxPC(consumer);
+	setRandomIOTraps(producer);
+	setRandomIOTraps(consumer);
+	// Set to not terminate
+	setTerminate(producer, 0);
+	setTerminate(consumer, 0);
+
+	// TODO Set up CP_PAIR_p
+
+	// enqueue
+	pro_node = construct_Node();
+	con_code = construct_Node();
+	initializeNode(pro_node);
+	initializeNode(con_code);
+	setNodePCB(pro_node, pcb);
+	setNodePCB(con_code, pcb);
+	q_enqueue(processes->newProcesses, pro_node);
+	q_enqueue(processes->newProcesses, con_code);
 }
 
 // Prints a message describing the enqueued PCB

@@ -66,11 +66,14 @@ typedef struct pcb {
     int io_1_traps[IO_TRAP_SIZE]; // An array of PC values representing Trap calls for IO device 1
     int io_2_traps[IO_TRAP_SIZE]; // An array of PC values representing Trap calls for IO device 2
 
-	int lock_pcs[SYNCRO_SIZE]; // An array of PC values representing lock calls
-	int unlock_pcs[SYNCRO_SIZE]; // An array of PC values representing unlock calls
-	int trylock_pcs[SYNCRO_SIZE]; // An array of PC values representing trylock calls
-	int wait_pcs[SYNCRO_SIZE]; // An array of PC values representing wait calls
-	int signal_pcs[SYNCRO_SIZE]; // An array of PC values representing signal calls
+	int lock_1_pcs[SYNCRO_SIZE]; // An array of PC values representing lock calls for resource 1
+	int lock_2_pcs[SYNCRO_SIZE]; // An array of PC values representing lock calls for  resource 2
+	int unlock_1_pcs[SYNCRO_SIZE]; // An array of PC values representing unlock calls resource 1
+	int unlock_2_pcs[SYNCRO_SIZE]; // An array of PC values representing unlock calls resource 2
+	int trylock_1_pcs[SYNCRO_SIZE]; // An array of PC values representing trylock calls resource 1
+	int trylock_2_pcs[SYNCRO_SIZE]; // An array of PC values representing trylock calls resource 2
+	int wait_1_pcs[SYNCRO_SIZE]; // An array of PC values representing wait calls resource 1
+	int signal_1_pcs[SYNCRO_SIZE]; // An array of PC values representing signal calls
 
     CPU_context_p context; // set of cpu registers
     // other items to be added as needed.

@@ -78,6 +78,44 @@ typedef struct process_queues {
 
 typedef PROCESS_QUEUES_s* PROCESS_QUEUES_p;
 
+typedef struct custom_mutex {
+	// NULL if no process holds the mutex, otherwise the pointer to the process
+	PID_p owner;
+	// A FIFO_q of processes blocked waiting for the mutex
+	FIFOq_p blocked;
+} CUSTOM_MUTEX_p;
+
+typedef struct custom_cond {
+	// int representing the state
+	int state;
+	// A FIFO_q of processes waiting for a state change
+	FIFOq_p waiting;
+} CUSTOM_COND_p;
+
+typedef struct cp_pair {
+	// PID of processes in the pair
+	int consumer_pid;
+	int producer_pid;
+
+	// Shared counter to increment/read
+	int counter;
+
+	// Syncronization vars
+	CUSTOM_MUTEX_p mutex;
+	CUSTOM_COND_p produced;
+	CUSTOM_COND_p consumed;
+} CP_PAIR_p;
+
+typedef struct resource_pair {
+	// PID of processes in the pair
+	int process1_pid;
+	int process2_pid;
+
+	// Syncronization vars
+	CUSTOM_MUTEX_p mutex_1;
+	CUSTOM_MUTEX_p mutex_2;
+} RESOURCE_PAIR_p;
+
 // A function to act as the main loop for the simulator
 //void OS_Simulator();
 

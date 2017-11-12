@@ -80,11 +80,14 @@ int initialize_pcb(PCB_p my_pcb) {
         }
 
 		for (int i = 0; i < SYNCRO_SIZE; i++) {
-			my_pcb->lock_pcs[i] = 0;
-			my_pcb->unlock_pcs[i] = 0;
-			my_pcb->trylock_pcs[i] = 0;
-			my_pcb->wait_pcs[i] = 0;
-			my_pcb->signal_pcs[i] = 0;
+			my_pcb->lock_1_pcs[i] = 0;
+			my_pcb->lock_2_pcs[i] = 0;
+			my_pcb->unlock_1_pcs[i] = 0;
+			my_pcb->unlock_2_pcs[i] = 0;
+			my_pcb->trylock_1_pcs[i] = 0;
+			my_pcb->trylock_2_pcs[i] = 0;
+			my_pcb->wait_1_pcs[i] = 0;
+			my_pcb->signal_1_pcs[i] = 0;
 		}
     }
 }
