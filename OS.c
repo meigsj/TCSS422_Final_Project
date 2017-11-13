@@ -28,6 +28,9 @@ int IO_2_counter;
 
 PROCESS_QUEUES_p processes;
 
+int total_cp_pairs;
+CP_PAIR_p pc_pairs[PRO_CON_MAX];
+
 // Updated for Problem 4
 // The top level of the OS simulator
 void * OS_Simulator(void *arg) {
@@ -390,6 +393,9 @@ int createConsumerProducerPair() {
 	PCB_p consumer = NULL;
 	Node_p pro_node;
 	Node_p con_code;
+	CP_PAIR_p pair; 
+
+	if (total_cp_pairs >= PRO_CON_MAX) return 1; // MAGIC NUMBER
 
 	producer = pcbConstruct();
 	consumer = pcbConstruct();
@@ -406,7 +412,13 @@ int createConsumerProducerPair() {
 	setTerminate(producer, 0);
 	setTerminate(consumer, 0);
 
-	// TODO Set up CP_PAIR_p
+	// initalize CP_PAIR
+	pair = (CP_PAIR_p)malloc(sizeof(CP_PAIR_s));
+	intialize_CP_Pair(pair);
+	pair->producer = producer;
+	pair->consumer = consumer;
+	pc_pairs[total_cp_pairs] = pair;
+	total_cp_pairs++;
 
 	// enqueue
 	pro_node = construct_Node();
@@ -417,6 +429,50 @@ int createConsumerProducerPair() {
 	setNodePCB(con_code, pcb);
 	q_enqueue(processes->newProcesses, pro_node);
 	q_enqueue(processes->newProcesses, con_code);
+
+	return SUCCESSFUL;
+}
+
+void initialize_CP_Pair(CP_PAIR_p pair) {
+	pair->producer = NULL;
+	pair->consumer = NULL;
+	pair->counter = 0;
+	pair->mutex = (CUSTOM_MUTEX_p)malloc(sizeof(CUSTOM_MUTEX_s));
+	pair->produced = (CUSTOM_COND_p)malloc(sizeof(CUSTOM_COND_s));
+	pair->consumed = (CUSTOM_COND_p)malloc(sizeof(CUSTOM_COND_s));
+
+	initialize_Custom_Mutex(pair->mutex);
+	initialize_Custom_Cond(pair->produced);
+	initialize_Custom_Cond(pair->consumed);
+}
+
+void initialize_Custom_Mutex(CUSTOM_MUTEX_p mutex) {
+	mutex->owner = NULL;
+	mutex->blocked = construct_FIFOq();
+	initializeFIFOq(mutex->blocked);
+}
+
+void initialize_Custom_Cond(CUSTOM_COND_p cond) {
+	cond->state = 0;
+	cond->waiting = construct_FIFOq();
+	initializeFIFOq(cond->waiting);
+}
+
+void is_mutex_free(CUSTOM_MUTEX_p mutex) {
+	if (mutex->owner) return 1;
+
+	return 0;
+}
+
+// Performs a linear search for a Producer/Consumer pair using the passed process
+CP_PAIR_p getPCPair(PCB_p process) {
+	for (int i = 0; i < PRO_CON_MAX; i++) {
+		if (pc_pairs[i]->producer == process || pc_pairs[i]->consumer == process) {
+			return pc_pairs[i];
+		}
+	}
+
+	return NULL;
 }
 
 // Prints a message describing the enqueued PCB
@@ -597,6 +653,7 @@ int main() {
     quantum_post_reset = 0;
     IO_1_counter = 0;
     IO_2_counter = 0;
+	total_cp_pairs = 0;
     timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));   
     
     // create starting processes
@@ -618,5 +675,6 @@ int main() {
 	pthread_join(os, NULL);
     
     // free resources
+	// TODO Add frees for syncro services vars and structs
     freeProcessQueues();
 }

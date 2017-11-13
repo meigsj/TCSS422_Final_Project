@@ -66,6 +66,9 @@ Shaun Coleman
 // range used to for the multiplier to decided the counter for IO interrupts (3-5)
 #define IO_COUNTER_MULT_RANGE 3 + 3
 
+// The maximum number of producer/consumer pairs
+#define PRO_CON_MAX 10
+
 typedef struct process_queues {
     // all currently used process queues and the running process pcb
     FIFOq_p newProcesses;
@@ -80,22 +83,26 @@ typedef PROCESS_QUEUES_s* PROCESS_QUEUES_p;
 
 typedef struct custom_mutex {
 	// NULL if no process holds the mutex, otherwise the pointer to the process
-	PID_p owner;
+	PCB_p owner;
 	// A FIFO_q of processes blocked waiting for the mutex
 	FIFOq_p blocked;
-} CUSTOM_MUTEX_p;
+} CUSTOM_MUTEX_s;
+
+typedef CUSTOM_MUTEX_s* CUSTOM_MUTEX_p;
 
 typedef struct custom_cond {
 	// int representing the state
 	int state;
 	// A FIFO_q of processes waiting for a state change
 	FIFOq_p waiting;
-} CUSTOM_COND_p;
+} CUSTOM_COND_s;
+
+typedef CUSTOM_COND_s* CUSTOM_COND_p;
 
 typedef struct cp_pair {
-	// PID of processes in the pair
-	int consumer_pid;
-	int producer_pid;
+	// pointers to the processes in the pair
+	PCB_p consumer;
+	PCB_p producer;
 
 	// Shared counter to increment/read
 	int counter;
@@ -104,17 +111,21 @@ typedef struct cp_pair {
 	CUSTOM_MUTEX_p mutex;
 	CUSTOM_COND_p produced;
 	CUSTOM_COND_p consumed;
-} CP_PAIR_p;
+} CP_PAIR_s;
+
+typedef CP_PAIR_s* CP_PAIR_p;
 
 typedef struct resource_pair {
-	// PID of processes in the pair
-	int process1_pid;
-	int process2_pid;
+	// pointers to the processes in the pair
+	PCB_p process1;
+	PCB_p process2;
 
 	// Syncronization vars
 	CUSTOM_MUTEX_p mutex_1;
 	CUSTOM_MUTEX_p mutex_2;
-} RESOURCE_PAIR_p;
+} RESOURCE_PAIR_s;
+
+typedef RESOURCE_PAIR_s* RESOURCE_PAIR_p;
 
 // A function to act as the main loop for the simulator
 //void OS_Simulator();
@@ -176,3 +187,19 @@ void initializeProcessQueues();
 
 // A function used to free the processes struct
 void freeProcessQueues();
+
+int createConsumerProducerPair();
+
+void initialize_CP_Pair(CP_PAIR_p pair);
+
+void initialize_Custom_Mutex(CUSTOM_MUTEX_p);
+
+void initialize_Custom_Cond(CUSTOM_COND_p);
+
+void is_mutex_free(CUSTOM_MUTEX_p);
+
+CP_PAIR_p getPCPair(PCB_p);
+
+CP_PAIR_p getPCPair(PCB_p);
+
+
