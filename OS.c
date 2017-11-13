@@ -535,7 +535,40 @@ int simulateProgramStep() {
         setTermCount(processes->runningProcess, getTermCount(processes->runningProcess)+1);
     }
     
+	// TODO simulate counter and possibly syncro services
+
+
     return SUCCESSFUL;
+}
+
+int simulate_mutex_lock(PCB_p process, CUSTOM_MUTEX_p mutex) {
+	if (!mutex->owner) {
+		mutex->owner = process;
+	} else {
+		q_enqueue(mutex->blocked, process);
+	}
+}
+
+int simulate_mutex_unlock(CUSTOM_MUTEX_p mutex) {
+	// TODO check for correctness
+	if (!mutex->owner && !q_is_empty(mutex->blocked)) {
+		// update state
+		// scheduler needs to grab next ready
+		mutex->owner = q_dequeue(mutex->blocked);
+	} else {
+		mutex->owner = NULL;
+	}
+}
+
+int simulate_cond_wait(PCB_p process, CUSTOM_COND_p cond) {
+	// TODO check state var?
+	// update state
+	// scheduler needs to grab next
+	q_enqueue(cond->waiting, process);
+}
+
+int simulate_cond_signal(PCB_p process, CUSTOM_COND_p cond) {
+	// move next process to ready (or all?)
 }
 
 // Moves proceeses from the new queue to the ready queue

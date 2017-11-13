@@ -202,4 +202,10 @@ CP_PAIR_p getPCPair(PCB_p);
 
 CP_PAIR_p getPCPair(PCB_p);
 
+int simulate_mutex_lock(PCB_p, CUSTOM_MUTEX_p);
 
+int simulate_mutex_unlock(CUSTOM_MUTEX_p);
+
+int simulate_cond_wait(PCB_p, CUSTOM_COND_p);
+
+int simulate_cond_signal(PCB_p, CUSTOM_COND_p);
