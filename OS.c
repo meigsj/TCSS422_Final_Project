@@ -44,8 +44,8 @@ void * OS_Simulator(void *arg) {
 	pthread_create(&the_timer_thread, NULL, timer_thread, NULL);
 	
 	//Creatting the I/O threads
-	pthread_create(&the_io1_thread, NULL, io1_thread, NULL);
-	pthread_create(&the_io2_thread, NULL, io2_thread, NULL);
+	//pthread_create(&the_io1_thread, NULL, io1_thread, NULL);
+	//pthread_create(&the_io2_thread, NULL, io2_thread, NULL);
 	
     for( ; ; ) { // for spider
         int trapFlag = 0;
