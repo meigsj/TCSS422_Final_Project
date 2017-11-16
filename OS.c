@@ -30,7 +30,12 @@ int IO_2_counter;
 //Tests
 pthread_mutex_t timer_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t timer_cond = PTHREAD_COND_INITIALIZER;
+//...
+pthread_mutex_t io1_lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t io1_cond = PTHREAD_COND_INITIALIZER; 
 
+pthread_mutex_t io2_lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t io2_cond = PTHREAD_COND_INITIALIZER; 
 
 PROCESS_QUEUES_p processes;
 
@@ -85,17 +90,21 @@ void * OS_Simulator(void *arg) {
 		/////
         
         // Trigger IO1 counter and check for IO1 interupt
-        if(IO_1_DownCounter() == IO_1_INTERUPT && !q_is_empty(processes->IO_1_Processes)) {
+        if(/*IO_1_DownCounter() == IO_1_INTERUPT*/pthread_mutex_trylock(&io1_lock) == 0 && !q_is_empty(processes->IO_1_Processes)) {
             sysStack = currentPC;
             IO_Interupt_Routine(IO_1_INTERUPT);
             printInterupt(IO_1_INTERUPT);
+			
+			pthread_mutext_unlock(&io1_lock);
         }
         
         // Trigger IO2 counter and check for IO1 interupt
-        if(IO_2_DownCounter() == IO_2_INTERUPT && !q_is_empty(processes->IO_2_Processes)) {
+        if(/*IO_2_DownCounter() == IO_2_INTERUPT*/pthread_mutex_trylock(&io2_lock) == 0 && !q_is_empty(processes->IO_2_Processes)) {
             sysStack = currentPC;
             IO_Interupt_Routine(IO_2_INTERUPT);
             printInterupt(IO_2_INTERUPT);
+			
+			pthread_mutext_unlock(&io2_lock);
         }
         
         // Check for Traps (termination is checked as a trap here too)
@@ -171,14 +180,57 @@ void * timer_thread(void * s) {
 }
 
 void * io1_thread(void * s) {
-
-
-
+	
+	struct timespec ts;
+	ts.tv_sec = 0;
+	ts.tv_nsec = 500;
+	
+	for (;;) {
+		pthread_mutext_lock(&io1_lock);
+		//....
+		nanosleep(&ts, NULL);
+		//....
+		pthread_mutex_unlock(&io1_lock);
+		//....
+		nanosleep(&ts, NULL);
+		/*
+		pthread_cond_wait(&io1_cond, &io1_lock);
+		IO_1_DownCounter();
+		if (IO_1_counter == 0) {
+			pthread_cond_signal(&io1_cond);
+		}	
+		*/
+		if (IO_1_counter == -1) {
+			break;
+		}
+	}
 }
 
 void * io2_thread(void * s) {
 
-
+	struct timespec ts;
+	ts.tv_sec = 0;
+	ts.tv_nsec = 500;
+	
+	for (;;) {
+		pthread_mutext_lock(&io2_lock);
+		//....
+		nanosleep(&ts, NULL);
+		//....
+		pthread_mutex_unlock(&io2_lock);
+		//....
+		nanosleep(&ts, NULL);
+		/*
+		pthread_cond_wait(&io2_cond, &io2_lock);
+		IO_2_DownCounter();
+		if (IO_2_counter == 0) {
+			pthread_cond_signal(&io2_cond);
+		}	
+		*/
+		if (IO_2_counter == -1) {
+			break;
+		}
+	}
 }
 
 //////
