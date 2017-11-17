@@ -26,14 +26,32 @@ int timer;
 int IO_1_counter;
 int IO_2_counter;
 
+
+//Tests
+pthread_mutex_t timer_lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t timer_cond = PTHREAD_COND_INITIALIZER;
+//...
+pthread_mutex_t io1_lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t io1_cond = PTHREAD_COND_INITIALIZER; 
+
+pthread_mutex_t io2_lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t io2_cond = PTHREAD_COND_INITIALIZER; 
+
 PROCESS_QUEUES_p processes;
 
 // Updated for Problem 4
 // The top level of the OS simulator
 void * OS_Simulator(void *arg) {
     char* buffer[MAX_BUFFER_SIZE];
+	pthread_t the_timer_thread;
     // Main Loop
     // One cycle is one instruction
+	pthread_create(&the_timer_thread, NULL, timer_thread, NULL);
+	
+	//Creatting the I/O threads
+	//pthread_create(&the_io1_thread, NULL, io1_thread, NULL);
+	//pthread_create(&the_io2_thread, NULL, io2_thread, NULL);
+	
     for( ; ; ) { // for spider
         int trapFlag = 0;
         // update counters
@@ -46,11 +64,16 @@ void * OS_Simulator(void *arg) {
         // Create new processes
         if ((iterationCount % NEW_PROCESS_ITERATION) == 0) {
             createNewProcesses(processes->newProcesses);
+			
         }
-        
+		if (timer >= 0) {//WILL NEED TO BE FIXED AS SO TO HAVE SCHEDULAR RUN AT LEAST ONCE BEFORE STARTING
+			
+		}
+		//In the CPU loop use the non-blocking mutex_trylock() call so that the loop doesn't block itself waiting for the timer signal
 		//// TO REMOVE AND REPLACE WITH CHECK CONDITION FOR TIMER INTERUPT
         // Trigger timer and check for timer interupt
-        if(timerDownCounter() == TIMER_INTERUPT) {
+		//pthread_mutex_trylock(&timer_lock);
+        if(pthread_mutex_trylock(&timer_lock) == 0) { //WAS:timerDownCounter() == TIMER_INTERUPT 
             int state = RUNNING;
             if(processes->runningProcess) state = getState(processes->runningProcess);
             // Timer interupt
@@ -62,21 +85,26 @@ void * OS_Simulator(void *arg) {
             } else { 
                 printInterupt(TIMER_INTERUPT);
             }
+			pthread_mutex_unlock(&timer_lock);
         }
 		/////
         
         // Trigger IO1 counter and check for IO1 interupt
-        if(IO_1_DownCounter() == IO_1_INTERUPT && !q_is_empty(processes->IO_1_Processes)) {
+        if(/*IO_1_DownCounter() == IO_1_INTERUPT*/pthread_mutex_trylock(&io1_lock) == 0 && !q_is_empty(processes->IO_1_Processes)) {
             sysStack = currentPC;
             IO_Interupt_Routine(IO_1_INTERUPT);
             printInterupt(IO_1_INTERUPT);
+			
+			pthread_mutext_unlock(&io1_lock);
         }
         
         // Trigger IO2 counter and check for IO1 interupt
-        if(IO_2_DownCounter() == IO_2_INTERUPT && !q_is_empty(processes->IO_2_Processes)) {
+        if(/*IO_2_DownCounter() == IO_2_INTERUPT*/pthread_mutex_trylock(&io2_lock) == 0 && !q_is_empty(processes->IO_2_Processes)) {
             sysStack = currentPC;
             IO_Interupt_Routine(IO_2_INTERUPT);
             printInterupt(IO_2_INTERUPT);
+			
+			pthread_mutext_unlock(&io2_lock);
         }
         
         // Check for Traps (termination is checked as a trap here too)
@@ -91,29 +119,118 @@ void * OS_Simulator(void *arg) {
         //check stop condition for the simulation
         if (iterationCount >= HALT_CONDITION) {
             printf("---- HALTING SIMULATION ON ITERATION %d ----\n", iterationCount);
+			timer = -1;
+			pthread_join(the_timer_thread, NULL);
             break;
         }
     }
 
 }
 
+// reset downcounter by quantum in seperate function
+
 // To Complete
+/*
 
-void * timer_thread(void *) {
+The timer is an independent thread that puts itself to sleep for some number of milliseconds (the standard sleep function in 
+Linux is in seconds so use the nanosleep() function (time.h) -you may need to experiment with how many the timer should sleep to 
+approximate a single quantum). When it wakes up it will need to "signal" the CPU thread that an interrupt has 
+occurred through the use of a mutex. In the CPU loop use the non-blocking mutex_trylock() call so that the loop
+doesn't block itself waiting for the timer signal. After throwing  the  interrupt  signal  it  puts  itself  to  sleep  again 
+for  the  designated  quantum.  The  timer  has  the highest priority with respect to interrupt processing. 
+It must be accommodated before any I/O interrupt. If an  I/O  interrupt  is  processing  when  a 
+timer interrupt occurs  you  should  call the timer  pseudo_ISR  from inside the I/O pseudo_ISR to simulate these priority relation
 
+in os change timewr to check for trylock
+*/
+void * timer_thread(void * s) {
 
+	struct timespec ts;
+	ts.tv_sec = 0;
+	ts.tv_nsec = 500;
+
+	for (;;) {
+		/**/
+		pthread_mutex_lock(&timer_lock);
+		//sleep thread
+		//pthread_cond_wait(&timer_cond, &timer_lock);
+		//Pthread_mutex_lock(&lock);
+		nanosleep(&ts, NULL);
+		//wake thread
+		//signal CPU thread
+		//pthread_cond_signal(&timer_cond);
+		pthread_mutex_unlock(&timer_lock);
+		//sleep thread again for quantum
+		//pthread_cond_wait(&timer_cond, &timer_lock);
+		nanosleep(&ts, NULL);
+		
+		/*
+		pthread_cond_wait(&timer_cond, &timer_lock);
+		timerDownCounter();
+		if (timer == 0) {
+			pthread_cond_signal(&timer_cond);
+		}
+		
+		*/
+		if (timer == -1) {
+			break;
+		}
+	}
 
 }
 
-void * io1_thread(void *) {
-
-
-
+void * io1_thread(void * s) {
+	
+	struct timespec ts;
+	ts.tv_sec = 0;
+	ts.tv_nsec = 500;
+	
+	for (;;) {
+		pthread_mutext_lock(&io1_lock);
+		//....
+		nanosleep(&ts, NULL);
+		//....
+		pthread_mutex_unlock(&io1_lock);
+		//....
+		nanosleep(&ts, NULL);
+		/*
+		pthread_cond_wait(&io1_cond, &io1_lock);
+		IO_1_DownCounter();
+		if (IO_1_counter == 0) {
+			pthread_cond_signal(&io1_cond);
+		}	
+		*/
+		if (IO_1_counter == -1) {
+			break;
+		}
+	}
 }
 
-void * io2_thread(void *) {
+void * io2_thread(void * s) {
 
-
+	struct timespec ts;
+	ts.tv_sec = 0;
+	ts.tv_nsec = 500;
+	
+	for (;;) {
+		pthread_mutext_lock(&io2_lock);
+		//....
+		nanosleep(&ts, NULL);
+		//....
+		pthread_mutex_unlock(&io2_lock);
+		//....
+		nanosleep(&ts, NULL);
+		/*
+		pthread_cond_wait(&io2_cond, &io2_lock);
+		IO_2_DownCounter();
+		if (IO_2_counter == 0) {
+			pthread_cond_signal(&io2_cond);
+		}	
+		*/
+		if (IO_2_counter == -1) {
+			break;
+		}
+	}
 }
 
 //////
@@ -579,6 +696,10 @@ int main() {
     
     // Start OS Thread
 	pthread_create(&os, NULL, OS_Simulator,  NULL);
+
+	//
+	
+
 	// Wait until the OS Thread completes
 	pthread_join(os, NULL);
     
