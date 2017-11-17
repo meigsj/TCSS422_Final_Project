@@ -1,10 +1,12 @@
 /*
 TCSS422 - Operating Systems
-Problem 4
+Final Project
 
 Group Members:
-Zira Cook
+Kirtwinder Gulati
 Shaun Coleman
+Ayub Tiba
+Joshua Meigs
 */
 
 #include <time.h>
@@ -19,7 +21,6 @@ unsigned int quantum_post_reset;
 // Too Remove
 PCB_p privilegedPCBs[MAX_PRIVILEGED];
 unsigned int numPrivileged;
-////
 
 
 int timer;
@@ -48,7 +49,7 @@ void * OS_Simulator(void *arg) {
     // One cycle is one instruction
 	pthread_create(&the_timer_thread, NULL, timer_thread, NULL);
 	
-	//Creatting the I/O threads
+	//Creating the I/O threads
 	//pthread_create(&the_io1_thread, NULL, io1_thread, NULL);
 	//pthread_create(&the_io2_thread, NULL, io2_thread, NULL);
 	
@@ -66,14 +67,16 @@ void * OS_Simulator(void *arg) {
             createNewProcesses(processes->newProcesses);
 			
         }
-		if (timer >= 0) {//WILL NEED TO BE FIXED AS SO TO HAVE SCHEDULAR RUN AT LEAST ONCE BEFORE STARTING
+        //Run the scheduler once before starting
+		if (timer >= 0) {
 			
 		}
 		//In the CPU loop use the non-blocking mutex_trylock() call so that the loop doesn't block itself waiting for the timer signal
 		//// TO REMOVE AND REPLACE WITH CHECK CONDITION FOR TIMER INTERUPT
         // Trigger timer and check for timer interupt
-		//pthread_mutex_trylock(&timer_lock);
-        if(pthread_mutex_trylock(&timer_lock) == 0) { //WAS:timerDownCounter() == TIMER_INTERUPT 
+		//pthread_mutex_trylock(&timer_lock) ?
+		//WAS:timerDownCounter() == TIMER_INTERUPT
+        if(pthread_mutex_trylock(&timer_lock) == 0) {
             int state = RUNNING;
             if(processes->runningProcess) state = getState(processes->runningProcess);
             // Timer interupt
@@ -87,10 +90,10 @@ void * OS_Simulator(void *arg) {
             }
 			pthread_mutex_unlock(&timer_lock);
         }
-		/////
         
         // Trigger IO1 counter and check for IO1 interupt
-        if(/*IO_1_DownCounter() == IO_1_INTERUPT*/pthread_mutex_trylock(&io1_lock) == 0 && !q_is_empty(processes->IO_1_Processes)) {
+        /*IO_1_DownCounter() == IO_1_INTERUPT*/
+        if(pthread_mutex_trylock(&io1_lock) == 0 && !q_is_empty(processes->IO_1_Processes)) {
             sysStack = currentPC;
             IO_Interupt_Routine(IO_1_INTERUPT);
             printInterupt(IO_1_INTERUPT);
