@@ -78,6 +78,14 @@ int initialize_pcb(PCB_p my_pcb) {
             my_pcb->io_1_traps[i] = NO_TRAP;
             my_pcb->io_2_traps[i] = NO_TRAP;
         }
+
+		for (int i = 0; i < SYNCRO_SIZE; i++) {
+			my_pcb->lock_pcs[i] = 0;
+			my_pcb->unlock_pcs[i] = 0;
+			my_pcb->trylock_pcs[i] = 0;
+			my_pcb->wait_pcs[i] = 0;
+			my_pcb->signal_pcs[i] = 0;
+		}
     }
 }
 

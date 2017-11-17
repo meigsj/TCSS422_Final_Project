@@ -15,6 +15,7 @@ Shaun Coleman
 // The total number of general registers (0-7)
 #define TOTAL_REG 8
 #define IO_TRAP_SIZE 4
+#define SYNCRO_SIZE 4
 #define NO_TRAP -1
 
 // The PID used to mark the process as the idle process
@@ -64,6 +65,12 @@ typedef struct pcb {
 
     int io_1_traps[IO_TRAP_SIZE]; // An array of PC values representing Trap calls for IO device 1
     int io_2_traps[IO_TRAP_SIZE]; // An array of PC values representing Trap calls for IO device 2
+
+	int lock_pcs[SYNCRO_SIZE]; // An array of PC values representing lock calls
+	int unlock_pcs[SYNCRO_SIZE]; // An array of PC values representing unlock calls
+	int trylock_pcs[SYNCRO_SIZE]; // An array of PC values representing trylock calls
+	int wait_pcs[SYNCRO_SIZE]; // An array of PC values representing wait calls
+	int signal_pcs[SYNCRO_SIZE]; // An array of PC values representing signal calls
 
     CPU_context_p context; // set of cpu registers
     // other items to be added as needed.

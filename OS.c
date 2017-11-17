@@ -8,14 +8,19 @@ Shaun Coleman
 */
 
 #include <time.h>
+#include <pthread.h>
 #include "OS.h"
 
 unsigned int sysStack;
 unsigned int currentPC;
 unsigned int iterationCount;
 unsigned int quantum_post_reset;
+
+// Too Remove
 PCB_p privilegedPCBs[MAX_PRIVILEGED];
 unsigned int numPrivileged;
+////
+
 
 int timer;
 int IO_1_counter;
@@ -25,7 +30,7 @@ PROCESS_QUEUES_p processes;
 
 // Updated for Problem 4
 // The top level of the OS simulator
-int OS_Simulator() {
+void * OS_Simulator(void *arg) {
     char* buffer[MAX_BUFFER_SIZE];
     // Main Loop
     // One cycle is one instruction
@@ -43,6 +48,7 @@ int OS_Simulator() {
             createNewProcesses(processes->newProcesses);
         }
         
+		//// TO REMOVE AND REPLACE WITH CHECK CONDITION FOR TIMER INTERUPT
         // Trigger timer and check for timer interupt
         if(timerDownCounter() == TIMER_INTERUPT) {
             int state = RUNNING;
@@ -57,6 +63,7 @@ int OS_Simulator() {
                 printInterupt(TIMER_INTERUPT);
             }
         }
+		/////
         
         // Trigger IO1 counter and check for IO1 interupt
         if(IO_1_DownCounter() == IO_1_INTERUPT && !q_is_empty(processes->IO_1_Processes)) {
@@ -89,6 +96,27 @@ int OS_Simulator() {
     }
 
 }
+
+// To Complete
+
+void * timer_thread(void *) {
+
+
+
+}
+
+void * io1_thread(void *) {
+
+
+
+}
+
+void * io2_thread(void *) {
+
+
+}
+
+//////
 
 // Function used to simulate an ISR call
 int pseudoISR() {
@@ -510,11 +538,12 @@ void freeProcessQueues() {
 }
 
 int main() {
-    
+	pthread_t os;
+
     // Seed RNG
     srand(time(NULL));
     
-    // Initialize Vars
+    // Initialize Queues
     initializeProcessQueues();
     
     
@@ -526,6 +555,7 @@ int main() {
       setQuantum(processes->readyProcesses, i, (i+1)*(i+1)*10);
     }
     
+	// Initialize Global Vars
     currentPC = 0;
     sysStack = 0;
     iterationCount = 0;
@@ -547,8 +577,10 @@ int main() {
         createNewProcesses();
     }
     
-    // main loop
-    OS_Simulator();
+    // Start OS Thread
+	pthread_create(&os, NULL, OS_Simulator,  NULL);
+	// Wait until the OS Thread completes
+	pthread_join(os, NULL);
     
     // free resources
     freeProcessQueues();
