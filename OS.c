@@ -9,6 +9,9 @@ Shaun Coleman
 
 #include <time.h>
 #include <pthread.h>
+
+#include <assert.h> //Could be useful
+
 #include "OS.h"
 
 unsigned int sysStack;
@@ -95,7 +98,7 @@ void * OS_Simulator(void *arg) {
             IO_Interupt_Routine(IO_1_INTERUPT);
             printInterupt(IO_1_INTERUPT);
 			
-			pthread_mutext_unlock(&io1_lock);
+			pthread_mutex_unlock(&io1_lock);
         }
         
         // Trigger IO2 counter and check for IO1 interupt
@@ -104,7 +107,7 @@ void * OS_Simulator(void *arg) {
             IO_Interupt_Routine(IO_2_INTERUPT);
             printInterupt(IO_2_INTERUPT);
 			
-			pthread_mutext_unlock(&io2_lock);
+			pthread_mutex_unlock(&io2_lock);
         }
         
         // Check for Traps (termination is checked as a trap here too)
@@ -186,7 +189,7 @@ void * io1_thread(void * s) {
 	ts.tv_nsec = 500;
 	
 	for (;;) {
-		pthread_mutext_lock(&io1_lock);
+		pthread_mutex_lock(&io1_lock);
 		//....
 		nanosleep(&ts, NULL);
 		//....
@@ -213,7 +216,7 @@ void * io2_thread(void * s) {
 	ts.tv_nsec = 500;
 	
 	for (;;) {
-		pthread_mutext_lock(&io2_lock);
+		pthread_mutex_lock(&io2_lock);
 		//....
 		nanosleep(&ts, NULL);
 		//....
