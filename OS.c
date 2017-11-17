@@ -10,7 +10,7 @@ Shaun Coleman
 #include <time.h>
 #include <pthread.h>
 #include "OS.h"
-
+#include <assert.h>
 unsigned int sysStack;
 unsigned int currentPC;
 unsigned int iterationCount;
@@ -21,8 +21,10 @@ PCB_p privilegedPCBs[MAX_PRIVILEGED];
 unsigned int numPrivileged;
 ////
 
-
+int scheduler_flag;
 int timer;
+int shutting_down;
+int ISR_FINISHED;
 int IO_1_counter;
 int IO_2_counter;
 
@@ -30,6 +32,8 @@ int IO_2_counter;
 //Tests
 pthread_mutex_t timer_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t timer_cond = PTHREAD_COND_INITIALIZER;
+
+pthread_mutex_t global_lock = PTHREAD_MUTEX_INITIALIZER;
 
 
 PROCESS_QUEUES_p processes;
@@ -39,9 +43,9 @@ PROCESS_QUEUES_p processes;
 void * OS_Simulator(void *arg) {
     char* buffer[MAX_BUFFER_SIZE];
 	pthread_t the_timer_thread;
+	
     // Main Loop
     // One cycle is one instruction
-	pthread_create(&the_timer_thread, NULL, timer_thread, NULL);
     for( ; ; ) { // for spider
         int trapFlag = 0;
         // update counters
@@ -56,20 +60,25 @@ void * OS_Simulator(void *arg) {
             createNewProcesses(processes->newProcesses);
 			
         }
-		if (timer >= 0) {//WILL NEED TO BE FIXED AS SO TO HAVE SCHEDULAR RUN AT LEAST ONCE BEFORE STARTING
-			
+		//scheduler_flag == 1
+		if (iterationCount == 5) {//WILL NEED TO BE FIXED AS SO TO HAVE SCHEDULAR RUN AT LEAST ONCE BEFORE STARTING
+			pthread_create(&the_timer_thread, NULL, timer_thread, NULL);
+			//scheduler_flag = 2;
 		}
 		//In the CPU loop use the non-blocking mutex_trylock() call so that the loop doesn't block itself waiting for the timer signal
 		//// TO REMOVE AND REPLACE WITH CHECK CONDITION FOR TIMER INTERUPT
         // Trigger timer and check for timer interupt
-		//pthread_mutex_trylock(&timer_lock);
-        if(pthread_mutex_trylock(&timer_lock) == 0) { //WAS:timerDownCounter() == TIMER_INTERUPT 
+		//scheduler_flag != 0 && 
+        if(iterationCount > 5 && pthread_mutex_trylock(&timer_lock) == 0 ) { //WAS: timerDownCounter() == TIMER_INTERUPT
             int state = RUNNING;
             if(processes->runningProcess) state = getState(processes->runningProcess);
             // Timer interupt
             sysStack = currentPC;
+			
             pseudoISR();
-            
+			ISR_FINISHED = 1;
+			pthread_cond_signal(&timer_cond);
+			
             if(state == HALTED) {
                 printInterupt(PCB_TERMINATED);
             } else { 
@@ -83,14 +92,14 @@ void * OS_Simulator(void *arg) {
         if(IO_1_DownCounter() == IO_1_INTERUPT && !q_is_empty(processes->IO_1_Processes)) {
             sysStack = currentPC;
             IO_Interupt_Routine(IO_1_INTERUPT);
-            printInterupt(IO_1_INTERUPT);
+            //printInterupt(IO_1_INTERUPT);
         }
         
         // Trigger IO2 counter and check for IO1 interupt
         if(IO_2_DownCounter() == IO_2_INTERUPT && !q_is_empty(processes->IO_2_Processes)) {
             sysStack = currentPC;
             IO_Interupt_Routine(IO_2_INTERUPT);
-            printInterupt(IO_2_INTERUPT);
+            //printInterupt(IO_2_INTERUPT);
         }
         
         // Check for Traps (termination is checked as a trap here too)
@@ -98,16 +107,17 @@ void * OS_Simulator(void *arg) {
         if(trapFlag == IO_1_TRAP || trapFlag == IO_2_TRAP || trapFlag == PCB_TERMINATED) {
             sysStack = currentPC;
             pseudoTSR(trapFlag);
-            printInterupt(trapFlag);
+            //printInterupt(trapFlag);
         }
 
         
         //check stop condition for the simulation
         if (iterationCount >= HALT_CONDITION) {
             printf("---- HALTING SIMULATION ON ITERATION %d ----\n", iterationCount);
-			timer = -1;
-			pthread_join(the_timer_thread, NULL);
-            break;
+			pthread_mutex_lock(&global_lock);
+			shutting_down = 1;
+			pthread_mutex_unlock(&global_lock);
+			break;
         }
     }
 
@@ -118,13 +128,11 @@ void * OS_Simulator(void *arg) {
 // To Complete
 /*
 
-The timer is an independent thread that puts itself to sleep for some number of milliseconds (the standard sleep function in 
-Linux is in seconds so use the nanosleep() function (time.h) -you may need to experiment with how many the timer should sleep to 
-approximate a single quantum). When it wakes up it will need to "signal" the CPU thread that an interrupt has 
-occurred through the use of a mutex. In the CPU loop use the non-blocking mutex_trylock() call so that the loop
-doesn't block itself waiting for the timer signal. After throwing  the  interrupt  signal  it  puts  itself  to  sleep  again 
-for  the  designated  quantum.  The  timer  has  the highest priority with respect to interrupt processing. 
-It must be accommodated before any I/O interrupt. If an  I/O  interrupt  is  processing  when  a 
+The timer is an independent thread that puts itself to sleep for some number of milliseconds (the standard sleep function in Linux is in seconds so use the nanosleep() function (time.h) 
+-you may need to experiment with how many the timer should sleep to approximate a single quantum). When it wakes up it will need to "signal" the CPU thread that an interrupt has 
+occurred through the use of a mutex. In the CPU loop use the non-blocking mutex_trylock() call so that the loop doesn't block itself waiting for the timer signal. 
+After throwing  the  interrupt  signal  it  puts  itself  to  sleep  again  for  the  designated  quantum.  The  timer  has  the
+highest priority with respect to interrupt processing. It must be accommodated before any I/O interrupt. If an  I/O  interrupt  is  processing  when  a 
 timer interrupt occurs  you  should  call the timer  pseudo_ISR  from inside the I/O pseudo_ISR to simulate these priority relation
 
 in os change timewr to check for trylock
@@ -132,37 +140,24 @@ in os change timewr to check for trylock
 void * timer_thread(void * s) {
 
 	struct timespec ts;
+	pthread_mutex_lock(&timer_lock);
 	ts.tv_sec = 0;
-	ts.tv_nsec = 500;
-
+	ts.tv_nsec = timer;//(timer*1000);
+	
+	
 	for (;;) {
-		/**/
-		pthread_mutex_lock(&timer_lock);
-		//sleep thread
-		//pthread_cond_wait(&timer_cond, &timer_lock);
-		//Pthread_mutex_lock(&lock);
-		nanosleep(&ts, NULL);
-		//wake thread
-		//signal CPU thread
-		//pthread_cond_signal(&timer_cond);
-		pthread_mutex_unlock(&timer_lock);
-		//sleep thread again for quantum
-		//pthread_cond_wait(&timer_cond, &timer_lock);
-		nanosleep(&ts, NULL);
-		
-		/*
-		pthread_cond_wait(&timer_cond, &timer_lock);
-		timerDownCounter();
-		if (timer == 0) {
-			pthread_cond_signal(&timer_cond);
-		}
-		
-		*/
-		if (timer == -1) {
+		pthread_mutex_trylock(&global_lock);
+		while (shutting_down) {
 			break;
 		}
+		pthread_mutex_unlock(&global_lock);
+		while (!ISR_FINISHED) {
+			pthread_cond_wait(&timer_cond, &timer_lock);		
+		}
+		ISR_FINISHED = 0;
+		ts.tv_nsec = timer;
+		
 	}
-
 }
 
 void * io1_thread(void * s) {
@@ -193,7 +188,6 @@ int pseudoISR() {
              
     // Update Timer
     timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));
-    
     // IRET (update current pc)
     currentPC = sysStack;
     return SUCCESSFUL;
@@ -300,7 +294,10 @@ int scheduler(int interupt) {
         
         quantum_post_reset = 0;
     }
-
+	if (scheduler_flag == 0) {
+		scheduler_flag = 1;
+	}
+	
     return SUCCESSFUL;
 }
 
@@ -599,7 +596,8 @@ void freeProcessQueues() {
 
 int main() {
 	pthread_t os;
-
+	shutting_down = 0;
+	ISR_FINISHED = 0;
     // Seed RNG
     srand(time(NULL));
     
@@ -623,7 +621,7 @@ int main() {
     IO_1_counter = 0;
     IO_2_counter = 0;
     timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));   
-    
+	scheduler_flag = 0;
     // create starting processes
     // set a process to running
     setState(processes->runningProcess, RUNNING);
