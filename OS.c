@@ -148,6 +148,8 @@ in os change timewr to check for trylock
 */
 void * timer_thread(void * s) {
 
+
+	//Will be updated from Joshua's branch
 	struct timespec ts;
 	ts.tv_sec = 0;
 	ts.tv_nsec = 500;
