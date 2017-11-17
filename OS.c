@@ -9,6 +9,7 @@ Shaun Coleman
 
 #include <time.h>
 #include <pthread.h>
+#include <assert.h>
 #include "OS.h"
 
 unsigned int sysStack;
@@ -21,15 +22,22 @@ PCB_p privilegedPCBs[MAX_PRIVILEGED];
 unsigned int numPrivileged;
 ////
 
-
 int timer;
 int IO_1_counter;
 int IO_2_counter;
 
 PROCESS_QUEUES_p processes;
 
+// TODO - Make into structs?
 int total_cp_pairs;
-CP_PAIR_p pc_pairs[PRO_CON_MAX];
+CP_PAIR_p cp_pairs[PRO_CON_MAX];
+
+int total_resource_pairs;
+RESOURCE_PAIR_p resource_pairs[SHARED_RESOURCE_MAX];
+
+int total_comp_processes;
+
+int total_io_processes;
 
 // Updated for Problem 4
 // The top level of the OS simulator
@@ -262,6 +270,16 @@ int dispatcher() {
             // enqueue to zombieProcesses
             setNodePCB(node, processes->runningProcess);
             q_enqueue(processes->zombieProcesses, node);
+
+			if (getType(processes->runningProcess) == IO) {
+				total_io_processes--;
+			} else if(getType(processes->runningProcess) == COMP_INTENSIVE) {
+				total_comp_processes--;
+			} else {
+				printf("Terminating a non IO or COMP_INTENSIVE process");
+				assert(0);
+			}
+
             break;
         case INTERRUPTED:
             // set state
@@ -351,6 +369,8 @@ int isAtTrap(PCB_p pcb) {
     
     if (terminate && terminate <= term_count) return PCB_TERMINATED;
 
+	if (io_1_traps[0] == NULL && io_2_traps[0] == NULL) return 0; // MAGIC NUMBER
+
     for (int i=0; i < IO_TRAP_SIZE; i++) {
         if (currentPC == pcb->io_1_traps[i]) return IO_1_TRAP;
         if (currentPC == pcb->io_2_traps[i]) return IO_2_TRAP;
@@ -361,33 +381,81 @@ int isAtTrap(PCB_p pcb) {
 
 // Function used to simulate the creation of new processes
 int createNewProcesses() {
-    PCB_p pcb = NULL;
-    Node_p node;
-    for(int i = 0; i < rand() % 5; i++) {
-        pcb = pcbConstruct();
-        initialize_pcb(pcb);
-        
-        // give PCB random Max PC, Terminate and Traps
-        setRandomMaxPC(pcb);
-        setRandomTerminate(pcb);
-        setRandomIOTraps(pcb);
-        
-        node = construct_Node();
-        initializeNode(node);
-        setNodePCB(node, pcb);
-        q_enqueue(processes->newProcesses, node);
+	for(int i = 0; i < rand() % CREATE_IO_PROCESS_MAX; i++) {
+		if (total_io_processes >= CREATE_IO_PROCESS_MAX) break;
+		createIOProcess();
     }
+
+	for (int i = 0; i < rand() % CREATE_CUMPUTE_PROCESS_MAX; i++) {
+		if (total_comp_processes >= CREATE_CUMPUTE_PROCESS_MAX) break;
+		createComputeIntensiveProcess();
+	}
+
+	for (int i = 0; i < rand() % CREATE_PRO_CON_MAX; i++) {
+		if (total_cp_pairs >= CREATE_PRO_CON_MAX) break;
+		createConsumerProducerPair();
+	}
+
+	for (int i = 0; i < rand() % CREATE_SHARED_RESOURCE_MAX; i++) {
+		if (total_resource_pairs >= CREATE_SHARED_RESOURCE_MAX) break;
+	    createSharedResourcePair();
+	}
     
     // to be removed
     // Sets a PCB to privileged if under maximum allowed privileged PCBs 
-    if (numPrivileged < MAX_PRIVILEGED && pcb) {
-        privilegedPCBs[numPrivileged] = pcb;
-        setTerminate(pcb, 0);
-        numPrivileged++;
-    }
+   // if (numPrivileged < MAX_PRIVILEGED && pcb) {
+   //     privilegedPCBs[numPrivileged] = pcb;
+   //     setTerminate(pcb, 0);
+   //     numPrivileged++;
+   // }
 	//////
 }
 
+// Create a process with IO Trap calls
+int createIOProcess() {
+	PCB_p pcb = NULL;
+	Node_p node;
+
+	pcb = pcbConstruct();
+	initialize_pcb(pcb);
+
+	setType(pcb, IO);
+
+	// give PCB random Max PC, Terminate and Traps
+	setRandomMaxPC(pcb);
+	setRandomTerminate(pcb);
+	setRandomIOTraps(pcb);
+
+	node = construct_Node();
+	initializeNode(node);
+	setNodePCB(node, pcb);
+	q_enqueue(processes->newProcesses, node);
+
+	total_io_processes++;
+}
+
+// Create a process with no io
+int createComputeIntensiveProcess() {
+	PCB_p pcb = NULL;
+	Node_p node;
+
+	pcb = pcbConstruct();
+	initialize_pcb(pcb);
+
+	setType(pcb, COMP_INTENSIVE);
+
+	setRandomMaxPC(pcb);
+	setRandomTerminate(pcb);
+
+	node = construct_Node();
+	initializeNode(node);
+	setNodePCB(node, pcb);
+	q_enqueue(processes->newProcesses, node);
+
+	total_comp_processes++;
+}
+
+// Create two processes in a consumer/producer pair
 int createConsumerProducerPair() {
 	PCB_p producer = NULL;
 	PCB_p consumer = NULL;
@@ -402,12 +470,19 @@ int createConsumerProducerPair() {
 	initialize_pcb(producer);
 	initialize_pcb(consumer);
 
+	// Mark each processes as a consumer/producer pair
+	setType(producer, CONPRO_PAIR);
+	setType(consumer, CONPRO_PAIR);
+
 	// give PCB random Max PC, and Traps
 	// TODO - Need small Max PC + need better trap method for here?
 	setRandomMaxPC(producer);
 	setRandomMaxPC(consumer);
-	setRandomIOTraps(producer);
-	setRandomIOTraps(consumer);
+	
+	// TODO - Check if traps are needed for PC pair
+	//setRandomIOTraps(producer);
+	//setRandomIOTraps(consumer);
+	
 	// Set to not terminate
 	setTerminate(producer, 0);
 	setTerminate(consumer, 0);
@@ -433,6 +508,44 @@ int createConsumerProducerPair() {
 	return SUCCESSFUL;
 }
 
+// Creates a two processes in a Shared Resource Pair
+int createSharedResourcePair() {
+	PCB_p process_1 = NULL;
+	PCB_p process_2 = NULL;
+	Node_p pro_node;
+	Node_p con_code;
+	RESOURCE_PAIR_p pair;
+
+	if (total_resource_pairs >= SHARED_RESOURCE_MAX) return 1; // MAGIC NUMBER
+
+	process_1 = pcbConstruct();
+	process_2 = pcbConstruct();
+	initialize_pcb(process_1);
+	initialize_pcb(process_2);
+
+	// Mark each processes as a resource pair
+	setType(process_1, RESOURCE_PAIR);
+	setType(process_2, RESOURCE_PAIR);
+
+	setRandomMaxPC(process_1);
+	setRandomMaxPC(process_2);
+
+	// Set to not terminate
+	setTerminate(process_1, 0);
+	setTerminate(process_2, 0);
+
+	// initalize RESOURCE_PAIR
+	pair = (RESOURCE_PAIR_p)malloc(sizeof(RESOURCE_PAIR_s));
+	intialize_Resource_Pair(pair);
+	pair->process_1 = process_1;
+	pair->process_2 = process_2;
+	resource_pairs[total_resource_pairs] = pair;
+	total_resource_pairs++;
+
+	return SUCCESSFUL;
+}
+
+// initialize the passed CP_PAIR struct
 void initialize_CP_Pair(CP_PAIR_p pair) {
 	pair->producer = NULL;
 	pair->consumer = NULL;
@@ -446,18 +559,32 @@ void initialize_CP_Pair(CP_PAIR_p pair) {
 	initialize_Custom_Cond(pair->consumed);
 }
 
+// initialize the passed RESOURCE_PAIR struct
+void initialize_Resource_Pair(RESOURCE_PAIR_p pair) {
+	pair->producer = NULL;
+	pair->consumer = NULL;
+	pair->mutex_1 = (CUSTOM_MUTEX_p)malloc(sizeof(CUSTOM_MUTEX_s));
+	pair->mutex_2 = (CUSTOM_MUTEX_p)malloc(sizeof(CUSTOM_MUTEX_s));
+
+	initialize_Custom_Mutex(pair->mutex_1);
+	initialize_Custom_Mutex(pair->mutex_2);
+}
+
+// Initialize the passed CUSTOM_MUTEX struct
 void initialize_Custom_Mutex(CUSTOM_MUTEX_p mutex) {
 	mutex->owner = NULL;
 	mutex->blocked = construct_FIFOq();
 	initializeFIFOq(mutex->blocked);
 }
 
+// Initialize the passed CUSTOM_COND struct
 void initialize_Custom_Cond(CUSTOM_COND_p cond) {
 	cond->state = 0;
 	cond->waiting = construct_FIFOq();
 	initializeFIFOq(cond->waiting);
 }
 
+// Helpwer method to see it the passed custom mutex is unlocked
 void is_mutex_free(CUSTOM_MUTEX_p mutex) {
 	if (mutex->owner) return 1;
 
@@ -469,6 +596,17 @@ CP_PAIR_p getPCPair(PCB_p process) {
 	for (int i = 0; i < PRO_CON_MAX; i++) {
 		if (pc_pairs[i]->producer == process || pc_pairs[i]->consumer == process) {
 			return pc_pairs[i];
+		}
+	}
+
+	return NULL;
+}
+
+// Performs a linear search for a Producer/Consumer pair using the passed process
+RESOURCE_PAIR_p getResourcePair(PCB_p process) {
+	for (int i = 0; i < SHARED_RESOURCE_MAX; i++) {
+		if (resource_pairs[i]->process_1 == process || resource_pairs[i]->process_2 == process) {
+			return resource_pairs[i];
 		}
 	}
 
@@ -537,7 +675,6 @@ int simulateProgramStep() {
     
 	// TODO simulate counter and possibly syncro services
 
-
     return SUCCESSFUL;
 }
 
@@ -545,6 +682,8 @@ int simulate_mutex_lock(PCB_p process, CUSTOM_MUTEX_p mutex) {
 	if (!mutex->owner) {
 		mutex->owner = process;
 	} else {
+		// TODO: Need to be done in scheduler?
+		setState(process, WAITING);
 		q_enqueue(mutex->blocked, process);
 	}
 }
@@ -552,9 +691,10 @@ int simulate_mutex_lock(PCB_p process, CUSTOM_MUTEX_p mutex) {
 int simulate_mutex_unlock(CUSTOM_MUTEX_p mutex) {
 	// TODO check for correctness
 	if (!mutex->owner && !q_is_empty(mutex->blocked)) {
-		// update state
-		// scheduler needs to grab next ready
+		// TODO: Need to be done in scheduler?
 		mutex->owner = q_dequeue(mutex->blocked);
+		setState(mutex->owner, READY);
+		p_enqueue(processes->readyProcesses, mutex->owner);
 	} else {
 		mutex->owner = NULL;
 	}
@@ -562,8 +702,7 @@ int simulate_mutex_unlock(CUSTOM_MUTEX_p mutex) {
 
 int simulate_cond_wait(PCB_p process, CUSTOM_COND_p cond) {
 	// TODO check state var?
-	// update state
-	// scheduler needs to grab next
+	setState(process, WAITING);
 	q_enqueue(cond->waiting, process);
 }
 

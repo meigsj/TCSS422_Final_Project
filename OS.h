@@ -69,6 +69,27 @@ Shaun Coleman
 // The maximum number of producer/consumer pairs
 #define PRO_CON_MAX 10
 
+// The maximum number of shared resource pairs
+#define SHARED_RESOURCE_MAX 10
+
+// The maximum number of IO process
+#define IO_PROCESS_MAX 50
+
+// The maximum number of computation intensive processes
+#define COMPUTE_PROCESS_MAX 25
+
+// The max number of new producer/consumer pairs to make per process creation
+#define CREATE_PRO_CON_MAX 1
+
+// The max number of new shared resource pairs to make per process creation
+#define CREATE_SHARED_RESOURCE_MAX 1
+
+// The max number of new IO Processes to make per process creation
+#define CREATE_IO_PROCESS_MAX 5
+
+// The max number of new computation intensive processes to make per process creation
+#define CREATE_CUMPUTE_PROCESS_MAX 2
+
 typedef struct process_queues {
     // all currently used process queues and the running process pcb
     FIFOq_p newProcesses;
@@ -117,8 +138,8 @@ typedef CP_PAIR_s* CP_PAIR_p;
 
 typedef struct resource_pair {
 	// pointers to the processes in the pair
-	PCB_p process1;
-	PCB_p process2;
+	PCB_p process_1;
+	PCB_p process_2;
 
 	// Syncronization vars
 	CUSTOM_MUTEX_p mutex_1;

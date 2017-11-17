@@ -45,10 +45,13 @@ typedef CPU_context_s * CPU_context_p; // _p means that this is a pointer to a s
 
 enum state_type {NEW, READY, RUNNING, INTERRUPTED, WAITING, HALTED};
 
+enum process_type { NO_TYPE, IO, COMP_INTENSIVE, CONPRO_PAIR, RESOURCE_PAIR };
+
 typedef struct pcb {
     // Process control block
     unsigned int pid; // process identification
     enum state_type state; // process state (running, waiting, etc.)
+	enum process_type type; // the type of the process used for experimentation
     unsigned int parent; // parent process pid
     unsigned char priority; // 0 is highest – 15 is lowest.
     unsigned char * mem; // start of process in memory
