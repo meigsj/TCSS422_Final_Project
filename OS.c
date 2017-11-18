@@ -47,13 +47,15 @@ PROCESS_QUEUES_p processes;
 void * OS_Simulator(void *arg) {
     char* buffer[MAX_BUFFER_SIZE];
 	pthread_t the_timer_thread;
+	pthread_t the_io1_thread;
+	pthread_t the_io2_thread;
     // Main Loop
     // One cycle is one instruction
 	pthread_create(&the_timer_thread, NULL, timer_thread, NULL);
 	
 	//Creatting the I/O threads
-	//pthread_create(&the_io1_thread, NULL, io1_thread, NULL);
-	//pthread_create(&the_io2_thread, NULL, io2_thread, NULL);
+	//pthread_create(&the_io1_thread, NULL,  io1_thread, NULL);
+	//pthread_create(&the_io2_thread, NULL,  io2_thread, NULL);
 	
     for( ; ; ) { // for spider
         int trapFlag = 0;
@@ -93,7 +95,7 @@ void * OS_Simulator(void *arg) {
 		/////
         
         // Trigger IO1 counter and check for IO1 interupt
-        if(/*IO_1_DownCounter() == IO_1_INTERUPT*/pthread_mutex_trylock(&io1_lock) == 0 && !q_is_empty(processes->IO_1_Processes)) {
+        if(/*IO_1_DownCounter() == IO_1_INTERUPT*/pthread_mutex_trylock(&io1_lock) == 0 /*&& !q_is_empty(processes->IO_1_Processes)//Not sure if this is needed*/) {
             sysStack = currentPC;
             IO_Interupt_Routine(IO_1_INTERUPT);
             printInterupt(IO_1_INTERUPT);
@@ -102,7 +104,7 @@ void * OS_Simulator(void *arg) {
         }
         
         // Trigger IO2 counter and check for IO1 interupt
-        if(/*IO_2_DownCounter() == IO_2_INTERUPT*/pthread_mutex_trylock(&io2_lock) == 0 && !q_is_empty(processes->IO_2_Processes)) {
+        if(/*IO_2_DownCounter() == IO_2_INTERUPT*/pthread_mutex_trylock(&io2_lock) == 0 /*&& !q_is_empty(processes->IO_2_Processes)//Not sure if this is needed*/) {
             sysStack = currentPC;
             IO_Interupt_Routine(IO_2_INTERUPT);
             printInterupt(IO_2_INTERUPT);
@@ -124,6 +126,8 @@ void * OS_Simulator(void *arg) {
             printf("---- HALTING SIMULATION ON ITERATION %d ----\n", iterationCount);
 			timer = -1;
 			pthread_join(the_timer_thread, NULL);
+			pthread_join(the_io1_thread, NULL);
+			pthread_join(the_io2_thread, NULL);
             break;
         }
     }
@@ -196,13 +200,13 @@ void * io1_thread(void * s) {
 		pthread_mutex_unlock(&io1_lock);
 		//....
 		nanosleep(&ts, NULL);
-		/*
+		
 		pthread_cond_wait(&io1_cond, &io1_lock);
 		IO_1_DownCounter();
 		if (IO_1_counter == 0) {
 			pthread_cond_signal(&io1_cond);
 		}	
-		*/
+		
 		if (IO_1_counter == -1) {
 			break;
 		}
@@ -223,13 +227,13 @@ void * io2_thread(void * s) {
 		pthread_mutex_unlock(&io2_lock);
 		//....
 		nanosleep(&ts, NULL);
-		/*
+		
 		pthread_cond_wait(&io2_cond, &io2_lock);
 		IO_2_DownCounter();
 		if (IO_2_counter == 0) {
 			pthread_cond_signal(&io2_cond);
 		}	
-		*/
+		
 		if (IO_2_counter == -1) {
 			break;
 		}
