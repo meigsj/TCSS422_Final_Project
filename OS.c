@@ -25,8 +25,16 @@ int scheduler_flag;
 int timer;
 int shutting_down;
 int ISR_FINISHED;
+int IOSR_1_finished;
+int IOSR_2_finished;
+int ISR_FINISHED;
 int IO_1_counter;
 int IO_2_counter;
+
+int IO_1_activated;
+int IO_2_activated;
+
+
 
 
 //Tests
@@ -35,6 +43,18 @@ pthread_cond_t timer_cond = PTHREAD_COND_INITIALIZER;
 
 pthread_mutex_t global_lock = PTHREAD_MUTEX_INITIALIZER;
 
+pthread_mutex_t IO_1_lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t IO_1_reset_lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t IO_1_cond = PTHREAD_COND_INITIALIZER;
+pthread_cond_t IO_1_active_cond = PTHREAD_COND_INITIALIZER;
+
+pthread_mutex_t IO_2_reset_lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t IO_2_lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t IO_2_cond = PTHREAD_COND_INITIALIZER;
+pthread_cond_t IO_2_active_cond = PTHREAD_COND_INITIALIZER;
+
+pthread_mutex_t IO_1_global_lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t IO_2_global_lock = PTHREAD_MUTEX_INITIALIZER;
 
 PROCESS_QUEUES_p processes;
 
@@ -146,7 +166,7 @@ void * timer_thread(void * s) {
 	
 	
 	for (;;) {
-		pthread_mutex_trylock(&global_lock);
+		pthread_mutex_lock(&global_lock);
 		while (shutting_down) {
 			break;
 		}
@@ -161,7 +181,42 @@ void * timer_thread(void * s) {
 }
 
 void * io1_thread(void * s) {
+	struct timespec ts;
+	pthread_mutex_lock(&timer_lock);
+	ts.tv_sec = 0;
+	ts.tv_nsec = timer;//(timer*1000);
 
+
+	for (;;) {
+		// Lock signal mutex
+		pthreads_mutex_lock(&IO_1_lock);
+		
+		pthread_mutex_lock(&global_lock);
+		
+		// Check if the program needs to shut down
+		while (shutting_down) {
+			break;
+		}
+		pthread_mutex_unlock(&global_lock);
+
+		pthread_mutex_lock(&IO_1_active_cond);
+		while (!IO_1_activated) {
+			pthread_cond_wait(&timer_cond, &IO_1_active_cond);
+		}
+		pthread_mutex_unlock(&IO_1_active_cond);
+
+		// Sleep thread then unlock to signal IO 1 device is ready
+		nanosleep(&ts, NULL);
+		pthread_mutex_unlock(&IO_1_lock);
+
+		// Wait until Interupt Service completes
+		pthread_mutex_lock(&IO_1_reset_lock);
+		while (!IOSR_finished) {
+			pthread_cond_wait(&timer_cond, &timer_lock);
+		}
+		IOSR_finished = 0;
+		pthread_mutex_unlock(&IO_1_reset_lock);
+	}
 
 
 }
@@ -620,6 +675,8 @@ int main() {
     quantum_post_reset = 0;
     IO_1_counter = 0;
     IO_2_counter = 0;
+	IO_1_activated = 0;
+	IO_2_activated = 0;
     timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));   
 	scheduler_flag = 0;
     // create starting processes
