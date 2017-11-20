@@ -109,19 +109,36 @@ void * OS_Simulator(void *arg) {
 		/////
         
         // Trigger IO1 counter and check for IO1 interupt
-        if(IO_1_DownCounter() == IO_1_INTERUPT && !q_is_empty(processes->IO_1_Processes)) {
+        if(pthread_mutex_trylock(&IO_1_lock) == 0) {
             sysStack = currentPC;
             IO_Interupt_Routine(IO_1_INTERUPT);
+			
+			if (q_is_empty(processes->IO_1_Processes)) {
+				IO_1_activated = 0;
+			}
+
+			IOSR_1_finished = 0;
+			pthread_cond_signal(&IOSR_1_finished);
+			pthread_mutex_unlock(&IO_1_lock);
             //printInterupt(IO_1_INTERUPT);
+			printf("IO 1 Interupt\n");
         }
         
         // Trigger IO2 counter and check for IO1 interupt
-        if(IO_2_DownCounter() == IO_2_INTERUPT && !q_is_empty(processes->IO_2_Processes)) {
-            sysStack = currentPC;
-            IO_Interupt_Routine(IO_2_INTERUPT);
-            //printInterupt(IO_2_INTERUPT);
-        }
-        
+		if (pthread_mutex_trylock(&IO_2_lock) == 0) {
+			sysStack = currentPC;
+			IO_Interupt_Routine(IO_2_INTERUPT);
+			
+			if (q_is_empty(processes->IO_2_Processes)) {
+				IO_2_activated = 0;
+			}
+
+			IOSR_2_finished = 0;
+			pthread_cond_signal(&IOSR_2_finished);
+			pthread_mutex_unlock(&IO_2_lock);
+			printf("IO 2 Interupt\n");
+		}
+
         // Check for Traps (termination is checked as a trap here too)
         trapFlag = isAtTrap(processes->runningProcess);
         if(trapFlag == IO_1_TRAP || trapFlag == IO_2_TRAP || trapFlag == PCB_TERMINATED) {
@@ -287,7 +304,26 @@ int pseudoTSR(int trap_interupt) {
     
     // scheduler up call
     scheduler(trap_interupt);
-    
+
+	// activate IO devices as needed
+	pthread_mutex_lock(&IO_1_active_lock);
+	if (q_is_empty(processes->IO_1_Processes)) {
+		IO_1_activated = 0;
+	} else {
+		IO_1_activated = 1;
+		pthread_cond_signal(&IO_1_active_cond);
+	}
+	pthread_mutex_unlock(&IO_1_active_lock);
+
+	pthread_mutex_lock(&IO_2_active_lock);
+	if (q_is_empty(processes->IO_2_Processes)) {
+		IO_2_activated = 0;
+	} else {
+		IO_2_activated = 1;
+		pthread_cond_signal(&IO_2_active_cond);
+	}
+	pthread_mutex_unlock(&IO_2_active_lock);
+
     // IRET (update current pc)
     currentPC = sysStack;
     return SUCCESSFUL;  
