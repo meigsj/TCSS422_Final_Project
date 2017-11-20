@@ -138,3 +138,9 @@ void initializeProcessQueues();
 
 // A function used to free the processes struct
 void freeProcessQueues();
+
+void* timer_thread();
+
+void* io1_thread();
+
+void* io2_thread();
