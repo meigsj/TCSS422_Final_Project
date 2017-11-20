@@ -65,6 +65,13 @@ void * OS_Simulator(void *arg) {
 	char* buffer[MAX_BUFFER_SIZE];
 	pthread_t the_timer_thread;
 	pthread_create(&the_timer_thread, NULL, timer_thread, NULL);
+
+	pthread_t the_io_1_thread;
+	pthread_create(&the_io_1_thread, NULL, io1_thread, NULL);
+
+	pthread_t the_io_2_thread;
+	pthread_create(&the_io_2_thread, NULL, io2_thread, NULL);
+
 	// Main Loop
 	// One cycle is one instruction
 	for (; ; ) { // for spider
@@ -80,11 +87,9 @@ void * OS_Simulator(void *arg) {
 		if ((iterationCount % NEW_PROCESS_ITERATION) == 0) {
 			createNewProcesses(processes->newProcesses);
 		}
-		//scheduler_flag == 1
 		//In the CPU loop use the non-blocking mutex_trylock() call so that the loop doesn't block itself waiting for the timer signal
 		//// TO REMOVE AND REPLACE WITH CHECK CONDITION FOR TIMER INTERUPT
 		// Trigger timer and check for timer interupt
-		//scheduler_flag != 0 && 
 		if (pthread_mutex_trylock(&timer_lock) == 0) { //WAS: timerDownCounter() == TIMER_INTERUPT
 			int state = RUNNING;
 			if (processes->runningProcess) state = getState(processes->runningProcess);
@@ -96,44 +101,45 @@ void * OS_Simulator(void *arg) {
 			pthread_cond_signal(&timer_cond);
 
 			if (state == HALTED) {
-				//printInterupt(PCB_TERMINATED);
+				printInterupt(PCB_TERMINATED);
 			}
 			else {
-				//printInterupt(TIMER_INTERUPT);
+				printInterupt(TIMER_INTERUPT);
 			}
 			pthread_mutex_unlock(&timer_lock);
 		}
-		/////
 
 		// Trigger IO1 counter and check for IO1 interupt
-		if (pthread_mutex_trylock(&IO_1_lock) == 0) {
+		if (IO_1_activated && pthread_mutex_trylock(&IO_1_lock) == 0) {
 			sysStack = currentPC;
 			IO_Interupt_Routine(IO_1_INTERUPT);
-
+			pthread_mutex_lock(&IO_1_global_lock);
 			if (q_is_empty(processes->IO_1_Processes)) {
 				IO_1_activated = 0;
 			}
-
-			IOSR_1_finished = 0;
+			pthread_mutex_unlock(&IO_1_global_lock);
+			IOSR_1_finished = 1;
 			pthread_cond_signal(&IO_1_active_cond);
+			printInterupt(IO_1_INTERUPT);
 			pthread_mutex_unlock(&IO_1_lock);
-			//printInterupt(IO_1_INTERUPT);
-			printf("IO 1 Interupt\n");
+
 		}
 
 		// Trigger IO2 counter and check for IO1 interupt
-		if (pthread_mutex_trylock(&IO_2_lock) == 0) {
+		if (IO_2_activated && pthread_mutex_trylock(&IO_2_lock) == 0) {
 			sysStack = currentPC;
 			IO_Interupt_Routine(IO_2_INTERUPT);
-
+			pthread_mutex_lock(&IO_2_global_lock);
 			if (q_is_empty(processes->IO_2_Processes)) {
 				IO_2_activated = 0;
 			}
-
-			IOSR_2_finished = 0;
+			pthread_mutex_unlock(&IO_2_global_lock);
+			IOSR_2_finished = 1;
 			pthread_cond_signal(&IO_2_active_cond);
+
+			printInterupt(IO_2_INTERUPT);
 			pthread_mutex_unlock(&IO_2_lock);
-			printf("IO 2 Interupt\n");
+
 		}
 
 		// Check for Traps (termination is checked as a trap here too)
@@ -196,15 +202,12 @@ void * timer_thread(void * s) {
 void * io1_thread(void * s) {
 	struct timespec ts;
 	ts.tv_sec = 0;
-	ts.tv_nsec = 1250;//(timer*1000);
-
+	ts.tv_nsec = 10000;//(timer*1000);
+	// Lock signal mutex
+	pthread_mutex_lock(&IO_1_lock);
 
 	for (;;) {
-		// Lock signal mutex
-		pthread_mutex_lock(&IO_1_lock);
-
 		pthread_mutex_lock(&global_shutdown_lock);
-
 		// Check if the program needs to shut down
 		while (shutting_down) {
 			break;
@@ -212,9 +215,11 @@ void * io1_thread(void * s) {
 		pthread_mutex_unlock(&global_shutdown_lock);
 
 		pthread_mutex_lock(&IO_1_active_lock);
+		//printf("Checking IO One Activated: %d\n", IO_1_activated);
 		while (!IO_1_activated) {
 			pthread_cond_wait(&IO_1_active_cond, &IO_1_active_lock);
 		}
+		//printf("Check IO One Completed: %d\n", IO_1_activated);
 		pthread_mutex_unlock(&IO_1_active_lock);
 
 		// Sleep thread then unlock to signal IO 1 device is ready
@@ -222,12 +227,17 @@ void * io1_thread(void * s) {
 		pthread_mutex_unlock(&IO_1_lock);
 
 		// Wait until Interupt Service completes
+		//printf("Is IOSR 1 Finished?\n");
 		pthread_mutex_lock(&IO_1_reset_lock);
 		while (!IOSR_1_finished) {
-			pthread_cond_wait(&IO_1_active_cond, &IO_1_active_lock);
+			pthread_cond_wait(&IO_1_active_cond, &IO_1_reset_lock);
 		}
+		//printf("IOSR 1 Finished!!!!!\n");
+		// Lock signal mutex
+		pthread_mutex_lock(&IO_1_lock);
 		IOSR_1_finished = 0;
 		pthread_mutex_unlock(&IO_1_reset_lock);
+		ts.tv_nsec = 10000;
 	}
 
 
@@ -237,12 +247,13 @@ void * io2_thread(void * s) {
 
 	struct timespec ts;
 	ts.tv_sec = 0;
-	ts.tv_nsec = 1250;//(timer*1000);
-
+	ts.tv_nsec = 10000;//(timer*1000);
+	 // Lock signal mutex
+	pthread_mutex_lock(&IO_2_lock);
 
 	for (;;) {
-		// Lock signal mutex
-		pthread_mutex_lock(&IO_2_lock);
+		//// Lock signal mutex
+		//pthread_mutex_lock(&IO_2_lock);
 
 		pthread_mutex_lock(&global_shutdown_lock);
 
@@ -253,22 +264,28 @@ void * io2_thread(void * s) {
 		pthread_mutex_unlock(&global_shutdown_lock);
 
 		pthread_mutex_lock(&IO_2_active_lock);
-		while (!IO_1_activated) {
+		//printf("Checking IO Two Activated: %d\n", IO_2_activated);
+		while (!IO_2_activated) {
 			pthread_cond_wait(&IO_2_active_cond, &IO_2_active_lock);
 		}
+		//printf("Checking IO Two Completed: %d\n", IO_2_activated);
 		pthread_mutex_unlock(&IO_2_active_lock);
-
-		// Sleep thread then unlock to signal IO 1 device is ready
+		// Sleep thread then unlock to signal IO 2 device is ready
 		nanosleep(&ts, NULL);
 		pthread_mutex_unlock(&IO_2_lock);
 
 		// Wait until Interupt Service completes
 		pthread_mutex_lock(&IO_2_reset_lock);
+		//printf("Is IOSR 2 Finished?\n");
 		while (!IOSR_2_finished) {
-			pthread_cond_wait(&IO_2_active_cond, &IO_2_active_lock);
+			pthread_cond_wait(&IO_2_active_cond, &IO_2_reset_lock);
 		}
+		//printf("IOSR 2 Finished!!!!!\n");
+		// Lock signal mutex
+		pthread_mutex_lock(&IO_2_lock);
 		IOSR_2_finished = 0;
 		pthread_mutex_unlock(&IO_2_reset_lock);
+		ts.tv_nsec = 10000;
 	}
 
 }
