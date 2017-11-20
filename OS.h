@@ -141,3 +141,7 @@ void initializeProcessQueues();
 void freeProcessQueues();
 
 void* timer_thread();
+
+void* io1_thread();
+
+void* io2_thread();
