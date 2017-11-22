@@ -36,16 +36,16 @@ int IO_2_counter;
 pthread_mutex_t timer_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t timer_cond = PTHREAD_COND_INITIALIZER;
 //...
-pthread_mutex_t io1_lock = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t io1_cond = PTHREAD_COND_INITIALIZER; 
+//pthread_mutex_t io1_lock = PTHREAD_MUTEX_INITIALIZER;
+//pthread_cond_t io1_cond = PTHREAD_COND_INITIALIZER; 
 
-<<<<<<< HEAD
+//<<<<<<< HEAD
 pthread_mutex_t io2_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t io2_cond = PTHREAD_COND_INITIALIZER; 
-=======
+//=======
 pthread_mutex_t global_lock = PTHREAD_MUTEX_INITIALIZER;
 
->>>>>>> 12e1e4b6bf7127f66dd71ac490b3591a002cc4ba
+//>>>>>>> 12e1e4b6bf7127f66dd71ac490b3591a002cc4ba
 
 PROCESS_QUEUES_p processes;
 
@@ -54,22 +54,22 @@ PROCESS_QUEUES_p processes;
 void * OS_Simulator(void *arg) {
     char* buffer[MAX_BUFFER_SIZE];
 	pthread_t the_timer_thread;
-<<<<<<< HEAD
+//<<<<<<< HEAD
 	pthread_t the_io1_thread;
 	pthread_t the_io2_thread;
     // Main Loop
     // One cycle is one instruction
-	pthread_create(&the_timer_thread, NULL, timer_thread, NULL);
+	//pthread_create(&the_timer_thread, NULL, timer_thread, NULL);
 	
 	//Creatting the I/O threads
 	//pthread_create(&the_io1_thread, NULL,  io1_thread, NULL);
 	//pthread_create(&the_io2_thread, NULL,  io2_thread, NULL);
 	
-=======
+//=======
 	
     // Main Loop
     // One cycle is one instruction
->>>>>>> 12e1e4b6bf7127f66dd71ac490b3591a002cc4ba
+//>>>>>>> 12e1e4b6bf7127f66dd71ac490b3591a002cc4ba
     for( ; ; ) { // for spider
         int trapFlag = 0;
         // update counters
@@ -116,26 +116,26 @@ void * OS_Simulator(void *arg) {
         if(/*IO_1_DownCounter() == IO_1_INTERUPT*/pthread_mutex_trylock(&io1_lock) == 0 /*&& !q_is_empty(processes->IO_1_Processes)//Not sure if this is needed*/) {
             sysStack = currentPC;
             IO_Interupt_Routine(IO_1_INTERUPT);
-<<<<<<< HEAD
+//<<<<<<< HEAD
             printInterupt(IO_1_INTERUPT);
 			
 			pthread_mutex_unlock(&io1_lock);
-=======
+//=======
             //printInterupt(IO_1_INTERUPT);
->>>>>>> 12e1e4b6bf7127f66dd71ac490b3591a002cc4ba
+//>>>>>>> 12e1e4b6bf7127f66dd71ac490b3591a002cc4ba
         }
         
         // Trigger IO2 counter and check for IO1 interupt
         if(/*IO_2_DownCounter() == IO_2_INTERUPT*/pthread_mutex_trylock(&io2_lock) == 0 /*&& !q_is_empty(processes->IO_2_Processes)//Not sure if this is needed*/) {
             sysStack = currentPC;
             IO_Interupt_Routine(IO_2_INTERUPT);
-<<<<<<< HEAD
+//<<<<<<< HEAD
             printInterupt(IO_2_INTERUPT);
 			
 			pthread_mutex_unlock(&io2_lock);
-=======
+//=======
             //printInterupt(IO_2_INTERUPT);
->>>>>>> 12e1e4b6bf7127f66dd71ac490b3591a002cc4ba
+//>>>>>>> 12e1e4b6bf7127f66dd71ac490b3591a002cc4ba
         }
         
         // Check for Traps (termination is checked as a trap here too)
@@ -150,18 +150,18 @@ void * OS_Simulator(void *arg) {
         //check stop condition for the simulation
         if (iterationCount >= HALT_CONDITION) {
             printf("---- HALTING SIMULATION ON ITERATION %d ----\n", iterationCount);
-<<<<<<< HEAD
+//<<<<<<< HEAD
 			timer = -1;
 			pthread_join(the_timer_thread, NULL);
 			pthread_join(the_io1_thread, NULL);
 			pthread_join(the_io2_thread, NULL);
             break;
-=======
+//=======
 			pthread_mutex_lock(&global_lock);
 			shutting_down = 1;
 			pthread_mutex_unlock(&global_lock);
 			break;
->>>>>>> 12e1e4b6bf7127f66dd71ac490b3591a002cc4ba
+//>>>>>>> 12e1e4b6bf7127f66dd71ac490b3591a002cc4ba
         }
     }
 
