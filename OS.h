@@ -1,12 +1,13 @@
 /*
 TCSS422 - Operating Systems
-Problem 4
+Final Project
 
 Group Members:
-Zira Cook
+Kirtwinder Gulati
 Shaun Coleman
+Ayub Tiba
+Joshua Meigs
 */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -140,3 +141,7 @@ void initializeProcessQueues();
 void freeProcessQueues();
 
 void* timer_thread();
+
+void* io1_thread();
+
+void* io2_thread();
