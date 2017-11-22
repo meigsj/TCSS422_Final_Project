@@ -144,3 +144,9 @@ void* timer_thread();
 void* io1_thread();
 
 void* io2_thread();
+
+void checkTimerInterrupt();
+
+void checkIO1Interrupt();
+
+void checkIO2Interrupt();

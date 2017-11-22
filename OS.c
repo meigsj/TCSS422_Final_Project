@@ -87,60 +87,17 @@ void * OS_Simulator(void *arg) {
 		if ((iterationCount % NEW_PROCESS_ITERATION) == 0) {
 			createNewProcesses(processes->newProcesses);
 		}
+		
 		//In the CPU loop use the non-blocking mutex_trylock() call so that the loop doesn't block itself waiting for the timer signal
 		//// TO REMOVE AND REPLACE WITH CHECK CONDITION FOR TIMER INTERUPT
 		// Trigger timer and check for timer interupt
-		if (pthread_mutex_trylock(&timer_lock) == 0) { //WAS: timerDownCounter() == TIMER_INTERUPT
-			int state = RUNNING;
-			if (processes->runningProcess) state = getState(processes->runningProcess);
-			// Timer interupt
-			sysStack = currentPC;
-
-			pseudoISR();
-			ISR_FINISHED = 1;
-			pthread_cond_signal(&timer_cond);
-
-			if (state == HALTED) {
-				printInterupt(PCB_TERMINATED);
-			}
-			else {
-				printInterupt(TIMER_INTERUPT);
-			}
-			pthread_mutex_unlock(&timer_lock);
-		}
+		checkTimerInterrupt();
 
 		// Trigger IO1 counter and check for IO1 interupt
-		if (IO_1_activated && pthread_mutex_trylock(&IO_1_lock) == 0) {
-			sysStack = currentPC;
-			IO_Interupt_Routine(IO_1_INTERUPT);
-			pthread_mutex_lock(&IO_1_global_lock);
-			if (q_is_empty(processes->IO_1_Processes)) {
-				IO_1_activated = 0;
-			}
-			pthread_mutex_unlock(&IO_1_global_lock);
-			IOSR_1_finished = 1;
-			pthread_cond_signal(&IO_1_active_cond);
-			printInterupt(IO_1_INTERUPT);
-			pthread_mutex_unlock(&IO_1_lock);
-
-		}
+		checkIO1Interrupt();
 
 		// Trigger IO2 counter and check for IO1 interupt
-		if (IO_2_activated && pthread_mutex_trylock(&IO_2_lock) == 0) {
-			sysStack = currentPC;
-			IO_Interupt_Routine(IO_2_INTERUPT);
-			pthread_mutex_lock(&IO_2_global_lock);
-			if (q_is_empty(processes->IO_2_Processes)) {
-				IO_2_activated = 0;
-			}
-			pthread_mutex_unlock(&IO_2_global_lock);
-			IOSR_2_finished = 1;
-			pthread_cond_signal(&IO_2_active_cond);
-
-			printInterupt(IO_2_INTERUPT);
-			pthread_mutex_unlock(&IO_2_lock);
-
-		}
+		checkIO2Interrupt();
 
 		// Check for Traps (termination is checked as a trap here too)
 		trapFlag = isAtTrap(processes->runningProcess);
@@ -161,6 +118,62 @@ void * OS_Simulator(void *arg) {
 		}
 	}
 
+}
+
+void checkTimerInterrupt() {
+	if (pthread_mutex_trylock(&timer_lock) == 0) { //WAS: timerDownCounter() == TIMER_INTERUPT
+		int state = RUNNING;
+		if (processes->runningProcess) state = getState(processes->runningProcess);
+		// Timer interupt
+		sysStack = currentPC;
+
+		pseudoISR();
+		ISR_FINISHED = 1;
+		pthread_cond_signal(&timer_cond);
+
+		if (state == HALTED) {
+			printInterupt(PCB_TERMINATED);
+		}
+		else {
+			printInterupt(TIMER_INTERUPT);
+		}
+		pthread_mutex_unlock(&timer_lock);
+	}
+}
+
+void checkIO1Interrupt() {
+	if (IO_1_activated && pthread_mutex_trylock(&IO_1_lock) == 0) {
+		sysStack = currentPC;
+		IO_Interupt_Routine(IO_1_INTERUPT);
+		pthread_mutex_lock(&IO_1_global_lock);
+		if (q_is_empty(processes->IO_1_Processes)) {
+			IO_1_activated = 0;
+		}
+		pthread_mutex_unlock(&IO_1_global_lock);
+		IOSR_1_finished = 1;
+		pthread_cond_signal(&IO_1_active_cond);
+		printInterupt(IO_1_INTERUPT);
+		pthread_mutex_unlock(&IO_1_lock);
+
+	}
+}
+
+void checkIO2Interrupt() {
+	if (IO_2_activated && pthread_mutex_trylock(&IO_2_lock) == 0) {
+		sysStack = currentPC;
+		IO_Interupt_Routine(IO_2_INTERUPT);
+		pthread_mutex_lock(&IO_2_global_lock);
+		if (q_is_empty(processes->IO_2_Processes)) {
+			IO_2_activated = 0;
+		}
+		pthread_mutex_unlock(&IO_2_global_lock);
+		IOSR_2_finished = 1;
+		pthread_cond_signal(&IO_2_active_cond);
+
+		printInterupt(IO_2_INTERUPT);
+		pthread_mutex_unlock(&IO_2_lock);
+
+	}
 }
 
 // reset downcounter by quantum in seperate function
