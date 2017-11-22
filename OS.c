@@ -40,7 +40,7 @@ int IO_2_activated;
 //Tests
 pthread_mutex_t timer_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t timer_cond = PTHREAD_COND_INITIALIZER;
-//...
+
 pthread_mutex_t io1_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t io1_cond = PTHREAD_COND_INITIALIZER; 
 
@@ -175,12 +175,9 @@ occurred through the use of a mutex. In the CPU loop use the non-blocking mutex_
 After throwing  the  interrupt  signal  it  puts  itself  to  sleep  again  for  the  designated  quantum.  The  timer  has  the
 highest priority with respect to interrupt processing. It must be accommodated before any I/O interrupt. If an  I/O  interrupt  is  processing  when  a
 timer interrupt occurs  you  should  call the timer  pseudo_ISR  from inside the I/O pseudo_ISR to simulate these priority relation
-in os change timewr to check for trylock
+in os change timer to check for trylock
 */
 void * timer_thread(void * s) {
-
-
-	//Will be updated from Joshua's branch
 	struct timespec ts;
 	pthread_mutex_lock(&timer_lock);
 	ts.tv_sec = 0;
