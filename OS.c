@@ -100,13 +100,14 @@ void * OS_Simulator(void *arg) {
 		checkIO2Interrupt();
 
 		// Check for Traps (termination is checked as a trap here too)
+		
 		trapFlag = isAtTrap(processes->runningProcess);
 		if (trapFlag == IO_1_TRAP || trapFlag == IO_2_TRAP || trapFlag == PCB_TERMINATED) {
 			sysStack = currentPC;
 			pseudoTSR(trapFlag);
 			printInterupt(trapFlag);
 		}
-
+		
 
 		//check stop condition for the simulation
 		if (iterationCount >= HALT_CONDITION) {
@@ -189,34 +190,32 @@ timer interrupt occurs  you  should  call the timer  pseudo_ISR  from inside the
 in os change timewr to check for trylock
 */
 void * timer_thread(void * s) {
-
-	struct timespec ts;
+    long i = 500000;
 	pthread_mutex_lock(&timer_lock);
-	ts.tv_sec = 0;
-	ts.tv_nsec = timer;//(timer*1000);
-
 
 	for (;;) {
 		pthread_mutex_lock(&global_shutdown_lock);
 		while (shutting_down) {
 			break;
 		}
-		nanosleep(&ts, NULL);
+
+		// wait instead of nanosleep for consistency
+		while (i) {
+			i--;
+		}
+
 		pthread_mutex_unlock(&global_shutdown_lock);
 		while (!ISR_FINISHED) {
 			pthread_cond_wait(&timer_cond, &timer_lock);
 		}
 		ISR_FINISHED = 0;
-		ts.tv_nsec = timer;
-
+		i = 500000;
 	}
 }
 
 void * io1_thread(void * s) {
-	struct timespec ts;
-	ts.tv_sec = 0;
-	ts.tv_nsec = 10000;//(timer*1000);
 	// Lock signal mutex
+	long i = 500000*4;
 	pthread_mutex_lock(&IO_1_lock);
 
 	for (;;) {
@@ -236,7 +235,10 @@ void * io1_thread(void * s) {
 		pthread_mutex_unlock(&IO_1_active_lock);
 
 		// Sleep thread then unlock to signal IO 1 device is ready
-		nanosleep(&ts, NULL);
+		while (i) {
+			i--;
+		}
+
 		pthread_mutex_unlock(&IO_1_lock);
 
 		// Wait until Interupt Service completes
@@ -250,7 +252,7 @@ void * io1_thread(void * s) {
 		pthread_mutex_lock(&IO_1_lock);
 		IOSR_1_finished = 0;
 		pthread_mutex_unlock(&IO_1_reset_lock);
-		ts.tv_nsec = 10000;
+		i = 500000*4;
 	}
 
 
@@ -258,9 +260,7 @@ void * io1_thread(void * s) {
 
 void * io2_thread(void * s) {
 
-	struct timespec ts;
-	ts.tv_sec = 0;
-	ts.tv_nsec = 10000;//(timer*1000);
+	long i = 500000*4;
 	 // Lock signal mutex
 	pthread_mutex_lock(&IO_2_lock);
 
@@ -284,7 +284,11 @@ void * io2_thread(void * s) {
 		//printf("Checking IO Two Completed: %d\n", IO_2_activated);
 		pthread_mutex_unlock(&IO_2_active_lock);
 		// Sleep thread then unlock to signal IO 2 device is ready
-		nanosleep(&ts, NULL);
+		
+		while (i) {
+			i--;
+		}
+
 		pthread_mutex_unlock(&IO_2_lock);
 
 		// Wait until Interupt Service completes
@@ -298,7 +302,7 @@ void * io2_thread(void * s) {
 		pthread_mutex_lock(&IO_2_lock);
 		IOSR_2_finished = 0;
 		pthread_mutex_unlock(&IO_2_reset_lock);
-		ts.tv_nsec = 10000;
+		i = 500000*4;
 	}
 
 }
