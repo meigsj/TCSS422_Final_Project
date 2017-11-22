@@ -61,6 +61,7 @@ int initialize_pcb(PCB_p my_pcb) {
         my_pcb->context->r6 = 0;
         my_pcb->context->r7 = 0;
         my_pcb->state = NEW;
+		my_pcb->type = NO_TYPE;
         my_pcb->priority = 0;
         my_pcb->channel_no = 0;
         my_pcb->parent = 0; // how do you find parent ID?
@@ -80,11 +81,14 @@ int initialize_pcb(PCB_p my_pcb) {
         }
 
 		for (int i = 0; i < SYNCRO_SIZE; i++) {
-			my_pcb->lock_pcs[i] = 0;
-			my_pcb->unlock_pcs[i] = 0;
-			my_pcb->trylock_pcs[i] = 0;
-			my_pcb->wait_pcs[i] = 0;
-			my_pcb->signal_pcs[i] = 0;
+			my_pcb->lock_1_pcs[i] = 0;
+			my_pcb->lock_2_pcs[i] = 0;
+			my_pcb->unlock_1_pcs[i] = 0;
+			my_pcb->unlock_2_pcs[i] = 0;
+			my_pcb->trylock_1_pcs[i] = 0;
+			my_pcb->trylock_2_pcs[i] = 0;
+			my_pcb->wait_1_pcs[i] = 0;
+			my_pcb->signal_1_pcs[i] = 0;
 		}
     }
 }
@@ -249,6 +253,26 @@ int setState(PCB_p my_pcb, enum state_type newState) {
     } else {
         my_pcb->state = newState;
     }
+}
+
+// Getter to get the state field of the pcb struct
+enum process_type getType(PCB_p my_pcb) {
+	if (!my_pcb) {
+		return NULL_ERROR;
+	}
+	else {
+		return my_pcb->type;
+	}
+}
+
+// Setter to set the type field of the pcb struct
+int setType(PCB_p my_pcb, enum process_type newType) {
+	if (!my_pcb) {
+		return NULL_ERROR;
+	}
+	else {
+		my_pcb->type = newType;
+	}
 }
 
 // Getter to get the parent field of the pcb struct

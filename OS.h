@@ -66,6 +66,30 @@ Shaun Coleman
 // range used to for the multiplier to decided the counter for IO interrupts (3-5)
 #define IO_COUNTER_MULT_RANGE 3 + 3
 
+// The maximum number of producer/consumer pairs
+#define PRO_CON_MAX 10
+
+// The maximum number of shared resource pairs
+#define SHARED_RESOURCE_MAX 10
+
+// The maximum number of IO process
+#define IO_PROCESS_MAX 50
+
+// The maximum number of computation intensive processes
+#define COMPUTE_PROCESS_MAX 25
+
+// The max number of new producer/consumer pairs to make per process creation
+#define CREATE_PRO_CON_MAX 1
+
+// The max number of new shared resource pairs to make per process creation
+#define CREATE_SHARED_RESOURCE_MAX 1
+
+// The max number of new IO Processes to make per process creation
+#define CREATE_IO_PROCESS_MAX 5
+
+// The max number of new computation intensive processes to make per process creation
+#define CREATE_CUMPUTE_PROCESS_MAX 2
+
 typedef struct process_queues {
     // all currently used process queues and the running process pcb
     FIFOq_p newProcesses;
@@ -77,6 +101,52 @@ typedef struct process_queues {
 } PROCESS_QUEUES_s; 
 
 typedef PROCESS_QUEUES_s* PROCESS_QUEUES_p;
+
+typedef struct custom_mutex {
+	// NULL if no process holds the mutex, otherwise the pointer to the process
+	PCB_p owner;
+	// A FIFO_q of processes blocked waiting for the mutex
+	FIFOq_p blocked;
+} CUSTOM_MUTEX_s;
+
+typedef CUSTOM_MUTEX_s* CUSTOM_MUTEX_p;
+
+typedef struct custom_cond {
+	// int representing the state
+	int state;
+	// A FIFO_q of processes waiting for a state change
+	FIFOq_p waiting;
+} CUSTOM_COND_s;
+
+typedef CUSTOM_COND_s* CUSTOM_COND_p;
+
+typedef struct cp_pair {
+	// pointers to the processes in the pair
+	PCB_p consumer;
+	PCB_p producer;
+
+	// Shared counter to increment/read
+	int counter;
+
+	// Syncronization vars
+	CUSTOM_MUTEX_p mutex;
+	CUSTOM_COND_p produced;
+	CUSTOM_COND_p consumed;
+} CP_PAIR_s;
+
+typedef CP_PAIR_s* CP_PAIR_p;
+
+typedef struct resource_pair {
+	// pointers to the processes in the pair
+	PCB_p process_1;
+	PCB_p process_2;
+
+	// Syncronization vars
+	CUSTOM_MUTEX_p mutex_1;
+	CUSTOM_MUTEX_p mutex_2;
+} RESOURCE_PAIR_s;
+
+typedef RESOURCE_PAIR_s* RESOURCE_PAIR_p;
 
 // A function to act as the main loop for the simulator
 //void OS_Simulator();
@@ -144,3 +214,26 @@ void* timer_thread();
 void* io1_thread();
 
 void* io2_thread();
+
+int createConsumerProducerPair();
+
+void initialize_CP_Pair(CP_PAIR_p pair);
+
+void initialize_Custom_Mutex(CUSTOM_MUTEX_p);
+
+void initialize_Custom_Cond(CUSTOM_COND_p);
+
+void is_mutex_free(CUSTOM_MUTEX_p);
+
+CP_PAIR_p getPCPair(PCB_p);
+
+CP_PAIR_p getPCPair(PCB_p);
+
+int simulate_mutex_lock(PCB_p, CUSTOM_MUTEX_p);
+
+int simulate_mutex_unlock(CUSTOM_MUTEX_p);
+
+int simulate_cond_wait(PCB_p, CUSTOM_COND_p);
+
+int simulate_cond_signal(PCB_p, CUSTOM_COND_p);
+
