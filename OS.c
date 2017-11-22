@@ -1,9 +1,11 @@
 /*
 TCSS422 - Operating Systems
-Problem 4
+Final Project
 Group Members:
-Zira Cook
+Kirtwinder Gulati
 Shaun Coleman
+Ayub Tiba
+Joshua Meigs
 */
 
 #include <time.h>
@@ -18,7 +20,6 @@ unsigned int quantum_post_reset;
 // Too Remove
 PCB_p privilegedPCBs[MAX_PRIVILEGED];
 unsigned int numPrivileged;
-////
 
 int scheduler_flag;
 int timer;
@@ -39,6 +40,9 @@ int IO_2_activated;
 //Tests
 pthread_mutex_t timer_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t timer_cond = PTHREAD_COND_INITIALIZER;
+
+pthread_mutex_t io1_lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t io1_cond = PTHREAD_COND_INITIALIZER; 
 
 pthread_mutex_t global_shutdown_lock = PTHREAD_MUTEX_INITIALIZER;
 
@@ -65,7 +69,6 @@ void * OS_Simulator(void *arg) {
 	char* buffer[MAX_BUFFER_SIZE];
 	pthread_t the_timer_thread;
 	pthread_create(&the_timer_thread, NULL, timer_thread, NULL);
-
 	pthread_t the_io_1_thread;
 	pthread_create(&the_io_1_thread, NULL, io1_thread, NULL);
 
@@ -117,7 +120,6 @@ void * OS_Simulator(void *arg) {
 			break;
 		}
 	}
-
 }
 
 void checkTimerInterrupt() {
@@ -186,10 +188,9 @@ occurred through the use of a mutex. In the CPU loop use the non-blocking mutex_
 After throwing  the  interrupt  signal  it  puts  itself  to  sleep  again  for  the  designated  quantum.  The  timer  has  the
 highest priority with respect to interrupt processing. It must be accommodated before any I/O interrupt. If an  I/O  interrupt  is  processing  when  a
 timer interrupt occurs  you  should  call the timer  pseudo_ISR  from inside the I/O pseudo_ISR to simulate these priority relation
-in os change timewr to check for trylock
+in os change timer to check for trylock
 */
 void * timer_thread(void * s) {
-
 	struct timespec ts;
 	pthread_mutex_lock(&timer_lock);
 	ts.tv_sec = 0;
@@ -252,8 +253,6 @@ void * io1_thread(void * s) {
 		pthread_mutex_unlock(&IO_1_reset_lock);
 		ts.tv_nsec = 10000;
 	}
-
-
 }
 
 void * io2_thread(void * s) {
@@ -300,7 +299,6 @@ void * io2_thread(void * s) {
 		pthread_mutex_unlock(&IO_2_reset_lock);
 		ts.tv_nsec = 10000;
 	}
-
 }
 
 //////
@@ -802,7 +800,6 @@ int main() {
 
 	// Wait until the OS Thread completes
 	pthread_join(os, NULL);
-
 	// free resources
 	freeProcessQueues();
 }

@@ -1,10 +1,12 @@
 /*
 TCSS422 - Operating Systems
-Problem 4
+Final Project
 
 Group Members:
-Zira Cook
+Kirtwinder Gulati
 Shaun Coleman
+Ayub Tiba
+Joshua Meigs
 */
 
 #ifndef PCB_H
