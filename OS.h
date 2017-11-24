@@ -223,7 +223,7 @@ void initialize_Custom_Mutex(CUSTOM_MUTEX_p);
 
 void initialize_Custom_Cond(CUSTOM_COND_p);
 
-void is_mutex_free(CUSTOM_MUTEX_p);
+int is_mutex_free(CUSTOM_MUTEX_p);
 
 CP_PAIR_p getPCPair(PCB_p);
 
@@ -237,3 +237,12 @@ int simulate_cond_wait(PCB_p, CUSTOM_COND_p);
 
 int simulate_cond_signal(PCB_p, CUSTOM_COND_p);
 
+int createIOProcess();
+
+int createComputeIntensiveProcess();
+
+int createSharedResourcePair();
+
+void initialize_Resource_Pair(RESOURCE_PAIR_p pair);
+
+void initialize_CP_Pair(CP_PAIR_p);

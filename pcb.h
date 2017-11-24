@@ -175,6 +175,9 @@ int* getIOTraps1(PCB_p); // getter for the IO1 Traps array
 
 int* getIOTraps2(PCB_p); // getter for the IO2 Traps array
 
+enum process_type getType(PCB_p);
+
+int setType(PCB_p, enum process_type);
 ////
 
 int context_toString(PCB_p, char*, int); // toString for context.

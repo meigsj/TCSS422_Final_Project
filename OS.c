@@ -182,20 +182,23 @@ occurred through the use of a mutex. In the CPU loop use the non-blocking mutex_
 After throwing  the  interrupt  signal  it  puts  itself  to  sleep  again  for  the  designated  quantum.  The  timer  has  the
 highest priority with respect to interrupt processing. It must be accommodated before any I/O interrupt. If an  I/O  interrupt  is  processing  when  a
 timer interrupt occurs  you  should  call the timer  pseudo_ISR  from inside the I/O pseudo_ISR to simulate these priority relation
-in os change timewr to check for trylock
+in os change timer to check for trylock
 */
 void * timer_thread(void * s) {
 
 	struct timespec ts;
 	pthread_mutex_lock(&timer_lock);
-	ts.tv_sec = 0;
-	ts.tv_nsec = timer;//(timer*1000);
-
+	//ts.tv_sec = 0;
+	//ts.tv_nsec = timer;//(timer*1000);
+	int i = 10000;
 
 	for (;;) {
 		pthread_mutex_lock(&global_shutdown_lock);
 		while (shutting_down) {
 			break;
+		}
+		while (i) {
+			i--;
 		}
 		nanosleep(&ts, NULL);
 		pthread_mutex_unlock(&global_shutdown_lock);
@@ -203,7 +206,8 @@ void * timer_thread(void * s) {
 			pthread_cond_wait(&timer_cond, &timer_lock);
 		}
 		ISR_FINISHED = 0;
-		ts.tv_nsec = timer;
+		i = 100000;
+		//ts.tv_nsec = timer;
 
 	}
 }
@@ -446,9 +450,6 @@ int scheduler(int interupt) {
 
 		quantum_post_reset = 0;
 	}
-	if (scheduler_flag == 0) {
-		scheduler_flag = 1;
-	}
 
 	return SUCCESSFUL;
 }
@@ -567,7 +568,7 @@ int isAtTrap(PCB_p pcb) {
     
     if (terminate && terminate <= term_count) return PCB_TERMINATED;
 
-	if (io_1_traps[0] == NULL && io_2_traps[0] == NULL) return 0; // MAGIC NUMBER
+	if (pcb->io_1_traps[0] == NULL && pcb->io_2_traps[0] == NULL) return 0; // MAGIC NUMBER
 
     for (int i=0; i < IO_TRAP_SIZE; i++) {
         if (currentPC == pcb->io_1_traps[i]) return IO_1_TRAP;
@@ -580,22 +581,22 @@ int isAtTrap(PCB_p pcb) {
 // Function used to simulate the creation of new processes
 int createNewProcesses() {
 	for(int i = 0; i < rand() % CREATE_IO_PROCESS_MAX; i++) {
-		if (total_io_processes >= CREATE_IO_PROCESS_MAX) break;
+		if (total_io_processes >= IO_PROCESS_MAX) break;
 		createIOProcess();
     }
 
 	for (int i = 0; i < rand() % CREATE_CUMPUTE_PROCESS_MAX; i++) {
-		if (total_comp_processes >= CREATE_CUMPUTE_PROCESS_MAX) break;
+		if (total_comp_processes >= COMPUTE_PROCESS_MAX) break;
 		createComputeIntensiveProcess();
 	}
 
 	for (int i = 0; i < rand() % CREATE_PRO_CON_MAX; i++) {
-		if (total_cp_pairs >= CREATE_PRO_CON_MAX) break;
+		if (total_cp_pairs >= PRO_CON_MAX) break;
 		createConsumerProducerPair();
 	}
 
 	for (int i = 0; i < rand() % CREATE_SHARED_RESOURCE_MAX; i++) {
-		if (total_resource_pairs >= CREATE_SHARED_RESOURCE_MAX) break;
+		if (total_resource_pairs >= SHARED_RESOURCE_MAX) break;
 	    createSharedResourcePair();
 	}
     
@@ -687,10 +688,13 @@ int createConsumerProducerPair() {
 
 	// initalize CP_PAIR
 	pair = (CP_PAIR_p)malloc(sizeof(CP_PAIR_s));
-	intialize_CP_Pair(pair);
-	pair->producer = producer;
-	pair->consumer = consumer;
-	pc_pairs[total_cp_pairs] = pair;
+	initialize_CP_Pair(pair);
+	cp_pairs[total_cp_pairs]->producer = producer;
+	cp_pairs[total_cp_pairs]->consumer = consumer;
+	//pair->producer = producer;
+	//pair->consumer = consumer;
+	
+	cp_pairs[total_cp_pairs] = pair;
 	total_cp_pairs++;
 
 	// enqueue
@@ -698,15 +702,15 @@ int createConsumerProducerPair() {
 	con_code = construct_Node();
 	initializeNode(pro_node);
 	initializeNode(con_code);
-	setNodePCB(pro_node, pcb);
-	setNodePCB(con_code, pcb);
+	setNodePCB(pro_node, producer);
+	setNodePCB(con_code, consumer);
 	q_enqueue(processes->newProcesses, pro_node);
 	q_enqueue(processes->newProcesses, con_code);
 
 	return SUCCESSFUL;
 }
 
-// Creates a two processes in a Shared Resource Pair
+// Creates a two processes in a Shared Resource Pairintialize_Resource_Pair
 int createSharedResourcePair() {
 	PCB_p process_1 = NULL;
 	PCB_p process_2 = NULL;
@@ -734,7 +738,7 @@ int createSharedResourcePair() {
 
 	// initalize RESOURCE_PAIR
 	pair = (RESOURCE_PAIR_p)malloc(sizeof(RESOURCE_PAIR_s));
-	intialize_Resource_Pair(pair);
+	initialize_Resource_Pair(pair);
 	pair->process_1 = process_1;
 	pair->process_2 = process_2;
 	resource_pairs[total_resource_pairs] = pair;
@@ -759,8 +763,8 @@ void initialize_CP_Pair(CP_PAIR_p pair) {
 
 // initialize the passed RESOURCE_PAIR struct
 void initialize_Resource_Pair(RESOURCE_PAIR_p pair) {
-	pair->producer = NULL;
-	pair->consumer = NULL;
+	pair->process_1 = NULL;
+	pair->process_2 = NULL;
 	pair->mutex_1 = (CUSTOM_MUTEX_p)malloc(sizeof(CUSTOM_MUTEX_s));
 	pair->mutex_2 = (CUSTOM_MUTEX_p)malloc(sizeof(CUSTOM_MUTEX_s));
 
@@ -783,7 +787,7 @@ void initialize_Custom_Cond(CUSTOM_COND_p cond) {
 }
 
 // Helpwer method to see it the passed custom mutex is unlocked
-void is_mutex_free(CUSTOM_MUTEX_p mutex) {
+int is_mutex_free(CUSTOM_MUTEX_p mutex) {
 	if (mutex->owner) return 1;
 
 	return 0;
@@ -792,8 +796,8 @@ void is_mutex_free(CUSTOM_MUTEX_p mutex) {
 // Performs a linear search for a Producer/Consumer pair using the passed process
 CP_PAIR_p getPCPair(PCB_p process) {
 	for (int i = 0; i < PRO_CON_MAX; i++) {
-		if (pc_pairs[i]->producer == process || pc_pairs[i]->consumer == process) {
-			return pc_pairs[i];
+		if (cp_pairs[i]->producer == process || cp_pairs[i]->consumer == process) {
+			return cp_pairs[i];
 		}
 	}
 
@@ -880,19 +884,28 @@ int simulate_mutex_lock(PCB_p process, CUSTOM_MUTEX_p mutex) {
 	if (!mutex->owner) {
 		mutex->owner = process;
 	} else {
+		Node_p node = construct_Node();
+		initializeNode(node);
+		setNodePCB(node, process);
+		//Added node here so that p_enque would have a node passed in and not the PCB
 		// TODO: Need to be done in scheduler?
 		setState(process, WAITING);
-		q_enqueue(mutex->blocked, process);
+		q_enqueue(mutex->blocked, node);
 	}
 }
 
 int simulate_mutex_unlock(CUSTOM_MUTEX_p mutex) {
 	// TODO check for correctness
 	if (!mutex->owner && !q_is_empty(mutex->blocked)) {
+
 		// TODO: Need to be done in scheduler?
 		mutex->owner = q_dequeue(mutex->blocked);
 		setState(mutex->owner, READY);
-		p_enqueue(processes->readyProcesses, mutex->owner);
+		//Added node here so that p_enque would have a node passed in and not the PCB
+		Node_p node = construct_Node();
+		initializeNode(node);
+		setNodePCB(node, mutex->owner);
+		p_enqueue(processes->readyProcesses, node);
 	} else {
 		mutex->owner = NULL;
 	}
@@ -900,8 +913,12 @@ int simulate_mutex_unlock(CUSTOM_MUTEX_p mutex) {
 
 int simulate_cond_wait(PCB_p process, CUSTOM_COND_p cond) {
 	// TODO check state var?
+	Node_p node = construct_Node();
+	initializeNode(node);
+	setNodePCB(node, process);
+	//Added node here so that p_enque would have a node passed in and not the PCB
 	setState(process, WAITING);
-	q_enqueue(cond->waiting, process);
+	q_enqueue(cond->waiting, node);
 }
 
 int simulate_cond_signal(PCB_p process, CUSTOM_COND_p cond) {
@@ -1030,7 +1047,6 @@ int main() {
 	IO_2_activated = 0;
 total_cp_pairs = 0;
 	timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));
-	scheduler_flag = 0;
 	// create starting processes
 	// set a process to running
 	setState(processes->runningProcess, RUNNING);
