@@ -587,22 +587,28 @@ int isAtTrap(PCB_p pcb) {
 
 // Function used to simulate the creation of new processes
 int createNewProcesses() {
-    for(int i = 0; i < rand() % CREATE_IO_PROCESS_MAX; i++) {
+    int newIO = rand() % CREATE_IO_PROCESS_MAX;
+    int newComp = rand() % CREATE_CUMPUTE_PROCESS_MAX;
+    int newCP = rand() % CREATE_PRO_CON_MAX;
+    int newShared = rand() % CREATE_SHARED_RESOURCE_MAX;
+    printf("\n Trying to create: %d IO, %d Comp, %d CP Pairs, %d Shared Pairs\n", newIO, newComp, newCP, newShared);
+
+    for(int i = 0; i < newIO; i++) {
         if (total_io_processes >= IO_PROCESS_MAX) break;
         createIOProcess();
     }
 
-    for (int i = 0; i < rand() % CREATE_CUMPUTE_PROCESS_MAX; i++) {
+    for (int i = 0; i < newComp; i++) {
         if (total_comp_processes >= COMPUTE_PROCESS_MAX) break;
         createComputeIntensiveProcess();
     }
 
-    for (int i = 0; i < rand() % CREATE_PRO_CON_MAX; i++) {
+    for (int i = 0; i < newCP; i++) {
         if (total_cp_pairs >= PRO_CON_MAX) break;
         createConsumerProducerPair();
     }
 
-    for (int i = 0; i < rand() % CREATE_SHARED_RESOURCE_MAX; i++) {
+    for (int i = 0; i < newShared; i++) {
         if (total_resource_pairs >= SHARED_RESOURCE_MAX) break;
         createSharedResourcePair();
     }
@@ -687,8 +693,8 @@ int createConsumerProducerPair() {
     // initalize CP_PAIR
     pair = (CP_PAIR_p)malloc(sizeof(CP_PAIR_s));
     initialize_CP_Pair(pair);
-    cp_pairs[total_cp_pairs]->producer = producer;
-    cp_pairs[total_cp_pairs]->consumer = consumer;
+    pair->producer = producer;
+    pair->consumer = consumer;
     //pair->producer = producer;
     //pair->consumer = consumer;
     
@@ -972,7 +978,8 @@ int printInterupt(int interupt) {
     printf(buffer);
     printf("IO1: %d\n", nodeCount(processes->IO_1_Processes));
     printf("IO2: %d\n", nodeCount(processes->IO_2_Processes));
-    printf("\n");
+    printf("Type Counts: Comp %d, IO %d, CP Pairs %d, Shared Resource %d\n\n", 
+            total_comp_processes, total_io_processes, total_cp_pairs, total_resource_pairs);
 }
 
 // Added for problem 4

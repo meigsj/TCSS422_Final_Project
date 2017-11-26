@@ -58,7 +58,7 @@ Shaun Coleman
 #define RESET_QUANTUM (((((MAX_PRIORITY/2)+1) * (MAX_PRIORITY/2)+1) * 10) * 15)
 
 // The initial number of create process calls to start the program with
-#define INIT_CREATE_CALLS 20
+#define INIT_CREATE_CALLS 5
 
 // the max number of processes that will not terminate
 #define MAX_PRIVILEGED 4
@@ -81,17 +81,17 @@ Shaun Coleman
 // The maximum number of computation intensive processes
 #define COMPUTE_PROCESS_MAX 25
 
-// The max number of new producer/consumer pairs to make per process creation
-#define CREATE_PRO_CON_MAX 1
+// The max number +1 of new producer/consumer pairs to make per process creation
+#define CREATE_PRO_CON_MAX 2
 
-// The max number of new shared resource pairs to make per process creation
-#define CREATE_SHARED_RESOURCE_MAX 1
+// The max number +1 of new shared resource pairs to make per process creation
+#define CREATE_SHARED_RESOURCE_MAX 2
 
-// The max number of new IO Processes to make per process creation
-#define CREATE_IO_PROCESS_MAX 5
+// The max number +1 of new IO Processes to make per process creation
+#define CREATE_IO_PROCESS_MAX 6
 
-// The max number of new computation intensive processes to make per process creation
-#define CREATE_CUMPUTE_PROCESS_MAX 2
+// The max number +1 of new computation intensive processes to make per process creation
+#define CREATE_CUMPUTE_PROCESS_MAX 3
 
 // A Constant used to test the timer's frequency
 #define TIMER_FREQ 1000
