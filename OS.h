@@ -38,8 +38,11 @@ Shaun Coleman
 // value to denote a successful function return
 #define SUCCESSFUL 0
 
+// value to denote a successful ISR return
+#define ISR_RETURNED 1
+
 // Maximum size used for an ouput buffer string
-#define MAX_BUFFER_SIZE 1024
+#define MAX_BUFFER_SIZE 2048
 
 // The amount of loop iterations before halting the simulation
 // Set low for output txt, tested at 500,000 iterations and no halting condition
@@ -90,6 +93,12 @@ Shaun Coleman
 // The max number of new computation intensive processes to make per process creation
 #define CREATE_CUMPUTE_PROCESS_MAX 2
 
+// A Constant used to test the timer's frequency
+#define TIMER_FREQ 1000
+
+// A Constant used to test the io device's interrupt frequency
+#define IO_FREQ 10000
+
 typedef struct process_queues {
     // all currently used process queues and the running process pcb
     FIFOq_p newProcesses;
@@ -98,9 +107,27 @@ typedef struct process_queues {
     FIFOq_p IO_2_Processes;
     PQueue_p readyProcesses;
     PCB_p runningProcess;
-} PROCESS_QUEUES_s; 
+} PROCESS_QUEUES_s;
 
 typedef PROCESS_QUEUES_s* PROCESS_QUEUES_p;
+
+typedef struct timer_device {
+    pthread_mutex_t timer_lock;
+    pthread_cond_t timer_cond;
+} TIMER_DEVICE_s;
+
+typedef TIMER_DEVICE_s* TIMER_DEVICE_p;
+
+typedef struct io_device {
+    int IO_activated;
+    pthread_mutex_t IO_lock;
+    pthread_mutex_t IO_reset_lock;
+    pthread_cond_t IO_cond;
+    pthread_cond_t IO_active_cond;
+    pthread_mutex_t IO_active_lock;
+} IO_DEVICE_s;
+
+typedef IO_DEVICE_s* IO_DEVICE_p;
 
 typedef struct custom_mutex {
 	// NULL if no process holds the mutex, otherwise the pointer to the process
@@ -155,7 +182,7 @@ typedef RESOURCE_PAIR_s* RESOURCE_PAIR_p;
 int pseudoISR();
 
 // A function to simulate an OS scheduler
-int scheduler(int);
+int scheduler(int, PCB_p);
 
 // A function to simulate a dispatcher for timer interrupts
 int dispatcher();
@@ -170,7 +197,7 @@ int pseudoTSR(int);
 int dispatcherIO(FIFOq_p);
 
 // A function to simulate the dispatcher for an Trap Interrupt
-int dispatcherTrap(FIFOq_p);
+int dispatcherTrap(FIFOq_p, PCB_p);
 
 // A function to check if the specified process is at an IO trap or is ready to terminate
 int isAtTrap(PCB_p);
@@ -246,3 +273,7 @@ int createSharedResourcePair();
 void initialize_Resource_Pair(RESOURCE_PAIR_p pair);
 
 void initialize_CP_Pair(CP_PAIR_p);
+
+void timer_check();
+
+void IO_check();

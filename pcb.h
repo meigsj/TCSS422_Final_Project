@@ -121,9 +121,9 @@ int setPriority(PCB_p, unsigned char); // setter for priority.
 
 int setRandomPriority(PCB_p); // set random priority.
 
-int setMem(PCB_p, unsigned int); // setter for Mem.
+int setMem(PCB_p, unsigned char*); // setter for Mem.
 
-unsigned char getMem(PCB_p); // getter for Mem.
+unsigned char* getMem(PCB_p); // getter for Mem.
 
 int setSize(PCB_p, unsigned int); // setter for Size.
 
