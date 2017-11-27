@@ -45,10 +45,13 @@ typedef CPU_context_s * CPU_context_p; // _p means that this is a pointer to a s
 
 enum state_type {NEW, READY, RUNNING, INTERRUPTED, WAITING, HALTED};
 
+enum process_type { NO_TYPE, IO, COMP_INTENSIVE, CONPRO_PAIR, RESOURCE_PAIR };
+
 typedef struct pcb {
     // Process control block
     unsigned int pid; // process identification
     enum state_type state; // process state (running, waiting, etc.)
+	enum process_type type; // the type of the process used for experimentation
     unsigned int parent; // parent process pid
     unsigned char priority; // 0 is highest – 15 is lowest.
     unsigned char * mem; // start of process in memory
@@ -66,11 +69,14 @@ typedef struct pcb {
     int io_1_traps[IO_TRAP_SIZE]; // An array of PC values representing Trap calls for IO device 1
     int io_2_traps[IO_TRAP_SIZE]; // An array of PC values representing Trap calls for IO device 2
 
-	int lock_pcs[SYNCRO_SIZE]; // An array of PC values representing lock calls
-	int unlock_pcs[SYNCRO_SIZE]; // An array of PC values representing unlock calls
-	int trylock_pcs[SYNCRO_SIZE]; // An array of PC values representing trylock calls
-	int wait_pcs[SYNCRO_SIZE]; // An array of PC values representing wait calls
-	int signal_pcs[SYNCRO_SIZE]; // An array of PC values representing signal calls
+	int lock_1_pcs[SYNCRO_SIZE]; // An array of PC values representing lock calls for resource 1
+	int lock_2_pcs[SYNCRO_SIZE]; // An array of PC values representing lock calls for  resource 2
+	int unlock_1_pcs[SYNCRO_SIZE]; // An array of PC values representing unlock calls resource 1
+	int unlock_2_pcs[SYNCRO_SIZE]; // An array of PC values representing unlock calls resource 2
+	int trylock_1_pcs[SYNCRO_SIZE]; // An array of PC values representing trylock calls resource 1
+	int trylock_2_pcs[SYNCRO_SIZE]; // An array of PC values representing trylock calls resource 2
+	int wait_1_pcs[SYNCRO_SIZE]; // An array of PC values representing wait calls resource 1
+	int signal_1_pcs[SYNCRO_SIZE]; // An array of PC values representing signal calls
 
     CPU_context_p context; // set of cpu registers
     // other items to be added as needed.
@@ -115,9 +121,9 @@ int setPriority(PCB_p, unsigned char); // setter for priority.
 
 int setRandomPriority(PCB_p); // set random priority.
 
-int setMem(PCB_p, unsigned int); // setter for Mem.
+int setMem(PCB_p, unsigned char*); // setter for Mem.
 
-unsigned char getMem(PCB_p); // getter for Mem.
+unsigned char* getMem(PCB_p); // getter for Mem.
 
 int setSize(PCB_p, unsigned int); // setter for Size.
 
@@ -169,6 +175,9 @@ int* getIOTraps1(PCB_p); // getter for the IO1 Traps array
 
 int* getIOTraps2(PCB_p); // getter for the IO2 Traps array
 
+enum process_type getType(PCB_p);
+
+int setType(PCB_p, enum process_type);
 ////
 
 int context_toString(PCB_p, char*, int); // toString for context.
