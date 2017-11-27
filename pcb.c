@@ -329,7 +329,7 @@ int setRandomPriority(PCB_p my_pcb) {
 }
 
 // Setter to set the mem field of the pcb struct
-int setMem(PCB_p my_pcb, unsigned int newValue) {
+int setMem(PCB_p my_pcb, unsigned char* newValue) {
     if (!my_pcb) {
         return NULL_ERROR;
     } else {
@@ -338,9 +338,9 @@ int setMem(PCB_p my_pcb, unsigned int newValue) {
 }
 
 // Getter to get the mem field of the pcb struct
-unsigned char getMem(PCB_p my_pcb) {
+unsigned char* getMem(PCB_p my_pcb) {
     if (!my_pcb) {
-        return NULL_ERROR;
+        return NULL;
     } else {
         return my_pcb->mem;
     }
