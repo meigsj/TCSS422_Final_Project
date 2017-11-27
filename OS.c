@@ -678,13 +678,8 @@ int createConsumerProducerPair() {
     setType(consumer, CONPRO_PAIR);
 
     // give PCB random Max PC, and Traps
-    // TODO - Need small Max PC + need better trap method for here?
     setRandomMaxPC(producer);
     setRandomMaxPC(consumer);
-    
-    // TODO - Check if traps are needed for PC pair
-    //setRandomIOTraps(producer);
-    //setRandomIOTraps(consumer);
     
     // Set to not terminate
     setTerminate(producer, 0);

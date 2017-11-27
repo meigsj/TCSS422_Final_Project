@@ -231,3 +231,15 @@ int q_resetPriority(FIFOq_p queue) {
      
      return POINTER_VALID;
 }
+
+int q_contains(FIFOq_p queue, PCB_p pcb) {
+    if (!queue) return 0;
+
+    Node_p tempQueue = queue->head;
+    while (tempQueue != NULL) {
+        if (tempQueue->pcb == pcb) return 1;
+        tempQueue = tempQueue->next;
+    }
+
+    return 0;
+}
