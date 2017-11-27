@@ -1,12 +1,12 @@
 /*
-TCSS422 - Operating Systems
-Final Project
-Group Members:
-Kirtwinder Gulati
-Shaun Coleman
-Ayub Tiba
-Joshua Meigs
-*/
+ TCSS422 - Operating Systems
+ Final Project
+ Group Members:
+ Kirtwinder Gulati
+ Shaun Coleman
+ Ayub Tiba
+ Joshua Meigs
+ */
 
 #include <time.h>
 #include <pthread.h>
@@ -34,15 +34,12 @@ int IO_2_counter;
 int IO_1_activated;
 int IO_2_activated;
 
-
-
-
 //Tests
 pthread_mutex_t timer_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t timer_cond = PTHREAD_COND_INITIALIZER;
 
 pthread_mutex_t io1_lock = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t io1_cond = PTHREAD_COND_INITIALIZER; 
+pthread_cond_t io1_cond = PTHREAD_COND_INITIALIZER;
 
 pthread_mutex_t global_shutdown_lock = PTHREAD_MUTEX_INITIALIZER;
 
@@ -77,7 +74,7 @@ void * OS_Simulator(void *arg) {
 
 	// Main Loop
 	// One cycle is one instruction
-	for (; ; ) { // for spider
+	for (;;) { // for spider
 		int trapFlag = 0;
 		// update counters
 		iterationCount++;
@@ -95,7 +92,8 @@ void * OS_Simulator(void *arg) {
 		// Trigger timer and check for timer interupt
 		if (pthread_mutex_trylock(&timer_lock) == 0) { //WAS: timerDownCounter() == TIMER_INTERUPT
 			int state = RUNNING;
-			if (processes->runningProcess) state = getState(processes->runningProcess);
+			if (processes->runningProcess)
+				state = getState(processes->runningProcess);
 			// Timer interupt
 			sysStack = currentPC;
 
@@ -105,8 +103,7 @@ void * OS_Simulator(void *arg) {
 
 			if (state == HALTED) {
 				printInterupt(PCB_TERMINATED);
-			}
-			else {
+			} else {
 				printInterupt(TIMER_INTERUPT);
 			}
 			pthread_mutex_unlock(&timer_lock);
@@ -147,16 +144,17 @@ void * OS_Simulator(void *arg) {
 
 		// Check for Traps (termination is checked as a trap here too)
 		trapFlag = isAtTrap(processes->runningProcess);
-		if (trapFlag == IO_1_TRAP || trapFlag == IO_2_TRAP || trapFlag == PCB_TERMINATED) {
+		if (trapFlag == IO_1_TRAP || trapFlag == IO_2_TRAP
+				|| trapFlag == PCB_TERMINATED) {
 			sysStack = currentPC;
 			pseudoTSR(trapFlag);
 			printInterupt(trapFlag);
 		}
 
-
 		//check stop condition for the simulation
 		if (iterationCount >= HALT_CONDITION) {
-			printf("---- HALTING SIMULATION ON ITERATION %d ----\n", iterationCount);
+			printf("---- HALTING SIMULATION ON ITERATION %d ----\n",
+					iterationCount);
 			pthread_mutex_lock(&global_shutdown_lock);
 			shutting_down = 1;
 			pthread_mutex_unlock(&global_shutdown_lock);
@@ -169,20 +167,19 @@ void * OS_Simulator(void *arg) {
 
 // To Complete
 /*
-The timer is an independent thread that puts itself to sleep for some number of milliseconds (the standard sleep function in Linux is in seconds so use the nanosleep() function (time.h)
--you may need to experiment with how many the timer should sleep to approximate a single quantum). When it wakes up it will need to "signal" the CPU thread that an interrupt has
-occurred through the use of a mutex. In the CPU loop use the non-blocking mutex_trylock() call so that the loop doesn't block itself waiting for the timer signal.
-After throwing  the  interrupt  signal  it  puts  itself  to  sleep  again  for  the  designated  quantum.  The  timer  has  the
-highest priority with respect to interrupt processing. It must be accommodated before any I/O interrupt. If an  I/O  interrupt  is  processing  when  a
-timer interrupt occurs  you  should  call the timer  pseudo_ISR  from inside the I/O pseudo_ISR to simulate these priority relation
-in os change timer to check for trylock
-*/
+ The timer is an independent thread that puts itself to sleep for some number of milliseconds (the standard sleep function in Linux is in seconds so use the nanosleep() function (time.h)
+ -you may need to experiment with how many the timer should sleep to approximate a single quantum). When it wakes up it will need to "signal" the CPU thread that an interrupt has
+ occurred through the use of a mutex. In the CPU loop use the non-blocking mutex_trylock() call so that the loop doesn't block itself waiting for the timer signal.
+ After throwing  the  interrupt  signal  it  puts  itself  to  sleep  again  for  the  designated  quantum.  The  timer  has  the
+ highest priority with respect to interrupt processing. It must be accommodated before any I/O interrupt. If an  I/O  interrupt  is  processing  when  a
+ timer interrupt occurs  you  should  call the timer  pseudo_ISR  from inside the I/O pseudo_ISR to simulate these priority relation
+ in os change timer to check for trylock
+ */
 void * timer_thread(void * s) {
 	struct timespec ts;
 	pthread_mutex_lock(&timer_lock);
 	ts.tv_sec = 0;
-	ts.tv_nsec = timer;//(timer*1000);
-
+	ts.tv_nsec = timer; //(timer*1000);
 
 	for (;;) {
 		pthread_mutex_lock(&global_shutdown_lock);
@@ -203,7 +200,7 @@ void * timer_thread(void * s) {
 void * io1_thread(void * s) {
 	struct timespec ts;
 	ts.tv_sec = 0;
-	ts.tv_nsec = 10000;//(timer*1000);
+	ts.tv_nsec = 10000; //(timer*1000);
 	// Lock signal mutex
 	pthread_mutex_lock(&IO_1_lock);
 
@@ -246,8 +243,8 @@ void * io2_thread(void * s) {
 
 	struct timespec ts;
 	ts.tv_sec = 0;
-	ts.tv_nsec = 10000;//(timer*1000);
-	 // Lock signal mutex
+	ts.tv_nsec = 10000;		//(timer*1000);
+	// Lock signal mutex
 	pthread_mutex_lock(&IO_2_lock);
 
 	for (;;) {
@@ -304,7 +301,8 @@ int pseudoISR() {
 	scheduler(TIMER_INTERUPT);
 
 	// Update Timer
-	timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));
+	timer = getQuantum(processes->readyProcesses,
+			getPriority(processes->runningProcess));
 	// IRET (update current pc)
 	currentPC = sysStack;
 	return SUCCESSFUL;
@@ -332,18 +330,21 @@ int pseudoTSR(int trap_interupt) {
 	if (trap_interupt == PCB_TERMINATED) {
 		setState(processes->runningProcess, HALTED);
 		setTermination(processes->runningProcess, time(NULL));
-	}
-	else {
+	} else {
 		setState(processes->runningProcess, WAITING);
 	}
 
 	// Activate counter if not in use (IO_Queue is empty)
 	// IO Traps only
 	if (trap_interupt == IO_1_TRAP && q_is_empty(processes->IO_1_Processes)) {
-		IO_1_counter = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess)) * (rand() % IO_COUNTER_MULT_RANGE);
-	}
-	else if (trap_interupt == IO_2_TRAP && q_is_empty(processes->IO_2_Processes)) {
-		IO_2_counter = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess)) * (rand() % IO_COUNTER_MULT_RANGE);
+		IO_1_counter = getQuantum(processes->readyProcesses,
+				getPriority(processes->runningProcess))
+				* (rand() % IO_COUNTER_MULT_RANGE);
+	} else if (trap_interupt == IO_2_TRAP
+			&& q_is_empty(processes->IO_2_Processes)) {
+		IO_2_counter = getQuantum(processes->readyProcesses,
+				getPriority(processes->runningProcess))
+				* (rand() % IO_COUNTER_MULT_RANGE);
 	}
 
 	// save pc to pcb
@@ -356,8 +357,7 @@ int pseudoTSR(int trap_interupt) {
 	pthread_mutex_lock(&IO_1_active_lock);
 	if (q_is_empty(processes->IO_1_Processes)) {
 		IO_1_activated = 0;
-	}
-	else {
+	} else {
 		IO_1_activated = 1;
 		pthread_cond_signal(&IO_1_active_cond);
 	}
@@ -366,8 +366,7 @@ int pseudoTSR(int trap_interupt) {
 	pthread_mutex_lock(&IO_2_active_lock);
 	if (q_is_empty(processes->IO_2_Processes)) {
 		IO_2_activated = 0;
-	}
-	else {
+	} else {
 		IO_2_activated = 1;
 		pthread_cond_signal(&IO_2_active_cond);
 	}
@@ -388,29 +387,34 @@ int scheduler(int interupt) {
 	case PCB_TERMINATED:
 	case TIMER_INTERUPT:
 		dispatcher();
-		timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));
+		timer = getQuantum(processes->readyProcesses,
+				getPriority(processes->runningProcess));
 		break;
 	case IO_1_INTERUPT:
 		dispatcherIO(processes->IO_1_Processes);
 		if (!q_is_empty(processes->IO_1_Processes)) {
 			PCB_p head = getNodePCB(getHead(processes->IO_1_Processes));
-			IO_1_counter = (int)getQuantum(processes->readyProcesses, getPriority(head)) * (rand() % IO_COUNTER_MULT_RANGE);
+			IO_1_counter = (int) getQuantum(processes->readyProcesses,
+					getPriority(head)) * (rand() % IO_COUNTER_MULT_RANGE);
 		}
 		break;
 	case IO_2_INTERUPT:
 		dispatcherIO(processes->IO_2_Processes);
 		if (!q_is_empty(processes->IO_2_Processes)) {
 			PCB_p head = getNodePCB(getHead(processes->IO_2_Processes));
-			IO_2_counter = (int)getQuantum(processes->readyProcesses, getPriority(head)) * (rand() % IO_COUNTER_MULT_RANGE);
+			IO_2_counter = (int) getQuantum(processes->readyProcesses,
+					getPriority(head)) * (rand() % IO_COUNTER_MULT_RANGE);
 		}
 		break;
 	case IO_1_TRAP:
 		dispatcherTrap(processes->IO_1_Processes);
-		timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));
+		timer = getQuantum(processes->readyProcesses,
+				getPriority(processes->runningProcess));
 		break;
 	case IO_2_TRAP:
 		dispatcherTrap(processes->IO_2_Processes);
-		timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));
+		timer = getQuantum(processes->readyProcesses,
+				getPriority(processes->runningProcess));
 		break;
 	default:
 		// error handling as needed
@@ -538,16 +542,20 @@ int dispatcherTrap(FIFOq_p IO_Queue) {
 int isAtTrap(PCB_p pcb) {
 	int terminate, term_count;
 
-	if (!pcb) return 0;
+	if (!pcb)
+		return 0;
 
 	terminate = getTerminate(pcb);
 	term_count = getTermCount(pcb);
 
-	if (terminate && terminate <= term_count) return PCB_TERMINATED;
+	if (terminate && terminate <= term_count)
+		return PCB_TERMINATED;
 
 	for (int i = 0; i < IO_TRAP_SIZE; i++) {
-		if (currentPC == pcb->io_1_traps[i]) return IO_1_TRAP;
-		if (currentPC == pcb->io_2_traps[i]) return IO_2_TRAP;
+		if (currentPC == pcb->io_1_traps[i])
+			return IO_1_TRAP;
+		if (currentPC == pcb->io_2_traps[i])
+			return IO_2_TRAP;
 	}
 
 	return 0;
@@ -605,7 +613,8 @@ int emptyZombies(FIFOq_p zombiesList) {
 int timerDownCounter() {
 	timer--;
 
-	if (timer == 0) return TIMER_INTERUPT;
+	if (timer == 0)
+		return TIMER_INTERUPT;
 
 	return NO_INTERUPT;
 }
@@ -615,7 +624,8 @@ int timerDownCounter() {
 int IO_1_DownCounter() {
 	IO_1_counter = IO_1_counter == 0 ? 0 : IO_1_counter - 1;
 
-	if (IO_1_counter == 0) return IO_1_INTERUPT;
+	if (IO_1_counter == 0)
+		return IO_1_INTERUPT;
 
 	return NO_INTERUPT;
 }
@@ -625,7 +635,8 @@ int IO_1_DownCounter() {
 int IO_2_DownCounter() {
 	IO_2_counter = IO_2_counter == 0 ? 0 : IO_2_counter - 1;
 
-	if (IO_2_counter == 0) return IO_2_INTERUPT;
+	if (IO_2_counter == 0)
+		return IO_2_INTERUPT;
 
 	return NO_INTERUPT;
 }
@@ -638,7 +649,8 @@ int simulateProgramStep() {
 	// setters/getters inside of pcb maybe?
 	if (currentPC > getMaxPC(processes->runningProcess)) {
 		currentPC = 0;
-		setTermCount(processes->runningProcess, getTermCount(processes->runningProcess) + 1);
+		setTermCount(processes->runningProcess,
+				getTermCount(processes->runningProcess) + 1);
 	}
 
 	return SUCCESSFUL;
@@ -704,7 +716,7 @@ int printInterupt(int interupt) {
 // Added for problem 4
 // A function used to initialize the processes struct
 void initializeProcessQueues() {
-	processes = (PROCESS_QUEUES_p)malloc(sizeof(PROCESS_QUEUES_s));
+	processes = (PROCESS_QUEUES_p) malloc(sizeof(PROCESS_QUEUES_s));
 
 	processes->newProcesses = construct_FIFOq();
 	processes->zombieProcesses = construct_FIFOq();
@@ -744,13 +756,12 @@ int main() {
 	// Initialize Queues
 	initializeProcessQueues();
 
-
 	// Added for Problem 3
 	// SetQuantums
 	for (int i = 0; i <= MAX_PRIORITY; i++) {
 		// Set Quantum to ten times one more than the priority level squared
 		// i.e. Priority 0 -> Quantum 10
-		setQuantum(processes->readyProcesses, i, (i + 1)*(i + 1) * 10);
+		setQuantum(processes->readyProcesses, i, (i + 1) * (i + 1) * 10);
 	}
 
 	// Initialize Global Vars
@@ -764,7 +775,8 @@ int main() {
 	IO_2_counter = 0;
 	IO_1_activated = 0;
 	IO_2_activated = 0;
-	timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));
+	timer = getQuantum(processes->readyProcesses,
+			getPriority(processes->runningProcess));
 	scheduler_flag = 0;
 	// create starting processes
 	// set a process to running
@@ -783,7 +795,6 @@ int main() {
 	pthread_create(&os, NULL, OS_Simulator, NULL);
 
 	//
-
 
 	// Wait until the OS Thread completes
 	pthread_join(os, NULL);
