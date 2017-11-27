@@ -1,3 +1,5 @@
+#pragma once
+#include <assert.h>
 #include "OS.h"
 
 #define DEADLOCK_FOUND -1
@@ -20,14 +22,14 @@ typedef DL_LOCK_NODE_s* DL_LOCK_NODE_p;
 
 typedef struct proc_list_node {
     DL_PROC_NODE_p proc_node;
-    DL_PROC_NODE_p next;
+    struct proc_list_node * next;
 } PROC_LIST_NODE_s;
 
 typedef PROC_LIST_NODE_s* PROC_LIST_NODE_p;
 
 typedef struct lock_list_node {
     DL_LOCK_NODE_p lock_node;
-    DL_LOCK_NODE_p next;
+    struct lock_list_node * next;
 } LOCK_LIST_NODE_s;
 
 typedef LOCK_LIST_NODE_s* LOCK_LIST_NODE_p;

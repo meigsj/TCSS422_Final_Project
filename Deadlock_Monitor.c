@@ -29,7 +29,7 @@ DL_GRAPH_p setupDLGraph(RESOURCE_PAIR_p pair) {
 
     graph->edge_count = 0;
 
-    return graph
+    return graph;
 }
 
 void connectDLGraph(DL_GRAPH_p graph) {
@@ -76,7 +76,7 @@ void destructDLGraph(DL_GRAPH_p graph) {
         lock_next = lock_next->next;
     }
 
-    free(graph)
+    free(graph);
 }
 
 int testResourcePair(RESOURCE_PAIR_p pair) {

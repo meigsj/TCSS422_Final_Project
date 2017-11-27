@@ -94,4 +94,4 @@ int nodeCount(FIFOq_p);
 int q_resetPriority(FIFOq_p);
 
 // A function to linearly search the queue to see if the specified pcb is contained
-int q_contains(FIFOq_p queue, PCB_p pcb)
+int q_contains(FIFOq_p queue, PCB_p pcb);
