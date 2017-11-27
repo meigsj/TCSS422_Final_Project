@@ -29,7 +29,7 @@ DL_GRAPH_p setupDLGraph(RESOURCE_PAIR_p pair) {
 
     graph->edge_count = 0;
 
-    return graph
+	return graph;
 }
 
 void connectDLGraph(DL_GRAPH_p graph) {
@@ -60,7 +60,7 @@ void destructDLGraph(DL_GRAPH_p graph) {
     PROC_LIST_NODE_p procs = graph->proc_head;
     PROC_LIST_NODE_p proc_next = graph->proc_head;
     LOCK_LIST_NODE_p locks = graph->lock_head;
-    LOCK_LIST_NODE_p locks = graph->lock_head;
+    LOCK_LIST_NODE_p lock_next = graph->lock_head;
 
     while (procs) {
         free(procs->proc_node);
@@ -76,7 +76,7 @@ void destructDLGraph(DL_GRAPH_p graph) {
         lock_next = lock_next->next;
     }
 
-    free(graph)
+	free(graph);
 }
 
 int testResourcePair(RESOURCE_PAIR_p pair) {
@@ -87,7 +87,7 @@ int testResourcePair(RESOURCE_PAIR_p pair) {
     assert(graph->edge_count <= MAX_SHARED_RESOURCE_EDGES);
     
     // If 4 edges are created a full cycle must be produced Ex: proc1->lock1->proc2->lock2->proc1...
-    if (edge_count == < MAX_SHARED_RESOURCE_EDGES) return DEADLOCK_FOUND;
+    if (graph->edge_count  == MAX_SHARED_RESOURCE_EDGES) return DEADLOCK_FOUND;
 
     return NO_DEADLOCK_FOUND;
 }
