@@ -72,7 +72,7 @@ int p_enqueue(PQueue_p pqueue, Node_p node) {
 // FIFOq that contains any nodes
 PCB_p p_dequeue(PQueue_p pqueue) {
     PCB_p pcb;
-    if (!pqueue) return POINTER_NULL;
+    if (!pqueue) return NULL;
     int priority = 0;
     
     // Added for problem 4
@@ -122,12 +122,12 @@ int getPrioritySize(PQueue_p pqueue, int priority) {
 // Fills the passed buffer with a String representation of the specified PQueue sizes
 // Helper function created to print the priority queue in the format discribed in the problem 3 documentation
 int pQSizeToString(PQueue_p pqueue, char* buffer, int b_size) {
-    if (!pqueue || !buffer) return POINTER_NULL;
- 
     char output[100];  //magic number
+    if (!pqueue || !buffer) return POINTER_NULL;
+    
     for(int i = 0; i <= MAX_PRIORITY; i++) {
-          sprintf(output, "Q%d: %d\n", i, getPrioritySize(pqueue, i));
-      strcat(buffer, output);
+        sprintf(output, "Q%d: %d\n", i, getPrioritySize(pqueue, i));
+        strcat(buffer, output);
   }
   
     return POINTER_VALID;

@@ -90,7 +90,7 @@ int q_enqueue(FIFOq_p queue, Node_p node) {
 // Removes a Node from the head of the passed queue, retrieves/returns the stored PCB, and destructs the removed node
 PCB_p q_dequeue(FIFOq_p queue) {
     // Check for valid pointers
-    if (!queue) return POINTER_NULL;
+    if (!queue) return NULL;
     
     if (q_is_empty(queue)) return NULL;   
     
@@ -155,7 +155,7 @@ int setNodePCB(Node_p node, PCB_p pcb) {
 
 // Returns the PCB stored in the given node
 PCB_p getNodePCB(Node_p node) {
-    if (!node) return POINTER_NULL;
+    if (!node) return NULL;
     
     return node->pcb;
 }
@@ -171,14 +171,14 @@ int setNodeNext(Node_p node, Node_p next) {
 
 // Returns the specified nodes next pointer
 Node_p getNodeNext(Node_p node) {
-    if (!node) return POINTER_NULL;
+    if (!node) return NULL;
     
     return node->next;
 }
 
 // Returns the head of the specified FIFOq
 Node_p getHead(FIFOq_p queue) {
-    if (!queue) return POINTER_NULL;
+    if (!queue) return NULL;
     
     return queue->head;
 }
@@ -232,4 +232,16 @@ int q_resetPriority(FIFOq_p queue) {
      }
      
      return POINTER_VALID;
+}
+
+int q_contains(FIFOq_p queue, PCB_p pcb) {
+    if (!queue) return 0;
+
+    Node_p tempQueue = queue->head;
+    while (tempQueue != NULL) {
+        if (tempQueue->pcb == pcb) return 1;
+        tempQueue = tempQueue->next;
+    }
+
+    return 0;
 }
