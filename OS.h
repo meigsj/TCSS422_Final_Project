@@ -249,14 +249,6 @@ CP_PAIR_p getPCPair(PCB_p);
 
 CP_PAIR_p getPCPair(PCB_p);
 
-int simulate_mutex_lock(PCB_p, CUSTOM_MUTEX_p);
-
-int simulate_mutex_unlock(CUSTOM_MUTEX_p);
-
-int simulate_cond_wait(PCB_p, CUSTOM_COND_p);
-
-int simulate_cond_signal(PCB_p, CUSTOM_COND_p);
-
 int createIOProcess();
 
 int createComputeIntensiveProcess();
@@ -270,3 +262,20 @@ void initialize_CP_Pair(CP_PAIR_p);
 void timer_check();
 
 void IO_check();
+
+int lock_tsr(CUSTOM_MUTEX_p);
+
+int unlock_tsr(CUSTOM_MUTEX_p mutex);
+
+int wait_tsr(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond);
+
+int signal_tsr(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond);
+
+int dispatcherLock(PCB_p process, CUSTOM_MUTEX_p mutex);
+
+int dispatcherUnlock(CUSTOM_MUTEX_p mutex);
+
+int dispatcherWait(PCB_p process, CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond);
+
+int dispatcherSignal(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond);
+

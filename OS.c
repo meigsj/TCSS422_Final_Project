@@ -129,23 +129,32 @@ void * OS_Simulator(void *arg) {
 
                 switch (syncro_flag) {
                     case LOCK_RESOURCE_1:
+						printf("\nProcess %d requests lock\n", processes->runningProcess);
                         lock_tsr(pair->mutex);
                         break;
                     case UNLOCK_RESOURCE_1:
+						printf("\nProcess %d releases lock\n", processes->runningProcess);
                         unlock_tsr(pair->mutex);
                         break;
                     case WAIT_RESOURCE_1:
                         if (pair->producer == process->runningProcess) {
+							printf("\nProducer %d calls wait for consumed.\n", pair->producer->pid);
                             wait_tsr(pair->mutex, pair->consumed);
                         } else {
+							printf("\nConsumer %d calls wait for produced.\n", pair->consumer->pid);
                             wait_tsr(pair->mutex, pair->produced);
                         }
                         break;
                     case SIGNAL_RESOURCE_1:
                         if (pair->producer == process->runningProcess) {
-                            signal_tsr(pair->mutex, pair->produced);
+							pair->counter++;
+							printf("\nProducer %d incremented counter to %d.\n", pair->producer->pid, pair->counter);
+							signal_tsr(pair->mutex, pair->produced);
+							printf("\nProducer %d signals produced.\n", pair->producer->pid);
                         } else {
+							printf("\nConsumer %d: Counter is %d.\n", pair->consumer->pid, pair->counter);
                             signal_tsr(pair->mutex, pair->consumed);
+							printf("\nConsumer %d signals consumed.\n", pair->consumer->pid);
                         }
                         break;
                     default:
