@@ -136,16 +136,16 @@ void * OS_Simulator(void *arg) {
                         break;
                     case WAIT_RESOURCE_1:
                         if (pair->producer == process->runningProcess) {
-                            wait_tsr(pair->consumed);
+                            wait_tsr(pair->mutex, pair->consumed);
                         } else {
-                            wait_tsr(pair->produced);
+                            wait_tsr(pair->mutex, pair->produced);
                         }
                         break;
                     case SIGNAL_RESOURCE_1:
                         if (pair->producer == process->runningProcess) {
-                            signal_tsr(pair->produced);
+                            signal_tsr(pair->mutex, pair->produced);
                         } else {
-                            signal_tsr(pair->consumed);
+                            signal_tsr(pair->mutex, pair->consumed);
                         }
                         break;
                     default:
@@ -502,13 +502,13 @@ int scheduler(int interupt, PCB_p running, CUSTOM_MUTEX_p mutex, CUSTOM_COND_s c
         dispatcherUnlock(mutex);
         break;
     case WAIT_INTERRUPT:
-        assert(running && cond);
-        dispatcherWait(running, cond);
+        assert(running && mutex && cond);
+        dispatcherWait(running, mutex, cond);
         timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));
         break;
     case SIGNAL_INTERRUPT:
-        assert(cond);
-        dispatcherSignal(cond);
+        assert(mutex && cond);
+        dispatcherSignal(mutex, cond);
         break;
     default:
         // error handling as needed
@@ -656,7 +656,7 @@ int lock_tsr(CUSTOM_MUTEX_p mutex) {
     IO_check();
 
     if (getState(running) == WAITING) {
-        scheduler(, running, mutex, NULL);
+        scheduler(LOCK_INTERRUPT, running, mutex, NULL);
     } else {
         mutex->owner = running;
     }
@@ -679,7 +679,7 @@ int unlock_tsr(CUSTOM_MUTEX_p mutex) {
     if (q_is_empty(mutex->blocked)) {
         mutex->owner == NULL;
     } else {
-        scheduler(, NULL, mutex, NULL);
+        scheduler(UNLOCK_INTERRUPT, NULL, mutex, NULL);
     }
 
     syncro_flag = NO_RESOURCE_SYNCRO;
@@ -689,7 +689,7 @@ int unlock_tsr(CUSTOM_MUTEX_p mutex) {
     return SUCCESSFUL;
 }
 
-int wait_tsr(CUSTOM_COND_p cond) {
+int wait_tsr(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond) {
     PCB_p running = processes->runningProcess;
     setPC(running, currentPC);
 
@@ -703,7 +703,7 @@ int wait_tsr(CUSTOM_COND_p cond) {
     IO_check();
 
     if (getState(running) == WAITING) {
-        scheduler(, running, NULL, cond);
+        scheduler(WAIT_INTERRUPT, running, mutex, cond);
     } else {
         cond->state = COND_NOT_READY;
     }
@@ -715,7 +715,7 @@ int wait_tsr(CUSTOM_COND_p cond) {
     return SUCCESSFUL;
 }
 
-int signal_tsr(CUSTOM_COND_p cond) {
+int signal_tsr(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond) {
     setPC(processes->runningProcess, currentPC);
 
     timer_check();
@@ -724,7 +724,7 @@ int signal_tsr(CUSTOM_COND_p cond) {
     if (q_is_empty(cond->waiting)) {
         cond->state = COND_READY;
     } else {
-        scheduler(,NULL, NULL, cond);
+        scheduler(SIGNAL_INTERRUPT, NULL, mutex, cond);
     }
 
     syncro_flag = NO_RESOURCE_SYNCRO;
@@ -752,16 +752,25 @@ int dispatcherUnlock(CUSTOM_MUTEX_p mutex) {
     p_enqueue(processes->readyProcesses, node);
 }
 
-int dispatcherWait(PCB_p process, CUSTOM_COND_p cond) {
+int dispatcherWait(PCB_p process, CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond) {
     Node_p node = construct_Node();
     initializeNode(node);
     setNodePCB(node, process);
     //Added node here so that p_enque would have a node passed in and not the PCB
     setState(process, WAITING);
     q_enqueue(cond->waiting, node);
+    
+    // unlock lock TODO: replace with lock tsr call?
+    if (q_is_empty(mutex->blocked)) {
+        mutex->owner == NULL;
+    } else {
+        mutex->owner = q_dequeue(mutex->blocked);
+        setState(mutex->owner, READY);
+        p_enqueue(processes->readyProcesses, mutex->owner);
+    }
 }
 
-int dispatcherSignal(CUSTOM_COND_p cond) {
+int dispatcherSignal(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond) {
     Node_p node = construct_Node();
     PCB_p wokePcb;
     int priority;
@@ -772,11 +781,12 @@ int dispatcherSignal(CUSTOM_COND_p cond) {
     wokePcb = q_dequeue(cond->waiting);
 
     // update state to ready
-    setState(wokePcb, READY);
+    setState(wokePcb, WAITING);
 
-    //enqueue to ready queue
+    // Try to grab lock used by wait (assumed to fail per CP_pair)
+    // TODO: use unlock TSR call instead?
     setNodePCB(node, wokePcb);
-    p_enqueue(processes->readyProcesses, node);
+    p_enqueue(mutex->blocked, node);
 }
 
 
