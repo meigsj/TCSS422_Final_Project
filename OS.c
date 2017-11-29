@@ -928,14 +928,23 @@ int createConsumerProducerPair() {
     setTerminate(producer, 0);
     setTerminate(consumer, 0);
 
+    // Set syncro trap calls
+    producer->lock_1_pcs[0] = 70;
+    producer->wait_1_pcs[0] = 90;
+    producer->signal_1_pcs[0] = 110;
+    producer->unlock_1_pcs[0] = 120;
+
+    consumer->lock_1_pcs[0] = 70;
+    consumer->wait_1_pcs[0] = 90;
+    consumer->signal_1_pcs[0] = 110;
+    consumer->unlock_1_pcs[0] = 120;
+
     // initalize CP_PAIR
     pair = (CP_PAIR_p)malloc(sizeof(CP_PAIR_s));
     initialize_CP_Pair(pair);
     pair->producer = producer;
     pair->consumer = consumer;
-    //pair->producer = producer;
-    //pair->consumer = consumer;
-    
+
     cp_pairs[total_cp_pairs] = pair;
     total_cp_pairs++;
 
@@ -977,6 +986,17 @@ int createSharedResourcePair() {
     // Set to not terminate
     setTerminate(process_1, 0);
     setTerminate(process_2, 0);
+
+    // Set up
+    process_1->lock_1_pcs[0] = 100;
+    process_1->lock_2_pcs[0] = 300;
+    process_1->unlock_1_pcs[0] = 1000;
+    process_1->unlock_2_pcs[0] = 1100;
+
+    process_2->lock_1_pcs[0] = 100;
+    process_2->lock_2_pcs[0] = 300;
+    process_2->unlock_1_pcs[0] = 1000;
+    process_2->unlock_2_pcs[0] = 1100;
 
     // initalize RESOURCE_PAIR
     pair = (RESOURCE_PAIR_p)malloc(sizeof(RESOURCE_PAIR_s));
