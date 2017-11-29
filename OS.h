@@ -13,6 +13,7 @@ Joshua Meigs
 #include "FIFOq.h"
 #include "pcb.h"
 #include "PQueue.h"
+#include "Simple_Stack.h"
 
 // value to denote no interupt or trap detected
 #define  0

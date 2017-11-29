@@ -12,7 +12,8 @@ Joshua Meigs
 #include <assert.h>
 #include "OS.h"
 #include <assert.h>
-unsigned int sysStack;
+
+SIMPLE_STACK_p sysStack;
 unsigned int currentPC;
 unsigned int iterationCount;
 unsigned int quantum_post_reset;
@@ -111,7 +112,7 @@ void * OS_Simulator(void *arg) {
         trapFlag = isAtTrap(processes->runningProcess);
         if (trapFlag == IO_1_TRAP || trapFlag == IO_2_TRAP || trapFlag == PCB_TERMINATED) {
             printf("\nTrap Detected!\n");
-            sysStack = currentPC;
+            ss_push(sysStack, currentPC);
             pseudoTSR(trapFlag);
             printInterupt(trapFlag);
         }
@@ -123,6 +124,7 @@ void * OS_Simulator(void *arg) {
             int error_bad_pcb_for_syncro = 0;
 
             printf("\nSyncronization Service Detected!\n");
+			ss_push(sysStack, currentPC);
 
             if (getType(runningProcess) == CONPRO_PAIR) {
                 CP_PAIR_p pair = getPCPair(process->runningProcess);
@@ -323,7 +325,7 @@ void timer_check() {
         int state = RUNNING;
         if (processes->runningProcess) state = getState(processes->runningProcess);
         // Timer interupt
-        sysStack = currentPC;
+        ss_push(sysStack, currentPC);
 
         pseudoISR();
         ISR_FINISHED = 1;
@@ -342,7 +344,7 @@ void timer_check() {
 void IO_check() {
     if (IO_1_activated && pthread_mutex_trylock(&IO_1_lock) == 0) {
         printf("\nIO1 Interrupt Detected!\n");
-        sysStack = currentPC;
+        ss_push(sysStack,currentPC);
         IO_Interupt_Routine(IO_1_INTERUPT);
         pthread_mutex_lock(&IO_1_global_lock);
         if (q_is_empty(processes->IO_1_Processes)) {
@@ -357,7 +359,7 @@ void IO_check() {
 
     if (IO_2_activated && pthread_mutex_trylock(&IO_2_lock) == 0) {
         printf("\nIO2 Interrupt Detected!\n");
-        sysStack = currentPC;
+		ss_push(sysStack, currentPC);
         IO_Interupt_Routine(IO_2_INTERUPT);
         pthread_mutex_lock(&IO_2_global_lock);
         if (q_is_empty(processes->IO_2_Processes)) {
@@ -390,7 +392,7 @@ int pseudoISR() {
     // Update Timer
     timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));
     // IRET (update current pc)
-    currentPC = sysStack;
+    currentPC = ss_pop(sysStack);
     return SUCCESSFUL;
 }
 
@@ -409,7 +411,7 @@ int IO_Interupt_Routine(int IO_interupt) {
     scheduler(IO_interupt, NULL, NULL, NULL);
 
     // IRET (update current pc)
-    currentPC = sysStack;
+    currentPC = ss_pop(sysStack);
     return SUCCESSFUL;
 }
 
@@ -461,7 +463,7 @@ int pseudoTSR(int trap_interupt) {
 
     trap_flag = 0;
     // IRET (update current pc)
-    currentPC = sysStack;
+    currentPC = ss_pop(sysStack);
     return SUCCESSFUL;
 }
 
@@ -552,7 +554,7 @@ int dispatcher() {
     initializeNode(node);
     
     // update context
-    setPC(processes->runningProcess, sysStack);
+    setPC(processes->runningProcess, ss_pop(sysStack));
     
     // check the state of the running proccess to correctly switch contexts
     switch (getState(processes->runningProcess)) {
@@ -599,7 +601,7 @@ int dispatcher() {
     // set state
     setState(processes->runningProcess, RUNNING);
     
-    sysStack = getPC(processes->runningProcess);
+    ss_push(sysStack, getPC(processes->runningProcess));
 
     return SUCCESSFUL;
 }
@@ -633,7 +635,7 @@ int dispatcherTrap(FIFOq_p IO_Queue, PCB_p running) {
     initializeNode(node);
 
     // update context
-    setPC(running, sysStack);
+    setPC(running, ss_pop(sysStack));
 
     // enqueue
     setNodePCB(node, running);
@@ -646,7 +648,7 @@ int dispatcherTrap(FIFOq_p IO_Queue, PCB_p running) {
     // set state
     setState(processes->runningProcess, RUNNING);
 
-    sysStack = getPC(processes->runningProcess);
+    ss_push(sysStack, getPC(processes->runningProcess));
 
     return SUCCESSFUL;
 }
@@ -673,7 +675,7 @@ int lock_tsr(CUSTOM_MUTEX_p mutex) {
     syncro_flag = NO_RESOURCE_SYNCRO;
 
     // IRET (update current pc)
-    currentPC = sysStack;
+    currentPC = ss_pop(sysStack);
     return SUCCESSFUL;
 }
 
@@ -694,7 +696,7 @@ int unlock_tsr(CUSTOM_MUTEX_p mutex) {
     syncro_flag = NO_RESOURCE_SYNCRO;
 
     // IRET (update current pc)
-    currentPC = sysStack;
+    currentPC = ss_pop(sysStack);
     return SUCCESSFUL;
 }
 
@@ -720,7 +722,7 @@ int wait_tsr(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond) {
     syncro_flag = NO_RESOURCE_SYNCRO;
 
     // IRET (update current pc)
-    currentPC = sysStack;
+    currentPC = ss_pop(sysStack);
     return SUCCESSFUL;
 }
 
@@ -739,7 +741,7 @@ int signal_tsr(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond) {
     syncro_flag = NO_RESOURCE_SYNCRO;
 
     // IRET (update current pc)
-    currentPC = sysStack;
+    currentPC = ss_pop(sysStack);
     return SUCCESSFUL;
 }
 
@@ -1269,8 +1271,8 @@ int main() {
     }
 
     // Initialize Global Vars
-    currentPC = 0;
-    sysStack = 0;
+    sysStack = createSimpleStack();
+	currentPC = 0;
     iterationCount = 0;
     quantum_post_reset = 0;
     IOSR_1_finished = 0;
@@ -1302,5 +1304,6 @@ int main() {
 
     // free resources
     freeProcessQueues();
+	destructStack(sysStack);
 // TODO Add frees for syncro services vars and structs
 }
