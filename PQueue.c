@@ -1,11 +1,12 @@
 /*
 TCSS422 - Operating Systems
-Problem 4
+Final Project
 
 Group Members:
-Zira Cook
 Shaun Coleman
+Joshua Meigs
 */
+
 #include "PQueue.h"
 
 // Constructor to set memory for a Priority Queue struct

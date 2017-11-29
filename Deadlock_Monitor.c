@@ -1,3 +1,12 @@
+/*
+TCSS422 - Operating Systems
+Final Project
+
+Group Members:
+Shaun Coleman
+Joshua Meigs
+*/
+
 #include "Deadlock_Monitor.h"
 
 DL_GRAPH_p setupDLGraph(RESOURCE_PAIR_p pair) {

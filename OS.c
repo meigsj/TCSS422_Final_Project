@@ -1,9 +1,10 @@
 /*
 TCSS422 - Operating Systems
-Problem 4
+Final Project
+
 Group Members:
-Zira Cook
 Shaun Coleman
+Joshua Meigs
 */
 
 #include <time.h>
@@ -213,6 +214,8 @@ void * timer_thread(void * s) {
             pthread_cond_wait(&timer_cond, &timer_lock);
         }
         ISR_FINISHED = 0;
+
+        //TODO add locks for grabbing the timer and setting the timer
         ts.tv_nsec = timer;
     }
 }
@@ -373,7 +376,7 @@ int pseudoISR() {
     if (running) setPC(running, currentPC);
 
     // scheduler up call
-    scheduler(TIMER_INTERUPT, NULL);
+    scheduler(TIMER_INTERUPT, NULL, NULL, NULL);
 
     // Update Timer
     timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));
@@ -394,7 +397,7 @@ int IO_Interupt_Routine(int IO_interupt) {
     timer_check();
 
     // scheduler up call
-    scheduler(IO_interupt, NULL);
+    scheduler(IO_interupt, NULL, NULL, NULL);
 
     // IRET (update current pc)
     currentPC = sysStack;
@@ -426,7 +429,7 @@ int pseudoTSR(int trap_interupt) {
     }
 
     // scheduler up call
-    scheduler(trap_interupt, running);
+    scheduler(trap_interupt, running, NULL, NULL);
 
     // activate IO devices as needed
     pthread_mutex_lock(&IO_1_active_lock);
@@ -455,7 +458,7 @@ int pseudoTSR(int trap_interupt) {
 
 // Updated for problem 4
 // Function used to simulate the scheduler in an operating system
-int scheduler(int interupt, PCB_p running) {
+int scheduler(int interupt, PCB_p running, CUSTOM_MUTEX_p mutex, CUSTOM_COND_s cond) {
     // move newly created processes to the ready queue
     moveNewToReady();
 
@@ -488,6 +491,24 @@ int scheduler(int interupt, PCB_p running) {
         assert(running);
         dispatcherTrap(processes->IO_2_Processes, running);
         timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));
+        break;
+    case LOCK_INTERRUPT:
+        assert(running && mutex);
+        dispatcherLock(running, mutex);
+        timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));
+        break;
+    case UNLOCK_INTERRUPT:
+        assert(mutex);
+        dispatcherUnlock(mutex);
+        break;
+    case WAIT_INTERRUPT:
+        assert(running && cond);
+        dispatcherWait(running, cond);
+        timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));
+        break;
+    case SIGNAL_INTERRUPT:
+        assert(cond);
+        dispatcherSignal(cond);
         break;
     default:
         // error handling as needed
@@ -624,21 +645,20 @@ int dispatcherTrap(FIFOq_p IO_Queue, PCB_p running) {
 int lock_tsr(CUSTOM_MUTEX_p mutex) {
     PCB_p running = processes->runningProcess;
     setPC(running, currentPC);
-    if (trap_interupt == PCB_TERMINATED) {
-        setState(running, HALTED);
-        setTermination(running, time(NULL));
-    }
-    else {
+    
+    if (!mutex->owner) {
+        setState(running, INTERRUPTED);
+    } else {
         setState(running, WAITING);
     }
 
     timer_check();
     IO_check();
 
-    if (!mutex->owner) {
-        mutex->owner = running;
+    if (getState(running) == WAITING) {
+        scheduler(, running, mutex, NULL);
     } else {
-        scheduler(, );
+        mutex->owner = running;
     }
 
     syncro_flag = NO_RESOURCE_SYNCRO;
@@ -649,8 +669,9 @@ int lock_tsr(CUSTOM_MUTEX_p mutex) {
 }
 
 int unlock_tsr(CUSTOM_MUTEX_p mutex) {
-    PCB_p running = processes->runningProcess;
-    setPC(running, currentPC);
+
+    setPC(processes->runningProcess, currentPC);
+    setState(processes->runningProcess, INTERRUPTED);
 
     timer_check();
     IO_check();
@@ -658,7 +679,7 @@ int unlock_tsr(CUSTOM_MUTEX_p mutex) {
     if (q_is_empty(mutex->blocked)) {
         mutex->owner == NULL;
     } else {
-        scheduler(, );
+        scheduler(, NULL, mutex, NULL);
     }
 
     syncro_flag = NO_RESOURCE_SYNCRO;
@@ -672,13 +693,19 @@ int wait_tsr(CUSTOM_COND_p cond) {
     PCB_p running = processes->runningProcess;
     setPC(running, currentPC);
 
+    if (cond->state == COND_READY) {
+        setState(running, INTERRUPTED);
+    } else {
+        setState(running, WAITING);
+    }
+
     timer_check();
     IO_check();
 
-    if (cond->state == COND_READY) {
-        cond->state = COND_NOT_READY;
+    if (getState(running) == WAITING) {
+        scheduler(, running, NULL, cond);
     } else {
-        scheduler(, );
+        cond->state = COND_NOT_READY;
     }
 
     syncro_flag = NO_RESOURCE_SYNCRO;
@@ -689,8 +716,7 @@ int wait_tsr(CUSTOM_COND_p cond) {
 }
 
 int signal_tsr(CUSTOM_COND_p cond) {
-    PCB_p running = processes->runningProcess;
-    setPC(running, currentPC);
+    setPC(processes->runningProcess, currentPC);
 
     timer_check();
     IO_check();
@@ -698,7 +724,7 @@ int signal_tsr(CUSTOM_COND_p cond) {
     if (q_is_empty(cond->waiting)) {
         cond->state = COND_READY;
     } else {
-        scheduler(,);
+        scheduler(,NULL, NULL, cond);
     }
 
     syncro_flag = NO_RESOURCE_SYNCRO;
