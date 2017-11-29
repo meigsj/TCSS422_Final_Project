@@ -99,6 +99,12 @@ Shaun Coleman
 // A Constant used to test the io device's interrupt frequency
 #define IO_FREQ 10000
 
+// An enum used to denote which syncronization services was requested
+enum syncro_code { NO_RESOURCE_SYNCRO, LOCK_RESOURCE_1, UNLOCK_RESOURCE_1, LOCK_RESOURCE_2, UNLOCK_RESOURCE_2
+                    , SIGNAL_RESOURCE_1, WAIT_RESOURCE_1};
+
+enum code_wait_code {COND_NOT_READY, COND_READY};
+
 typedef struct process_queues {
     // all currently used process queues and the running process pcb
     FIFOq_p newProcesses;

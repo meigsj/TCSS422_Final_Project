@@ -1,9 +1,9 @@
-#include "OS.h"
 #pragma once
+#include "OS.h"
 #include <assert.h>
 
 #define DEADLOCK_FOUND -1
-#define NO_DEADLOCK_FOUND 1
+#define NO_DEADLOCK_FOUND 0
 #define MAX_SHARED_RESOURCE_EDGES 4
 
 struct dl_lock_node;

@@ -64,6 +64,9 @@ int total_io_processes;
 // A flag to signal that a TSR is in progress
 int trap_flag;
 
+// A flag to signal that a TSR is in progress
+int syncro_flag;
+
 // Updated for Problem 4
 // The top level of the OS simulator
 void * OS_Simulator(void *arg) {
@@ -111,8 +114,64 @@ void * OS_Simulator(void *arg) {
             pseudoTSR(trapFlag);
             printInterupt(trapFlag);
         }
+
+        // Check for Syncronization services
+        // TODO: BREAK INNER IF STATE INTO FUNCTIONS
+        syncro_flag = isAtSyncro(processes->runningProcess);
+        if (syncro_flag) {
+            int error_bad_pcb_for_syncro = 0;
+
+            printf("\nSyncronization Service Detected!\n");
+
+            if (getType(runningProcess) == CONPRO_PAIR) {
+                CP_PAIR_p pair = getPCPair(process->runningProcess);
+
+                switch (syncro_flag) {
+                    case LOCK_RESOURCE_1:
+                        lock_tsr(pair->mutex);
+                        break;
+                    case UNLOCK_RESOURCE_1:
+                        unlock_tsr(pair->mutex);
+                        break;
+                    case WAIT_RESOURCE_1:
+                        if (pair->producer == process->runningProcess) {
+                            wait_tsr(pair->consumed);
+                        } else {
+                            wait_tsr(pair->produced);
+                        }
+                        break;
+                    case SIGNAL_RESOURCE_1:
+                        if (pair->producer == process->runningProcess) {
+                            signal_tsr(pair->produced);
+                        } else {
+                            signal_tsr(pair->consumed);
+                        }
+                        break;
+                    default:
+                        break;
+               }
+            } else if (getType(runningProcess) == RESOURCE_PAIR) {
+                RESOURCE_PAIR pair = getResourcePair(process->runningProcess);
+                switch (syncro_flag) {
+                    case LOCK_RESOURCE_1:
+                    case LOCK_RESOURCE_2:
+                        lock_tsr(pair->mutex);
+                        break;
+                    case UNLOCK_RESOURCE_1:
+                    case UNLOCK_RESOURCE_2
+                        unlock_tsr(pair->mutex);
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                assert(error_bad_pcb_for_syncro);
+            }
+
+        }
         
         //check stop condition for the simulation
+        
         if (iterationCount >= HALT_CONDITION) {
             printf("---- HALTING SIMULATION ON ITERATION %d ----\n", iterationCount);
             pthread_mutex_lock(&global_shutdown_lock);
@@ -562,6 +621,141 @@ int dispatcherTrap(FIFOq_p IO_Queue, PCB_p running) {
     return SUCCESSFUL;
 }
 
+int lock_tsr(CUSTOM_MUTEX_p mutex) {
+    PCB_p running = processes->runningProcess;
+    setPC(running, currentPC);
+    if (trap_interupt == PCB_TERMINATED) {
+        setState(running, HALTED);
+        setTermination(running, time(NULL));
+    }
+    else {
+        setState(running, WAITING);
+    }
+
+    timer_check();
+    IO_check();
+
+    if (!mutex->owner) {
+        mutex->owner = running;
+    } else {
+        scheduler(, );
+    }
+
+    syncro_flag = NO_RESOURCE_SYNCRO;
+
+    // IRET (update current pc)
+    currentPC = sysStack;
+    return SUCCESSFUL;
+}
+
+int unlock_tsr(CUSTOM_MUTEX_p mutex) {
+    PCB_p running = processes->runningProcess;
+    setPC(running, currentPC);
+
+    timer_check();
+    IO_check();
+    
+    if (q_is_empty(mutex->blocked)) {
+        mutex->owner == NULL;
+    } else {
+        scheduler(, );
+    }
+
+    syncro_flag = NO_RESOURCE_SYNCRO;
+
+    // IRET (update current pc)
+    currentPC = sysStack;
+    return SUCCESSFUL;
+}
+
+int wait_tsr(CUSTOM_COND_p cond) {
+    PCB_p running = processes->runningProcess;
+    setPC(running, currentPC);
+
+    timer_check();
+    IO_check();
+
+    if (cond->state == COND_READY) {
+        cond->state = COND_NOT_READY;
+    } else {
+        scheduler(, );
+    }
+
+    syncro_flag = NO_RESOURCE_SYNCRO;
+
+    // IRET (update current pc)
+    currentPC = sysStack;
+    return SUCCESSFUL;
+}
+
+int signal_tsr(CUSTOM_COND_p cond) {
+    PCB_p running = processes->runningProcess;
+    setPC(running, currentPC);
+
+    timer_check();
+    IO_check();
+
+    if (q_is_empty(cond->waiting)) {
+        cond->state = COND_READY;
+    } else {
+        scheduler(trap_interupt, running);
+    }
+
+    syncro_flag = NO_RESOURCE_SYNCRO;
+
+    // IRET (update current pc)
+    currentPC = sysStack;
+    return SUCCESSFUL;
+}
+
+/*
+int simulate_mutex_lock(PCB_p process, CUSTOM_MUTEX_p mutex) {
+    if (!mutex->owner) {
+        mutex->owner = process;
+    }
+    else {
+        Node_p node = construct_Node();
+        initializeNode(node);
+        setNodePCB(node, process);
+        //Added node here so that p_enque would have a node passed in and not the PCB
+        // TODO: Need to be done in scheduler?
+        setState(process, WAITING);
+        q_enqueue(mutex->blocked, node);
+    }
+}
+
+int simulate_mutex_unlock(CUSTOM_MUTEX_p mutex) {
+    // TODO check for correctness
+    if (!mutex->owner && !q_is_empty(mutex->blocked)) {
+        // TODO: Need to be done in scheduler?
+        mutex->owner = q_dequeue(mutex->blocked);
+        setState(mutex->owner, READY);
+        //Added node here so that p_enque would have a node passed in and not the PCB
+        Node_p node = construct_Node();
+        initializeNode(node);
+        setNodePCB(node, mutex->owner);
+        p_enqueue(processes->readyProcesses, node);
+    }
+    else {
+        mutex->owner = NULL;
+    }
+}
+
+int simulate_cond_wait(PCB_p process, CUSTOM_COND_p cond) {
+    // TODO check state var?
+    Node_p node = construct_Node();
+    initializeNode(node);
+    setNodePCB(node, process);
+    //Added node here so that p_enque would have a node passed in and not the PCB
+    setState(process, WAITING);
+    q_enqueue(cond->waiting, node);
+}
+
+int simulate_cond_signal(PCB_p process, CUSTOM_COND_p cond) {
+    // move next process to ready (or all?)
+}
+*/
+
 // Added for problem 4
 // A function to check if the specified process is at an IO trap or is ready to terminate
 int isAtTrap(PCB_p pcb) {
@@ -582,6 +776,32 @@ int isAtTrap(PCB_p pcb) {
     }
     
     return 0;
+}
+
+// A function to check if the specified process is at a syncronization service request
+int isAtSyncro(PCB_p pcb) {
+    int type;
+
+    if (!pcb) return NO_RESOURCE_SYNCRO;
+    type = getType(pcb);
+    
+    if (type == CONPRO_PAIR) {
+        for (int i = 0; i < SYNCRO_SIZE; i++) {
+            if (currentPC == pcb->lock_1_pcs[i]) return LOCK_RESOURCE_1;
+            if (currentPC == pcb->unlock_1_pcs[i]) return UNLOCK_RESOURCE_1;
+            if (currentPC == pcb->wait_1_pcs[i]) return WAIT_RESOURCE_1;
+            if (currentPC == pcb->signal_1_pcs[i]) return SIGNAL_RESOURCE_1;
+        }
+    }
+
+    if (type == RESOURCE_PAIR) {
+        if (currentPC == pcb->lock_1_pcs[i]) return LOCK_RESOURCE_1;
+        if (currentPC == pcb->unlock_1_pcs[i]) return UNLOCK_RESOURCE_1;
+        if (currentPC == pcb->lock_2_pcs[i]) return LOCK_RESOURCE_2;
+        if (currentPC == pcb->unlock_2_pcs[i]) return UNLOCK_RESOURCE_2;
+    }
+
+    return NO_RESOURCE_SYNCRO;
 }
 
 // Function used to simulate the creation of new processes
@@ -878,50 +1098,7 @@ int simulateProgramStep() {
     return SUCCESSFUL;
 }
 
-int simulate_mutex_lock(PCB_p process, CUSTOM_MUTEX_p mutex) {
-    if (!mutex->owner) {
-        mutex->owner = process;
-    } else {
-        Node_p node = construct_Node();
-        initializeNode(node);
-        setNodePCB(node, process);
-        //Added node here so that p_enque would have a node passed in and not the PCB
-        // TODO: Need to be done in scheduler?
-        setState(process, WAITING);
-        q_enqueue(mutex->blocked, node);
-    }
-}
 
-int simulate_mutex_unlock(CUSTOM_MUTEX_p mutex) {
-    // TODO check for correctness
-    if (!mutex->owner && !q_is_empty(mutex->blocked)) {
-
-        // TODO: Need to be done in scheduler?
-        mutex->owner = q_dequeue(mutex->blocked);
-        setState(mutex->owner, READY);
-        //Added node here so that p_enque would have a node passed in and not the PCB
-        Node_p node = construct_Node();
-        initializeNode(node);
-        setNodePCB(node, mutex->owner);
-        p_enqueue(processes->readyProcesses, node);
-    } else {
-        mutex->owner = NULL;
-    }
-}
-
-int simulate_cond_wait(PCB_p process, CUSTOM_COND_p cond) {
-    // TODO check state var?
-    Node_p node = construct_Node();
-    initializeNode(node);
-    setNodePCB(node, process);
-    //Added node here so that p_enque would have a node passed in and not the PCB
-    setState(process, WAITING);
-    q_enqueue(cond->waiting, node);
-}
-
-int simulate_cond_signal(PCB_p process, CUSTOM_COND_p cond) {
-    // move next process to ready (or all?)
-}
 
 // Moves proceeses from the new queue to the ready queue
 int moveNewToReady() {
@@ -1048,6 +1225,7 @@ int main() {
     setRandomMaxPC(processes->runningProcess);
     setRandomIOTraps(processes->runningProcess);
     trap_flag = 0;
+    syncro_flag = 0;
 
     for (int i = 0; i < INIT_CREATE_CALLS; i++) {
         createNewProcesses();
