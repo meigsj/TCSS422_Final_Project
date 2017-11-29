@@ -698,7 +698,7 @@ int signal_tsr(CUSTOM_COND_p cond) {
     if (q_is_empty(cond->waiting)) {
         cond->state = COND_READY;
     } else {
-        scheduler(trap_interupt, running);
+        scheduler(,);
     }
 
     syncro_flag = NO_RESOURCE_SYNCRO;
@@ -708,41 +708,25 @@ int signal_tsr(CUSTOM_COND_p cond) {
     return SUCCESSFUL;
 }
 
-/*
-int simulate_mutex_lock(PCB_p process, CUSTOM_MUTEX_p mutex) {
-    if (!mutex->owner) {
-        mutex->owner = process;
-    }
-    else {
-        Node_p node = construct_Node();
-        initializeNode(node);
-        setNodePCB(node, process);
-        //Added node here so that p_enque would have a node passed in and not the PCB
-        // TODO: Need to be done in scheduler?
-        setState(process, WAITING);
-        q_enqueue(mutex->blocked, node);
-    }
+int dispatcherLock(PCB_p process, CUSTOM_MUTEX_p mutex) {
+    Node_p node = construct_Node();
+    initializeNode(node);
+    setNodePCB(node, process);
+    setState(process, WAITING);
+    q_enqueue(mutex->blocked, node);
 }
 
-int simulate_mutex_unlock(CUSTOM_MUTEX_p mutex) {
-    // TODO check for correctness
-    if (!mutex->owner && !q_is_empty(mutex->blocked)) {
-        // TODO: Need to be done in scheduler?
-        mutex->owner = q_dequeue(mutex->blocked);
-        setState(mutex->owner, READY);
-        //Added node here so that p_enque would have a node passed in and not the PCB
-        Node_p node = construct_Node();
-        initializeNode(node);
-        setNodePCB(node, mutex->owner);
-        p_enqueue(processes->readyProcesses, node);
-    }
-    else {
-        mutex->owner = NULL;
-    }
+int dispatcherUnlock(CUSTOM_MUTEX_p mutex) {
+    mutex->owner = q_dequeue(mutex->blocked);
+    setState(mutex->owner, READY);
+    //Added node here so that p_enque would have a node passed in and not the PCB
+    Node_p node = construct_Node();
+    initializeNode(node);
+    setNodePCB(node, mutex->owner);
+    p_enqueue(processes->readyProcesses, node);
 }
 
-int simulate_cond_wait(PCB_p process, CUSTOM_COND_p cond) {
-    // TODO check state var?
+int dispatcherWait(PCB_p process, CUSTOM_COND_p cond) {
     Node_p node = construct_Node();
     initializeNode(node);
     setNodePCB(node, process);
@@ -751,10 +735,24 @@ int simulate_cond_wait(PCB_p process, CUSTOM_COND_p cond) {
     q_enqueue(cond->waiting, node);
 }
 
-int simulate_cond_signal(PCB_p process, CUSTOM_COND_p cond) {
-    // move next process to ready (or all?)
+int dispatcherSignal(CUSTOM_COND_p cond) {
+    Node_p node = construct_Node();
+    PCB_p wokePcb;
+    int priority;
+
+    initializeNode(node);
+
+    // dequeue from IO queue
+    wokePcb = q_dequeue(cond->waiting);
+
+    // update state to ready
+    setState(wokePcb, READY);
+
+    //enqueue to ready queue
+    setNodePCB(node, wokePcb);
+    p_enqueue(processes->readyProcesses, node);
 }
-*/
+
 
 // Added for problem 4
 // A function to check if the specified process is at an IO trap or is ready to terminate
