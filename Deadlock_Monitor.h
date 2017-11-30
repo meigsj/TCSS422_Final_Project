@@ -1,4 +1,14 @@
+/*
+TCSS422 - Operating Systems
+Final Project
+
+Group Members:
+Shaun Coleman
+Joshua Meigs
+*/
+
 #pragma once
+#include "OS.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>

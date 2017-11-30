@@ -1,10 +1,10 @@
 /*
 TCSS422 - Operating Systems
-Problem 4
+Final Project
 
 Group Members:
-Zira Cook
 Shaun Coleman
+Joshua Meigs
 */
 #pragma once
 #include <stdio.h>
@@ -13,28 +13,11 @@ Shaun Coleman
 #include "FIFOq.h"
 #include "pcb.h"
 #include "PQueue.h"
+#include "Simple_Stack.h"
 #include "Deadlock_Monitor.h"
 
-// value to denote current interupt is a timer interupt
-#define TIMER_INTERUPT 1
-
-// value to denote current interupt is a IO 1 interupt
-#define IO_1_INTERUPT 2
-
-// value to denote current interupt is a IO 2 interupt
-#define IO_2_INTERUPT 3
-
-// value to denote a TRAP call to IO 1
-#define IO_1_TRAP 4
-
-// value to denote a TRAP call to IO 2
-#define IO_2_TRAP 5
-
-// value to denote a program was halted
-#define PCB_TERMINATED 6
-
 // value to denote no interupt or trap detected
-#define NO_INTERUPT 0
+#define  0
 
 // value to denote a successful function return
 #define SUCCESSFUL 0
@@ -99,6 +82,17 @@ Shaun Coleman
 
 // A Constant used to test the io device's interrupt frequency
 #define IO_FREQ 10000
+
+// An enum used to denote which interrupt is occuring for the scheduler
+enum interrupt_type { NO_INTERUPT, TIMER_INTERUPT, IO_1_INTERUPT, IO_2_INTERUPT, IO_1_TRAP
+    , IO_2_TRAP, PCB_TERMINATED, LOCK_INTERRUPT, UNLOCK_INTERRUPT, WAIT_INTERRUPT, SIGNAL_INTERRUPT
+};
+
+// An enum used to denote which syncronization services was requested
+enum syncro_code { NO_RESOURCE_SYNCRO, LOCK_RESOURCE_1, UNLOCK_RESOURCE_1, LOCK_RESOURCE_2, UNLOCK_RESOURCE_2
+                    , SIGNAL_RESOURCE_1, WAIT_RESOURCE_1};
+
+enum code_wait_code {COND_NOT_READY, COND_READY};
 
 typedef struct process_queues {
     // all currently used process queues and the running process pcb
@@ -166,7 +160,7 @@ typedef CP_PAIR_s* CP_PAIR_p;
 int pseudoISR();
 
 // A function to simulate an OS scheduler
-int scheduler(int, PCB_p);
+int scheduler(int, PCB_p, CUSTOM_MUTEX_p, CUSTOM_COND_p);
 
 // A function to simulate a dispatcher for timer interrupts
 int dispatcher();
@@ -240,14 +234,6 @@ CP_PAIR_p getPCPair(PCB_p);
 
 CP_PAIR_p getPCPair(PCB_p);
 
-int simulate_mutex_lock(PCB_p, CUSTOM_MUTEX_p);
-
-int simulate_mutex_unlock(CUSTOM_MUTEX_p);
-
-int simulate_cond_wait(PCB_p, CUSTOM_COND_p);
-
-int simulate_cond_signal(PCB_p, CUSTOM_COND_p);
-
 int createIOProcess();
 
 int createComputeIntensiveProcess();
@@ -261,3 +247,20 @@ void initialize_CP_Pair(CP_PAIR_p);
 void timer_check();
 
 void IO_check();
+
+int lock_tsr(CUSTOM_MUTEX_p);
+
+int unlock_tsr(CUSTOM_MUTEX_p mutex);
+
+int wait_tsr(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond);
+
+int signal_tsr(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond);
+
+int dispatcherLock(PCB_p process, CUSTOM_MUTEX_p mutex);
+
+int dispatcherUnlock(CUSTOM_MUTEX_p mutex);
+
+int dispatcherWait(PCB_p process, CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond);
+
+int dispatcherSignal(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond);
+
