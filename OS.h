@@ -6,13 +6,14 @@ Group Members:
 Zira Cook
 Shaun Coleman
 */
-
+#pragma once
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
 #include "FIFOq.h"
 #include "pcb.h"
 #include "PQueue.h"
+#include "Deadlock_Monitor.h"
 
 // value to denote current interupt is a timer interupt
 #define TIMER_INTERUPT 1
@@ -129,14 +130,7 @@ typedef struct io_device {
 
 typedef IO_DEVICE_s* IO_DEVICE_p;
 
-typedef struct custom_mutex {
-	// NULL if no process holds the mutex, otherwise the pointer to the process
-	PCB_p owner;
-	// A FIFO_q of processes blocked waiting for the mutex
-	FIFOq_p blocked;
-} CUSTOM_MUTEX_s;
 
-typedef CUSTOM_MUTEX_s* CUSTOM_MUTEX_p;
 
 typedef struct custom_cond {
 	// int representing the state
@@ -163,17 +157,7 @@ typedef struct cp_pair {
 
 typedef CP_PAIR_s* CP_PAIR_p;
 
-typedef struct resource_pair {
-	// pointers to the processes in the pair
-	PCB_p process_1;
-	PCB_p process_2;
 
-	// Syncronization vars
-	CUSTOM_MUTEX_p mutex_1;
-	CUSTOM_MUTEX_p mutex_2;
-} RESOURCE_PAIR_s;
-
-typedef RESOURCE_PAIR_s* RESOURCE_PAIR_p;
 
 // A function to act as the main loop for the simulator
 //void OS_Simulator();

@@ -1,9 +1,14 @@
-#include "OS.h"
 #pragma once
 #include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include "FIFOq.h"
+#include "pcb.h"
+#include "PQueue.h"
 
 #define DEADLOCK_FOUND -1
-#define NO_DEADLOCK_FOUND 1
+#define NO_DEADLOCK_FOUND 0
 #define MAX_SHARED_RESOURCE_EDGES 4
 
 struct dl_lock_node;
@@ -14,6 +19,28 @@ typedef struct dl_proc_node {
 } DL_PROC_NODE_s;
 
 typedef DL_PROC_NODE_s* DL_PROC_NODE_p;
+
+typedef struct custom_mutex {
+	// NULL if no process holds the mutex, otherwise the pointer to the process
+	PCB_p owner;
+	// A FIFO_q of processes blocked waiting for the mutex
+	FIFOq_p blocked;
+} CUSTOM_MUTEX_s;
+
+typedef CUSTOM_MUTEX_s* CUSTOM_MUTEX_p;
+
+
+typedef struct resource_pair {
+	// pointers to the processes in the pair
+	PCB_p process_1;
+	PCB_p process_2;
+
+	// Syncronization vars
+	CUSTOM_MUTEX_p mutex_1;
+	CUSTOM_MUTEX_p mutex_2;
+} RESOURCE_PAIR_s;
+
+typedef RESOURCE_PAIR_s* RESOURCE_PAIR_p;
 
 typedef struct dl_lock_node {
 	CUSTOM_MUTEX_p lock;

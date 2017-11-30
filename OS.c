@@ -10,7 +10,6 @@ Shaun Coleman
 #include <pthread.h>
 #include <assert.h>
 #include "OS.h"
-#include <assert.h>
 unsigned int sysStack;
 unsigned int currentPC;
 unsigned int iterationCount;
@@ -26,6 +25,8 @@ int IO_2_counter;
 
 int IO_1_activated;
 int IO_2_activated;
+int total_deadlock_pairs;
+int total_terminated;
 
 //Tests
 pthread_mutex_t timer_lock = PTHREAD_MUTEX_INITIALIZER;
@@ -77,14 +78,17 @@ void * OS_Simulator(void *arg) {
 
     pthread_t the_io_2_thread;
     pthread_create(&the_io_2_thread, NULL, io2_thread, NULL);
-
-    // Main Loop
+	int deadlocks[SHARED_RESOURCE_MAX] = {0};
+	int i = 0;
+	// Main Loop
     // One cycle is one instruction
-    for (; ; ) { // for spider
+    for (;;) { // for spider
         int trapFlag = 0;
         // update counters
         iterationCount++;
         quantum_post_reset++;
+
+		//DOES DEADLOCK CHECK
 
         // increments Current PC and checks MAX_PC of the running PCB
         simulateProgramStep();
@@ -93,17 +97,14 @@ void * OS_Simulator(void *arg) {
         if ((iterationCount % NEW_PROCESS_ITERATION) == 0) {
             createNewProcesses(processes->newProcesses);
         }
-        //In the CPU loop use the non-blocking mutex_trylock() call so that the loop doesn't block itself waiting for the timer signal
-        //// TO REMOVE AND REPLACE WITH CHECK CONDITION FOR TIMER INTERUPT
-        // Trigger timer and check for timer interupt
-         //WAS: timerDownCounter() == TIMER_INTERUPT
+        ////  TO REMOVE AND REPLACE WITH CHECK CONDITION FOR TIMER INTERUPT
+        //Trigger timer and check for timer interupt
         timer_check();
 
         // Trigger IO counters and check for IO interupts
         IO_check();
 
         // Check for Traps (termination is checked as a trap here too)
-       
         trapFlag = isAtTrap(processes->runningProcess);
         if (trapFlag == IO_1_TRAP || trapFlag == IO_2_TRAP || trapFlag == PCB_TERMINATED) {
             printf("\nTrap Detected!\n");
@@ -111,7 +112,32 @@ void * OS_Simulator(void *arg) {
             pseudoTSR(trapFlag);
             printInterupt(trapFlag);
         }
-        
+
+		//getType(processes->runningProcess)
+		//switch (getType(processes->runningProcess)) {
+		//	case IO: printf("\nIO\n");
+		//		break;
+		//	case COMP_INTENSIVE: printf("\nCOMP INTENSE\n");
+		//		break;
+		//	case CONPRO_PAIR: printf("\nCP PAIR\n");
+		//		break;
+		//	case RESOURCE_PAIR: printf("\nRESOURCE PAIR\n");
+		//		break;
+		//	default:printf("\nNONE OF THE ABOVE\n");
+		//		break;
+		//}
+		//Check for Deadlock
+		//if (getType(processes->runningProcess) == RESOURCE_PAIR) {
+		//	int* tester[SHARED_RESOURCE_MAX];
+		//	int i = 0;
+		//	testResourcePairs(resource_pairs, tester, total_resource_pairs);
+		//	for (i = 0; i < SHARED_RESOURCE_MAX; i++) {
+		//		if (tester[i] == 0) {
+		//			printf("\nDEADLOCK FOUND! On: %d\n", i);
+		//		}
+		//	}
+		//}
+        //
         //check stop condition for the simulation
         if (iterationCount >= HALT_CONDITION) {
             printf("---- HALTING SIMULATION ON ITERATION %d ----\n", iterationCount);
@@ -120,7 +146,8 @@ void * OS_Simulator(void *arg) {
             pthread_mutex_unlock(&global_shutdown_lock);
             break;
         }
-        
+
+		//check for processes type
     }
 
 }
@@ -448,9 +475,9 @@ int scheduler(int interupt, PCB_p running) {
         resetPriority(processes->readyProcesses);
         q_resetPriority(processes->IO_1_Processes);
         q_resetPriority(processes->IO_2_Processes);
-        setPriority(processes->runningProcess, 0);
-
+		setPriority(processes->runningProcess, 0);
         quantum_post_reset = 0;
+		//check_for_deadlock();
     }
 
     return SUCCESSFUL;
@@ -471,6 +498,7 @@ int dispatcher() {
             // enqueue to zombieProcesses
             setNodePCB(node, processes->runningProcess);
             q_enqueue(processes->zombieProcesses, node);
+			total_terminated++;
 
             if (getType(processes->runningProcess) == IO) {
                 total_io_processes--;
@@ -1005,8 +1033,62 @@ void freeProcessQueues() {
     destruct_FIFOq(processes->IO_2_Processes);
     destruct_PQueue(processes->readyProcesses);
     pcbDestruct(processes->runningProcess);
-
     free(processes);
+}
+
+int initialize_test_resource_pairs() {
+	createSharedResourcePair();
+	resource_pairs[(total_resource_pairs - 1)]->mutex_1->owner = resource_pairs[(total_resource_pairs - 1)]->process_2;
+	resource_pairs[(total_resource_pairs - 1)]->mutex_2->owner = resource_pairs[(total_resource_pairs - 1)]->process_1;
+	Node_p pro_node = construct_Node();
+	initializeNode(pro_node);
+	setNodePCB(pro_node, resource_pairs[(total_resource_pairs - 1)]->process_1);
+	Node_p con_node = construct_Node();
+	initializeNode(con_node);
+	setNodePCB(con_node, resource_pairs[(total_resource_pairs - 1)]->process_2);
+	q_enqueue(resource_pairs[(total_resource_pairs - 1)]->mutex_1->blocked, pro_node);
+	q_enqueue(resource_pairs[(total_resource_pairs - 1)]->mutex_2->blocked, con_node);
+}
+
+void destruct_Resource_Pair(RESOURCE_PAIR_p the_pair) {
+	destruct_Custom_Mutex(the_pair->mutex_1);
+	destruct_Custom_Mutex(the_pair->mutex_2);
+	free(the_pair);
+}
+
+void destruct_CP_Pair(CP_PAIR_p pair) {
+	destruct_Custom_Mutex(pair->mutex);
+	destruct_Custom_Cond(pair->produced);
+	destruct_Custom_Cond(pair->consumed);
+	free(pair);
+}
+
+void destruct_Custom_Mutex(CUSTOM_MUTEX_p mutex) {
+	destruct_FIFOq(mutex->blocked);
+	free(mutex);
+}
+
+void destruct_Custom_Cond(CUSTOM_COND_p cond) {
+	destruct_FIFOq(cond->waiting);
+	free(cond);
+}
+
+void check_for_deadlock() {
+	int deadlocks[SHARED_RESOURCE_MAX] = { 0,0,0,0,0,0,0,0,0,0 };
+	int deadlock_amount = 0;
+	int i = 0;
+	testResourcePairs(resource_pairs, deadlocks, total_resource_pairs);
+	for (i = 0; i < total_resource_pairs; i++) {
+		if (deadlocks[i] == -1) { // MAGIC NUMBER
+			printf("\nDeadlock found at: %d\nWith: %d", i, resource_pairs[i]);
+			destruct_Resource_Pair(resource_pairs[i]);
+			resource_pairs[i] = resource_pairs[total_resource_pairs - 1];
+			deadlocks[i] = deadlocks[total_resource_pairs - 1];
+			deadlock_amount++;
+			total_resource_pairs--;
+			i--;
+		}
+	}
 }
 
 int main() {
@@ -1016,8 +1098,11 @@ int main() {
     // Seed RNG
     srand(time(NULL));
 
+
+
     // Initialize Queues
     initializeProcessQueues();
+
 
 
     // Added for Problem 3
@@ -1040,6 +1125,9 @@ int main() {
     IO_1_activated = 0;
     IO_2_activated = 0;
     total_cp_pairs = 0;
+	total_resource_pairs = 0;
+	total_deadlock_pairs = 0;
+	total_terminated = 0;
     timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));
     // create starting processes
     // set a process to running
@@ -1048,6 +1136,15 @@ int main() {
     setRandomMaxPC(processes->runningProcess);
     setRandomIOTraps(processes->runningProcess);
     trap_flag = 0;
+
+	//Test Correctness of the Deadlock Monitor
+	//initialize_test_resource_pairs();
+	//createSharedResourcePair();
+	//initialize_test_resource_pairs();
+	//createSharedResourcePair();
+	//initialize_test_resource_pairs();
+	//check_for_deadlock();
+
 
     for (int i = 0; i < INIT_CREATE_CALLS; i++) {
         createNewProcesses();
