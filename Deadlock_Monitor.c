@@ -1,3 +1,12 @@
+/*
+TCSS422 - Operating Systems
+Final Project
+
+Group Members:
+Shaun Coleman
+Joshua Meigs
+*/
+
 #include "Deadlock_Monitor.h"
 
 DL_GRAPH_p setupDLGraph(RESOURCE_PAIR_p pair) {
@@ -34,11 +43,9 @@ DL_GRAPH_p setupDLGraph(RESOURCE_PAIR_p pair) {
 
 void connectDLGraph(DL_GRAPH_p graph) {
     PROC_LIST_NODE_p procs = graph->proc_head;
-
     while (procs) {
         LOCK_LIST_NODE_p locks = graph->lock_head;
-        
-        while (locks) {
+        while (locks) {		
             if (locks->lock_node->lock->owner == procs->proc_node->process) {
                 procs->proc_node->owns = locks->lock_node;
                 graph->edge_count++;

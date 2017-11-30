@@ -1,17 +1,18 @@
 /*
 TCSS422 - Operating Systems
-Problem 4
+Final Project
+
 Group Members:
-Zira Cook
 Shaun Coleman
+Joshua Meigs
 */
 
 #include <time.h>
 #include <pthread.h>
 #include <assert.h>
 #include "OS.h"
-#include <assert.h>
-unsigned int sysStack;
+
+SIMPLE_STACK_p sysStack;
 unsigned int currentPC;
 unsigned int iterationCount;
 unsigned int quantum_post_reset;
@@ -26,6 +27,8 @@ int IO_2_counter;
 
 int IO_1_activated;
 int IO_2_activated;
+int total_deadlock_pairs;
+int total_terminated;
 
 //Tests
 pthread_mutex_t timer_lock = PTHREAD_MUTEX_INITIALIZER;
@@ -64,6 +67,9 @@ int total_io_processes;
 // A flag to signal that a TSR is in progress
 int trap_flag;
 
+// A flag to signal that a TSR is in progress
+int syncro_flag;
+
 // Updated for Problem 4
 // The top level of the OS simulator
 void * OS_Simulator(void *arg) {
@@ -77,14 +83,17 @@ void * OS_Simulator(void *arg) {
 
     pthread_t the_io_2_thread;
     pthread_create(&the_io_2_thread, NULL, io2_thread, NULL);
-
-    // Main Loop
+	int deadlocks[SHARED_RESOURCE_MAX] = {0};
+	int i = 0;
+	// Main Loop
     // One cycle is one instruction
-    for (; ; ) { // for spider
+    for (;;) { // for spider
         int trapFlag = 0;
         // update counters
         iterationCount++;
         quantum_post_reset++;
+
+		//DOES DEADLOCK CHECK
 
         // increments Current PC and checks MAX_PC of the running PCB
         simulateProgramStep();
@@ -93,26 +102,94 @@ void * OS_Simulator(void *arg) {
         if ((iterationCount % NEW_PROCESS_ITERATION) == 0) {
             createNewProcesses(processes->newProcesses);
         }
-        //In the CPU loop use the non-blocking mutex_trylock() call so that the loop doesn't block itself waiting for the timer signal
-        //// TO REMOVE AND REPLACE WITH CHECK CONDITION FOR TIMER INTERUPT
-        // Trigger timer and check for timer interupt
-         //WAS: timerDownCounter() == TIMER_INTERUPT
+        ////  TO REMOVE AND REPLACE WITH CHECK CONDITION FOR TIMER INTERUPT
+        //Trigger timer and check for timer interupt
         timer_check();
 
         // Trigger IO counters and check for IO interupts
         IO_check();
 
         // Check for Traps (termination is checked as a trap here too)
-       
         trapFlag = isAtTrap(processes->runningProcess);
         if (trapFlag == IO_1_TRAP || trapFlag == IO_2_TRAP || trapFlag == PCB_TERMINATED) {
             printf("\nTrap Detected!\n");
-            sysStack = currentPC;
+            ss_push(sysStack, currentPC);
             pseudoTSR(trapFlag);
             printInterupt(trapFlag);
         }
+
+        // Check for Syncronization services
+        // TODO: BREAK INNER IF STATE INTO FUNCTIONS
+        syncro_flag = isAtSyncro(processes->runningProcess);
+        if (syncro_flag) {
+            int error_bad_pcb_for_syncro = 0;
+
+            printf("\nSyncronization Service Detected!\n");
+			ss_push(sysStack, currentPC);
+
+            if (getType(processes->runningProcess) == CONPRO_PAIR) {
+                CP_PAIR_p pair = getPCPair(processes->runningProcess);
+
+               switch (syncro_flag) {
+                    case LOCK_RESOURCE_1:
+						printf("\nProcess %d requests lock\n", processes->runningProcess->pid);
+                        lock_tsr(pair->mutex);
+                        break;
+                    case UNLOCK_RESOURCE_1:
+						printf("\nProcess %d releases lock\n", processes->runningProcess->pid);
+                        unlock_tsr(pair->mutex);
+                        break;
+                    case WAIT_RESOURCE_1:
+                        if (pair->producer == processes->runningProcess) {
+							printf("\nProducer %d calls wait for consumed.\n", pair->producer->pid);
+                            wait_tsr(pair->mutex, pair->consumed);
+                        } else {
+							printf("\nConsumer %d calls wait for produced.\n", pair->consumer->pid);
+                            wait_tsr(pair->mutex, pair->produced);
+                        }
+                        break;
+                    case SIGNAL_RESOURCE_1:
+                        if (pair->producer == processes->runningProcess) {
+							pair->counter++;
+							printf("\nProducer %d incremented counter to %d.\n", pair->producer->pid, pair->counter);
+							signal_tsr(pair->mutex, pair->produced);
+							printf("\nProducer %d signals produced.\n", pair->producer->pid);
+                        } else {
+							printf("\nConsumer %d: Counter is %d.\n", pair->consumer->pid, pair->counter);
+                            signal_tsr(pair->mutex, pair->consumed);
+							printf("\nConsumer %d signals consumed.\n", pair->consumer->pid);
+                        }
+                        break;
+                    default:
+                        break;
+               }
+            } else if (getType(processes->runningProcess) == RESOURCE_PAIR) {
+				RESOURCE_PAIR_p pair = getResourcePair(processes->runningProcess);
+				switch (syncro_flag) {
+				case LOCK_RESOURCE_1:
+					lock_tsr(pair->mutex_1);
+					break;
+				case LOCK_RESOURCE_2:
+					lock_tsr(pair->mutex_2);
+					break;
+				case UNLOCK_RESOURCE_1:
+					unlock_tsr(pair->mutex_1);
+					break;
+				case UNLOCK_RESOURCE_2:
+						unlock_tsr(pair->mutex_2);
+						break;
+					default:
+						break;
+				}
+			}
+			else {
+				assert(error_bad_pcb_for_syncro);
+			}
+
+        }
         
         //check stop condition for the simulation
+        
         if (iterationCount >= HALT_CONDITION) {
             printf("---- HALTING SIMULATION ON ITERATION %d ----\n", iterationCount);
             pthread_mutex_lock(&global_shutdown_lock);
@@ -120,21 +197,12 @@ void * OS_Simulator(void *arg) {
             pthread_mutex_unlock(&global_shutdown_lock);
             break;
         }
-        
+
+		//check for processes type
     }
 
 }
 
-
-/*
-The timer is an independent thread that puts itself to sleep for some number of milliseconds (the standard sleep function in Linux is in seconds so use the nanosleep() function (time.h)
--you may need to experiment with how many the timer should sleep to approximate a single quantum). When it wakes up it will need to "signal" the CPU thread that an interrupt has
-occurred through the use of a mutex. In the CPU loop use the non-blocking mutex_trylock() call so that the loop doesn't block itself waiting for the timer signal.
-After throwing  the  interrupt  signal  it  puts  itself  to  sleep  again  for  the  designated  quantum.  The  timer  has  the
-highest priority with respect to interrupt processing. It must be accommodated before any I/O interrupt. If an  I/O  interrupt  is  processing  when  a
-timer interrupt occurs  you  should  call the timer  pseudo_ISR  from inside the I/O pseudo_ISR to simulate these priority relation
-in os change timer to check for trylock
-*/
 void * timer_thread(void * s) {
 
     struct timespec ts;
@@ -154,6 +222,8 @@ void * timer_thread(void * s) {
             pthread_cond_wait(&timer_cond, &timer_lock);
         }
         ISR_FINISHED = 0;
+
+        //TODO add locks for grabbing the timer and setting the timer
         ts.tv_nsec = timer;
     }
 }
@@ -252,7 +322,7 @@ void timer_check() {
         int state = RUNNING;
         if (processes->runningProcess) state = getState(processes->runningProcess);
         // Timer interupt
-        sysStack = currentPC;
+        ss_push(sysStack, currentPC);
 
         pseudoISR();
         ISR_FINISHED = 1;
@@ -271,7 +341,7 @@ void timer_check() {
 void IO_check() {
     if (IO_1_activated && pthread_mutex_trylock(&IO_1_lock) == 0) {
         printf("\nIO1 Interrupt Detected!\n");
-        sysStack = currentPC;
+        ss_push(sysStack,currentPC);
         IO_Interupt_Routine(IO_1_INTERUPT);
         pthread_mutex_lock(&IO_1_global_lock);
         if (q_is_empty(processes->IO_1_Processes)) {
@@ -286,7 +356,7 @@ void IO_check() {
 
     if (IO_2_activated && pthread_mutex_trylock(&IO_2_lock) == 0) {
         printf("\nIO2 Interrupt Detected!\n");
-        sysStack = currentPC;
+		ss_push(sysStack, currentPC);
         IO_Interupt_Routine(IO_2_INTERUPT);
         pthread_mutex_lock(&IO_2_global_lock);
         if (q_is_empty(processes->IO_2_Processes)) {
@@ -314,12 +384,12 @@ int pseudoISR() {
     if (running) setPC(running, currentPC);
 
     // scheduler up call
-    scheduler(TIMER_INTERUPT, NULL);
+    scheduler(TIMER_INTERUPT, NULL, NULL, NULL);
 
     // Update Timer
     timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));
     // IRET (update current pc)
-    currentPC = sysStack;
+    currentPC = ss_pop(sysStack);
     return SUCCESSFUL;
 }
 
@@ -335,10 +405,10 @@ int IO_Interupt_Routine(int IO_interupt) {
     timer_check();
 
     // scheduler up call
-    scheduler(IO_interupt, NULL);
+    scheduler(IO_interupt, NULL, NULL, NULL);
 
     // IRET (update current pc)
-    currentPC = sysStack;
+    currentPC = ss_pop(sysStack);
     return SUCCESSFUL;
 }
 
@@ -367,7 +437,7 @@ int pseudoTSR(int trap_interupt) {
     }
 
     // scheduler up call
-    scheduler(trap_interupt, running);
+    scheduler(trap_interupt, running, NULL, NULL);
 
     // activate IO devices as needed
     pthread_mutex_lock(&IO_1_active_lock);
@@ -390,13 +460,13 @@ int pseudoTSR(int trap_interupt) {
 
     trap_flag = 0;
     // IRET (update current pc)
-    currentPC = sysStack;
+    currentPC = ss_pop(sysStack);
     return SUCCESSFUL;
 }
 
 // Updated for problem 4
 // Function used to simulate the scheduler in an operating system
-int scheduler(int interupt, PCB_p running) {
+int scheduler(int interupt, PCB_p running, CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond) {//WAS COND_s
     // move newly created processes to the ready queue
     moveNewToReady();
 
@@ -430,6 +500,24 @@ int scheduler(int interupt, PCB_p running) {
         dispatcherTrap(processes->IO_2_Processes, running);
         timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));
         break;
+    case LOCK_INTERRUPT:
+        assert(running && mutex);
+        dispatcherLock(running, mutex);
+        timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));
+        break;
+    case UNLOCK_INTERRUPT:
+        assert(mutex);
+        dispatcherUnlock(mutex);
+        break;
+    case WAIT_INTERRUPT:
+        assert(running && mutex && cond);
+        dispatcherWait(running, mutex, cond);
+        timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));
+        break;
+    case SIGNAL_INTERRUPT:
+        assert(mutex && cond);
+        dispatcherSignal(mutex, cond);
+        break;
     default:
         // error handling as needed
         break;
@@ -448,9 +536,9 @@ int scheduler(int interupt, PCB_p running) {
         resetPriority(processes->readyProcesses);
         q_resetPriority(processes->IO_1_Processes);
         q_resetPriority(processes->IO_2_Processes);
-        setPriority(processes->runningProcess, 0);
-
+		setPriority(processes->runningProcess, 0);
         quantum_post_reset = 0;
+		check_for_deadlock();
     }
 
     return SUCCESSFUL;
@@ -463,7 +551,7 @@ int dispatcher() {
     initializeNode(node);
     
     // update context
-    setPC(processes->runningProcess, sysStack);
+    setPC(processes->runningProcess, ss_pop(sysStack));
     
     // check the state of the running proccess to correctly switch contexts
     switch (getState(processes->runningProcess)) {
@@ -471,6 +559,7 @@ int dispatcher() {
             // enqueue to zombieProcesses
             setNodePCB(node, processes->runningProcess);
             q_enqueue(processes->zombieProcesses, node);
+			total_terminated++;
 
             if (getType(processes->runningProcess) == IO) {
                 total_io_processes--;
@@ -510,7 +599,7 @@ int dispatcher() {
     // set state
     setState(processes->runningProcess, RUNNING);
     
-    sysStack = getPC(processes->runningProcess);
+    ss_push(sysStack, getPC(processes->runningProcess));
 
     return SUCCESSFUL;
 }
@@ -540,27 +629,187 @@ int dispatcherIO(FIFOq_p IO_Queue) {
 // Added for problem 4
 // A function to simulate the dispatcher for an Trap Interrupt
 int dispatcherTrap(FIFOq_p IO_Queue, PCB_p running) {
-    Node_p node = construct_Node();
-    initializeNode(node);
+	Node_p node = construct_Node();
+	initializeNode(node);
 
-    // update context
-    setPC(running, sysStack);
+	// update context
+	setPC(running, ss_pop(sysStack));
 
-    // enqueue
-    setNodePCB(node, running);
-    q_enqueue(IO_Queue, node);
+	// enqueue
+	setNodePCB(node, running);
+	q_enqueue(IO_Queue, node);
 
-    // dequeue
-    processes->runningProcess = p_dequeue(processes->readyProcesses);
+	if (processes->runningProcess == running) {
+		// dequeue
+		processes->runningProcess = p_dequeue(processes->readyProcesses);
+		// update state to running
+		// set state
+		setState(processes->runningProcess, RUNNING);
+	}
 
-    // update state to running
-    // set state
-    setState(processes->runningProcess, RUNNING);
+	ss_push(sysStack, getPC(processes->runningProcess));
 
-    sysStack = getPC(processes->runningProcess);
+	return SUCCESSFUL;
+}
 
+int lock_tsr(CUSTOM_MUTEX_p mutex) {
+    PCB_p running = processes->runningProcess;
+    setPC(running, currentPC);
+    
+    if (!mutex->owner) {
+        setState(running, INTERRUPTED);
+    } else {
+        setState(running, WAITING);
+    }
+
+    timer_check();
+    IO_check();
+
+    if (getState(running) == WAITING) {
+        scheduler(LOCK_INTERRUPT, running, mutex, NULL);
+    } else {
+        mutex->owner = running;
+    }
+
+    syncro_flag = NO_RESOURCE_SYNCRO;
+
+    // IRET (update current pc)
+    currentPC = ss_pop(sysStack);
     return SUCCESSFUL;
 }
+
+int unlock_tsr(CUSTOM_MUTEX_p mutex) {
+
+    setPC(processes->runningProcess, currentPC);
+    setState(processes->runningProcess, INTERRUPTED);
+
+    timer_check();
+    IO_check();
+    
+    if (q_is_empty(mutex->blocked)) {
+        mutex->owner == NULL;
+    } else {
+        scheduler(UNLOCK_INTERRUPT, NULL, mutex, NULL);
+    }
+
+    syncro_flag = NO_RESOURCE_SYNCRO;
+
+    // IRET (update current pc)
+    currentPC = ss_pop(sysStack);
+    return SUCCESSFUL;
+}
+
+int wait_tsr(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond) {
+    PCB_p running = processes->runningProcess;
+    setPC(running, currentPC);
+
+    if (cond->state == COND_READY) {
+        setState(running, INTERRUPTED);
+    } else {
+        setState(running, WAITING);
+    }
+
+    timer_check();
+    IO_check();
+
+    if (getState(running) == WAITING) {
+        scheduler(WAIT_INTERRUPT, running, mutex, cond);
+    } else {
+        cond->state = COND_NOT_READY;
+    }
+
+    syncro_flag = NO_RESOURCE_SYNCRO;
+
+    // IRET (update current pc)
+    currentPC = ss_pop(sysStack);
+    return SUCCESSFUL;
+}
+
+int signal_tsr(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond) {
+    setPC(processes->runningProcess, currentPC);
+
+    timer_check();
+    IO_check();
+
+    if (q_is_empty(cond->waiting)) {
+        cond->state = COND_READY;
+    } else {
+        scheduler(SIGNAL_INTERRUPT, NULL, mutex, cond);
+    }
+
+    syncro_flag = NO_RESOURCE_SYNCRO;
+
+    // IRET (update current pc)
+    currentPC = ss_pop(sysStack);
+    return SUCCESSFUL;
+}
+
+int dispatcherLock(PCB_p process, CUSTOM_MUTEX_p mutex) {
+    Node_p node = construct_Node();
+    initializeNode(node);
+    setNodePCB(node, process);
+    setState(process, WAITING);
+    q_enqueue(mutex->blocked, node);
+	if (processes->runningProcess == process) {
+		processes->runningProcess = p_dequeue(processes->readyProcesses);
+		setState(processes->runningProcess, RUNNING);
+	}
+}
+
+int dispatcherUnlock(CUSTOM_MUTEX_p mutex) {
+    mutex->owner = q_dequeue(mutex->blocked);
+    setState(mutex->owner, READY);
+    //Added node here so that p_enque would have a node passed in and not the PCB
+    Node_p node = construct_Node();
+    initializeNode(node);
+    setNodePCB(node, mutex->owner);
+    p_enqueue(processes->readyProcesses, node);
+}
+
+int dispatcherWait(PCB_p process, CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond) {
+    Node_p node = construct_Node();
+    initializeNode(node);
+    setNodePCB(node, process);
+    //Added node here so that p_enque would have a node passed in and not the PCB
+    setState(process, WAITING);
+    q_enqueue(cond->waiting, node);
+    
+    // unlock lock TODO: replace with lock tsr call?
+    if (q_is_empty(mutex->blocked)) {
+        mutex->owner == NULL;
+    } else {
+		Node_p another_node = construct_Node();//ADDED FOR 11/30 TODO:
+		initializeNode(another_node);
+        mutex->owner = q_dequeue(mutex->blocked);
+        setState(mutex->owner, READY);
+		setNodePCB(another_node, mutex->owner);
+        p_enqueue(processes->readyProcesses, another_node);
+    }
+	if (processes->runningProcess == process) {
+		processes->runningProcess = p_dequeue(processes->readyProcesses);
+		setState(processes->runningProcess, RUNNING);
+	}
+}
+
+int dispatcherSignal(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond) {
+    Node_p node = construct_Node();
+    PCB_p wokePcb;
+    int priority;
+
+    initializeNode(node);
+
+    // dequeue from IO queue
+    wokePcb = q_dequeue(cond->waiting);
+
+    // update state to ready
+    setState(wokePcb, WAITING);
+
+    // Try to grab lock used by wait (assumed to fail per CP_pair)
+    // TODO: use unlock TSR call instead?
+    setNodePCB(node, wokePcb);
+    q_enqueue(mutex->blocked, node);//Meant to be p_enqueue? 
+}
+
 
 // Added for problem 4
 // A function to check if the specified process is at an IO trap or is ready to terminate
@@ -582,6 +831,34 @@ int isAtTrap(PCB_p pcb) {
     }
     
     return 0;
+}
+
+// A function to check if the specified process is at a syncronization service request
+int isAtSyncro(PCB_p pcb) {
+    int type;
+
+    if (!pcb) return NO_RESOURCE_SYNCRO;
+    type = getType(pcb);
+    
+    if (type == CONPRO_PAIR) {
+        for (int i = 0; i < SYNCRO_SIZE; i++) {
+            if (currentPC == pcb->lock_1_pcs[i]) return LOCK_RESOURCE_1;
+            if (currentPC == pcb->unlock_1_pcs[i]) return UNLOCK_RESOURCE_1;
+            if (currentPC == pcb->wait_1_pcs[i]) return WAIT_RESOURCE_1;
+            if (currentPC == pcb->signal_1_pcs[i]) return SIGNAL_RESOURCE_1;
+        }
+    }
+
+    if (type == RESOURCE_PAIR) { //Meant to have for loop like above?
+		for (int i = 0; i < SYNCRO_SIZE; i++) {
+			if (currentPC == pcb->lock_1_pcs[i]) return LOCK_RESOURCE_1;
+			if (currentPC == pcb->unlock_1_pcs[i]) return UNLOCK_RESOURCE_1;
+			if (currentPC == pcb->lock_2_pcs[i]) return LOCK_RESOURCE_2;
+			if (currentPC == pcb->unlock_2_pcs[i]) return UNLOCK_RESOURCE_2;
+		}
+    }
+
+    return NO_RESOURCE_SYNCRO;
 }
 
 // Function used to simulate the creation of new processes
@@ -684,14 +961,23 @@ int createConsumerProducerPair() {
     setTerminate(producer, 0);
     setTerminate(consumer, 0);
 
+    // Set syncro trap calls
+    producer->lock_1_pcs[0] = 70;
+    producer->wait_1_pcs[0] = 90;
+    producer->signal_1_pcs[0] = 110;
+    producer->unlock_1_pcs[0] = 120;
+
+    consumer->lock_1_pcs[0] = 70;
+    consumer->wait_1_pcs[0] = 90;
+    consumer->signal_1_pcs[0] = 110;
+    consumer->unlock_1_pcs[0] = 120;
+
     // initalize CP_PAIR
     pair = (CP_PAIR_p)malloc(sizeof(CP_PAIR_s));
     initialize_CP_Pair(pair);
     pair->producer = producer;
     pair->consumer = consumer;
-    //pair->producer = producer;
-    //pair->consumer = consumer;
-    
+
     cp_pairs[total_cp_pairs] = pair;
     total_cp_pairs++;
 
@@ -733,6 +1019,17 @@ int createSharedResourcePair() {
     // Set to not terminate
     setTerminate(process_1, 0);
     setTerminate(process_2, 0);
+
+    // Set up
+    process_1->lock_1_pcs[0] = 100;
+    process_1->lock_2_pcs[0] = 300;
+    process_1->unlock_1_pcs[0] = 1000;
+    process_1->unlock_2_pcs[0] = 1100;
+
+    process_2->lock_1_pcs[0] = 100;
+    process_2->lock_2_pcs[0] = 300;
+    process_2->unlock_1_pcs[0] = 1000;
+    process_2->unlock_2_pcs[0] = 1100;
 
     // initalize RESOURCE_PAIR
     pair = (RESOURCE_PAIR_p)malloc(sizeof(RESOURCE_PAIR_s));
@@ -878,50 +1175,7 @@ int simulateProgramStep() {
     return SUCCESSFUL;
 }
 
-int simulate_mutex_lock(PCB_p process, CUSTOM_MUTEX_p mutex) {
-    if (!mutex->owner) {
-        mutex->owner = process;
-    } else {
-        Node_p node = construct_Node();
-        initializeNode(node);
-        setNodePCB(node, process);
-        //Added node here so that p_enque would have a node passed in and not the PCB
-        // TODO: Need to be done in scheduler?
-        setState(process, WAITING);
-        q_enqueue(mutex->blocked, node);
-    }
-}
 
-int simulate_mutex_unlock(CUSTOM_MUTEX_p mutex) {
-    // TODO check for correctness
-    if (!mutex->owner && !q_is_empty(mutex->blocked)) {
-
-        // TODO: Need to be done in scheduler?
-        mutex->owner = q_dequeue(mutex->blocked);
-        setState(mutex->owner, READY);
-        //Added node here so that p_enque would have a node passed in and not the PCB
-        Node_p node = construct_Node();
-        initializeNode(node);
-        setNodePCB(node, mutex->owner);
-        p_enqueue(processes->readyProcesses, node);
-    } else {
-        mutex->owner = NULL;
-    }
-}
-
-int simulate_cond_wait(PCB_p process, CUSTOM_COND_p cond) {
-    // TODO check state var?
-    Node_p node = construct_Node();
-    initializeNode(node);
-    setNodePCB(node, process);
-    //Added node here so that p_enque would have a node passed in and not the PCB
-    setState(process, WAITING);
-    q_enqueue(cond->waiting, node);
-}
-
-int simulate_cond_signal(PCB_p process, CUSTOM_COND_p cond) {
-    // move next process to ready (or all?)
-}
 
 // Moves proceeses from the new queue to the ready queue
 int moveNewToReady() {
@@ -1005,8 +1259,62 @@ void freeProcessQueues() {
     destruct_FIFOq(processes->IO_2_Processes);
     destruct_PQueue(processes->readyProcesses);
     pcbDestruct(processes->runningProcess);
-
     free(processes);
+}
+
+int initialize_test_resource_pairs() {
+	createSharedResourcePair();
+	resource_pairs[(total_resource_pairs - 1)]->mutex_1->owner = resource_pairs[(total_resource_pairs - 1)]->process_2;
+	resource_pairs[(total_resource_pairs - 1)]->mutex_2->owner = resource_pairs[(total_resource_pairs - 1)]->process_1;
+	Node_p pro_node = construct_Node();
+	initializeNode(pro_node);
+	setNodePCB(pro_node, resource_pairs[(total_resource_pairs - 1)]->process_1);
+	Node_p con_node = construct_Node();
+	initializeNode(con_node);
+	setNodePCB(con_node, resource_pairs[(total_resource_pairs - 1)]->process_2);
+	q_enqueue(resource_pairs[(total_resource_pairs - 1)]->mutex_1->blocked, pro_node);
+	q_enqueue(resource_pairs[(total_resource_pairs - 1)]->mutex_2->blocked, con_node);
+}
+
+void destruct_Resource_Pair(RESOURCE_PAIR_p the_pair) {
+	destruct_Custom_Mutex(the_pair->mutex_1);
+	destruct_Custom_Mutex(the_pair->mutex_2);
+	free(the_pair);
+}
+
+void destruct_CP_Pair(CP_PAIR_p pair) {
+	destruct_Custom_Mutex(pair->mutex);
+	destruct_Custom_Cond(pair->produced);
+	destruct_Custom_Cond(pair->consumed);
+	free(pair);
+}
+
+void destruct_Custom_Mutex(CUSTOM_MUTEX_p mutex) {
+	destruct_FIFOq(mutex->blocked);
+	free(mutex);
+}
+
+void destruct_Custom_Cond(CUSTOM_COND_p cond) {
+	destruct_FIFOq(cond->waiting);
+	free(cond);
+}
+
+void check_for_deadlock() {
+	int deadlocks[SHARED_RESOURCE_MAX] = { 0,0,0,0,0,0,0,0,0,0 };
+	int deadlock_amount = 0;
+	int i = 0;
+	testResourcePairs(resource_pairs, deadlocks, total_resource_pairs);
+	for (i = 0; i < total_resource_pairs; i++) {
+		if (deadlocks[i] == -1) { // MAGIC NUMBER
+			printf("\nDeadlock found at: %d\nWith: %d", i, resource_pairs[i]);
+			destruct_Resource_Pair(resource_pairs[i]);
+			resource_pairs[i] = resource_pairs[total_resource_pairs - 1];
+			deadlocks[i] = deadlocks[total_resource_pairs - 1];
+			deadlock_amount++;
+			total_resource_pairs--;
+			i--;
+		}
+	}
 }
 
 int main() {
@@ -1016,8 +1324,11 @@ int main() {
     // Seed RNG
     srand(time(NULL));
 
+
+
     // Initialize Queues
     initializeProcessQueues();
+
 
 
     // Added for Problem 3
@@ -1029,8 +1340,8 @@ int main() {
     }
 
     // Initialize Global Vars
-    currentPC = 0;
-    sysStack = 0;
+    sysStack = createSimpleStack();
+	currentPC = 0;
     iterationCount = 0;
     quantum_post_reset = 0;
     IOSR_1_finished = 0;
@@ -1040,6 +1351,9 @@ int main() {
     IO_1_activated = 0;
     IO_2_activated = 0;
     total_cp_pairs = 0;
+	total_resource_pairs = 0;
+	total_deadlock_pairs = 0;
+	total_terminated = 0;
     timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));
     // create starting processes
     // set a process to running
@@ -1048,6 +1362,16 @@ int main() {
     setRandomMaxPC(processes->runningProcess);
     setRandomIOTraps(processes->runningProcess);
     trap_flag = 0;
+    syncro_flag = 0;
+
+	//Test Correctness of the Deadlock Monitor
+	//initialize_test_resource_pairs();
+	//createSharedResourcePair();
+	//initialize_test_resource_pairs();
+	//createSharedResourcePair();
+	//initialize_test_resource_pairs();
+	//check_for_deadlock();
+
 
     for (int i = 0; i < INIT_CREATE_CALLS; i++) {
         createNewProcesses();
@@ -1061,5 +1385,6 @@ int main() {
 
     // free resources
     freeProcessQueues();
+	destructStack(sysStack);
 // TODO Add frees for syncro services vars and structs
 }
