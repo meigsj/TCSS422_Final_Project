@@ -34,10 +34,10 @@ int ss_peek(SIMPLE_STACK_p stack) {
 	return stack->head->value;
 }
 
-void stack_is_empty(SIMPLE_STACK_p stack) {
-	if (stack->head) return 1;
+int stack_is_empty(SIMPLE_STACK_p stack) {
+	if (stack->head) return 0;
 
-	return 0;
+	return 1;
 }
 
 void destructStack(SIMPLE_STACK_p stack) {

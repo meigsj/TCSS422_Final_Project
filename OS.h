@@ -16,8 +16,7 @@ Joshua Meigs
 #include "Simple_Stack.h"
 #include "Deadlock_Monitor.h"
 
-// value to denote no interupt or trap detected
-#define  0
+
 
 // value to denote a successful function return
 #define SUCCESSFUL 0
@@ -264,3 +263,16 @@ int dispatcherWait(PCB_p process, CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond);
 
 int dispatcherSignal(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond);
 
+int isAtSyncro(PCB_p pcb);
+
+RESOURCE_PAIR_p getResourcePair(PCB_p process);
+
+void destruct_Resource_Pair(RESOURCE_PAIR_p the_pair);
+
+void destruct_CP_Pair(CP_PAIR_p pair);
+
+void destruct_Custom_Mutex(CUSTOM_MUTEX_p mutex);
+
+void destruct_Custom_Cond(CUSTOM_COND_p cond);
+
+void check_for_deadlock();

@@ -6,10 +6,12 @@ Group Members:
 Shaun Coleman
 Joshua Meigs
 */
+#pragma once 
+#include <stdlib.h>
 
 typedef struct stack_node {
 	int value;
-	struct stack_node next;
+	struct stack_node* next;//changed to add pointer
 } STACK_NODE_s;
 
 typedef STACK_NODE_s * STACK_NODE_p;
@@ -28,6 +30,6 @@ int ss_pop(SIMPLE_STACK_p);
 
 int ss_peek(SIMPLE_STACK_p);
 
-void stack_is_empty(SIMPLE_STACK_p);
+int stack_is_empty(SIMPLE_STACK_p);
 
 void destructStack(SIMPLE_STACK_p);
