@@ -67,6 +67,7 @@ int trap_flag;
 // Updated for Problem 4
 // The top level of the OS simulator
 void * OS_Simulator(void *arg) {
+
     char* buffer[MAX_BUFFER_SIZE];
     pthread_t the_timer_thread;
     pthread_create(&the_timer_thread, NULL, timer_thread, NULL);
@@ -243,8 +244,6 @@ void * io2_thread(void * s) {
         pthread_mutex_unlock(&IO_2_reset_lock);
         ts.tv_nsec = 10000;
     }
-
-
 }
 
 void timer_check() {
