@@ -8,6 +8,7 @@ Joshua Meigs
 */
 #pragma once 
 #include <stdlib.h>
+#include <assert.h>
 
 typedef struct stack_node {
 	int value;
@@ -18,6 +19,7 @@ typedef STACK_NODE_s * STACK_NODE_p;
 
 typedef struct simple_stack {
 	STACK_NODE_p head;
+	int size;
 } SIMPLE_STACK_s;
 
 typedef SIMPLE_STACK_s * SIMPLE_STACK_p;
@@ -33,3 +35,5 @@ int ss_peek(SIMPLE_STACK_p);
 int stack_is_empty(SIMPLE_STACK_p);
 
 void destructStack(SIMPLE_STACK_p);
+
+int ss_getSize(SIMPLE_STACK_p);
