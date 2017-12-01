@@ -12,7 +12,7 @@ Joshua Meigs
 
 #include <time.h>
 
-// The total number of general registers (0-7)
+/* The total number of general registers (0-7)*/
 #define TOTAL_REG 8
 #define IO_TRAP_SIZE 4
 #define SYNCRO_SIZE 4

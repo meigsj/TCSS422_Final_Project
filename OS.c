@@ -219,7 +219,8 @@ void * timer_thread(void * s) {
             break;
         }
 
-        nanosleep(&ts, NULL);
+        //nanosleep(&ts, NULL);
+		while(timerDownCounter());
         pthread_mutex_unlock(&global_shutdown_lock);
         while (!ISR_FINISHED) {
             pthread_cond_wait(&timer_cond, &timer_lock);
