@@ -1,0 +1,5602 @@
+
+ Trying to create: 1 IO, 1 Comp, 1 CP Pairs, 1 Shared Pairs
+
+ Trying to create: 4 IO, 0 Comp, 1 CP Pairs, 0 Shared Pairs
+
+ Trying to create: 5 IO, 0 Comp, 0 CP Pairs, 1 Shared Pairs
+
+ Trying to create: 2 IO, 1 Comp, 1 CP Pairs, 0 Shared Pairs
+
+ Trying to create: 5 IO, 2 Comp, 0 CP Pairs, 0 Shared Pairs
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 126
+Running PCB: PID:2 @ PC -2144448696
+Q0: 26
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 0
+IO2: 1
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 4, IO 17, CP Pairs 3, Shared Resource 2
+
+
+Trap Detected!
+
+Process Terminated @ Iteration: 127
+Running PCB: PID:3 @ PC 81040
+Q0: 25
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 0
+IO2: 1
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 4, IO 16, CP Pairs 3, Shared Resource 2
+
+
+Timer Interrupt Detected!
+
+Timer Interupt @ Iteration: 3691
+Running PCB: PID:4 @ PC 68112
+Q0: 24
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 0
+IO2: 1
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 4, IO 16, CP Pairs 3, Shared Resource 2
+
+
+Syncronization Service Detected!
+
+Process 4 requests lock
+Running PCB: PID:4 @ PC 68112
+Q0: 24
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 0
+IO2: 1
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 4, IO 16, CP Pairs 3, Shared Resource 2
+
+
+Syncronization Service Detected!
+
+Process 4 requests lock
+Running PCB: PID:5 @ PC 68112
+Q0: 23
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 0
+IO2: 1
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 4, IO 16, CP Pairs 3, Shared Resource 2
+
+
+Syncronization Service Detected!
+
+Process 5 requests lock
+Running PCB: PID:8 @ PC 69392
+Q0: 22
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 0
+IO2: 1
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 4, IO 16, CP Pairs 3, Shared Resource 2
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 3880
+Running PCB: PID:9 @ PC 68464
+Q0: 21
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 1
+IO2: 1
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 4, IO 16, CP Pairs 3, Shared Resource 2
+
+
+Trap Detected!
+
+Process Terminated @ Iteration: 3881
+Running PCB: PID:10 @ PC 70592
+Q0: 20
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 1
+IO2: 1
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 4, IO 15, CP Pairs 3, Shared Resource 2
+
+
+Trap Detected!
+
+Process Terminated @ Iteration: 3882
+Running PCB: PID:11 @ PC 70944
+Q0: 19
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 1
+IO2: 1
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 4, IO 14, CP Pairs 3, Shared Resource 2
+
+
+Trap Detected!
+
+Process Terminated @ Iteration: 3883
+Running PCB: PID:12 @ PC 71296
+Q0: 18
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 1
+IO2: 1
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 4, IO 13, CP Pairs 3, Shared Resource 2
+
+
+Syncronization Service Detected!
+
+Process 12 requests lock
+Running PCB: PID:12 @ PC 81232
+Q0: 18
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 1
+IO2: 1
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 4, IO 13, CP Pairs 3, Shared Resource 2
+
+
+Syncronization Service Detected!
+
+Process 12 requests lock
+Running PCB: PID:13 @ PC 81232
+Q0: 17
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 1
+IO2: 1
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 4, IO 13, CP Pairs 3, Shared Resource 2
+
+
+Syncronization Service Detected!
+
+Process 13 requests lock
+Running PCB: PID:14 @ PC 72576
+Q0: 16
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 1
+IO2: 1
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 4, IO 13, CP Pairs 3, Shared Resource 2
+
+
+ Trying to create: 2 IO, 2 Comp, 0 CP Pairs, 0 Shared Pairs
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 4023
+Running PCB: PID:15 @ PC 71616
+Q0: 19
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 1
+IO2: 2
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 15, CP Pairs 3, Shared Resource 2
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 4133
+Running PCB: PID:16 @ PC 72960
+Q0: 18
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 2
+IO2: 2
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 15, CP Pairs 3, Shared Resource 2
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 4405
+Running PCB: PID:17 @ PC 73312
+Q0: 17
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 2
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 15, CP Pairs 3, Shared Resource 2
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 4526
+Running PCB: PID:18 @ PC 73664
+Q0: 16
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 3
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 15, CP Pairs 3, Shared Resource 2
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 4801
+Running PCB: PID:21 @ PC 74016
+Q0: 15
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 4
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 15, CP Pairs 3, Shared Resource 2
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 4916
+Running PCB: PID:22 @ PC 74368
+Q0: 14
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 4
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 15, CP Pairs 3, Shared Resource 2
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 5108
+Running PCB: PID:23 @ PC 75536
+Q0: 13
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 4
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 15, CP Pairs 3, Shared Resource 2
+
+
+Timer Interrupt Detected!
+
+Timer Interupt @ Iteration: 7873
+Running PCB: PID:24 @ PC 75888
+Q0: 12
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 4
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 15, CP Pairs 3, Shared Resource 2
+
+
+IO1 Interrupt Detected!
+
+IO 1 Interupt @ Iteration: 7873
+Running PCB: PID:24 @ PC 75888
+Q0: 13
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 4
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 15, CP Pairs 3, Shared Resource 2
+
+
+IO2 Interrupt Detected!
+
+IO 2 Interupt @ Iteration: 7873
+Running PCB: PID:24 @ PC 69424
+Q0: 14
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 3
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 15, CP Pairs 3, Shared Resource 2
+
+
+Syncronization Service Detected!
+
+Process 24 requests lock
+Running PCB: PID:24 @ PC 79664
+Q0: 14
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 3
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 15, CP Pairs 3, Shared Resource 2
+
+
+Syncronization Service Detected!
+
+Process 24 requests lock
+Running PCB: PID:25 @ PC 79664
+Q0: 13
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 3
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 15, CP Pairs 3, Shared Resource 2
+
+
+Syncronization Service Detected!
+
+Process 25 requests lock
+Running PCB: PID:26 @ PC 77168
+Q0: 12
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 3
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 15, CP Pairs 3, Shared Resource 2
+
+
+Trap Detected!
+
+Process Terminated @ Iteration: 7877
+Running PCB: PID:27 @ PC 76240
+Q0: 11
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 3
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 14, CP Pairs 3, Shared Resource 2
+
+
+ Trying to create: 4 IO, 0 Comp, 1 CP Pairs, 0 Shared Pairs
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 8109
+Running PCB: PID:28 @ PC 84464
+Q0: 16
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 4
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 18, CP Pairs 4, Shared Resource 2
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 8277
+Running PCB: PID:29 @ PC 77904
+Q0: 15
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 5
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 18, CP Pairs 4, Shared Resource 2
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 8534
+Running PCB: PID:30 @ PC 78256
+Q0: 14
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 5
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 18, CP Pairs 4, Shared Resource 2
+
+
+Trap Detected!
+
+Process Terminated @ Iteration: 8535
+Running PCB: PID:31 @ PC 78608
+Q0: 13
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 5
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 17, CP Pairs 4, Shared Resource 2
+
+
+Trap Detected!
+
+Process Terminated @ Iteration: 8536
+Running PCB: PID:32 @ PC 78960
+Q0: 12
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 5
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 17, CP Pairs 4, Shared Resource 2
+
+
+ Trying to create: 0 IO, 0 Comp, 0 CP Pairs, 0 Shared Pairs
+
+Timer Interrupt Detected!
+
+Timer Interupt @ Iteration: 12507
+Running PCB: PID:33 @ PC 79312
+Q0: 14
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 5
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 17, CP Pairs 4, Shared Resource 2
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 12615
+Running PCB: PID:34 @ PC 71648
+Q0: 13
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 6
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 17, CP Pairs 4, Shared Resource 2
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 12772
+Running PCB: PID:35 @ PC 68464
+Q0: 12
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 7
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 17, CP Pairs 4, Shared Resource 2
+
+
+ Trying to create: 3 IO, 0 Comp, 1 CP Pairs, 0 Shared Pairs
+
+IO2 Interrupt Detected!
+
+Timer Interrupt Detected!
+
+Timer Interupt @ Iteration: 16487
+Running PCB: PID:36 @ PC 87088
+Q0: 16
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 7
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 20, CP Pairs 5, Shared Resource 2
+
+
+IO 2 Interupt @ Iteration: 16487
+Running PCB: PID:36 @ PC 0
+Q0: 17
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 6
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 20, CP Pairs 5, Shared Resource 2
+
+
+IO1 Interrupt Detected!
+
+IO 1 Interupt @ Iteration: 16488
+Running PCB: PID:36 @ PC -2144448696
+Q0: 18
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 6
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 20, CP Pairs 5, Shared Resource 2
+
+
+ Trying to create: 3 IO, 1 Comp, 1 CP Pairs, 1 Shared Pairs
+
+Timer Interrupt Detected!
+
+Timer Interupt @ Iteration: 21353
+Running PCB: PID:8 @ PC 90240
+Q0: 25
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 6
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 23, CP Pairs 6, Shared Resource 3
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 21539
+Running PCB: PID:1 @ PC 75888
+Q0: 24
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 6
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 23, CP Pairs 6, Shared Resource 3
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 21666
+Running PCB: PID:37 @ PC 69424
+Q0: 23
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 7
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 23, CP Pairs 6, Shared Resource 3
+
+
+Trap Detected!
+
+Process Terminated @ Iteration: 21667
+Running PCB: PID:38 @ PC 84496
+Q0: 22
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 7
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 22, CP Pairs 6, Shared Resource 3
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 21865
+Running PCB: PID:39 @ PC 69424
+Q0: 21
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 6
+IO2: 7
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 22, CP Pairs 6, Shared Resource 3
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 21982
+Running PCB: PID:40 @ PC 76240
+Q0: 20
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 6
+IO2: 8
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 22, CP Pairs 6, Shared Resource 3
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 22205
+Running PCB: PID:41 @ PC 83120
+Q0: 19
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 6
+IO2: 9
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 22, CP Pairs 6, Shared Resource 3
+
+
+Syncronization Service Detected!
+
+Process 41 requests lock
+Running PCB: PID:41 @ PC 83120
+Q0: 19
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 6
+IO2: 9
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 22, CP Pairs 6, Shared Resource 3
+
+
+Syncronization Service Detected!
+
+Process 41 requests lock
+Running PCB: PID:42 @ PC 83120
+Q0: 18
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 6
+IO2: 9
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 22, CP Pairs 6, Shared Resource 3
+
+
+Syncronization Service Detected!
+
+Process 42 requests lock
+Running PCB: PID:3 @ PC 84400
+Q0: 17
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 6
+IO2: 9
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 22, CP Pairs 6, Shared Resource 3
+
+
+ Trying to create: 5 IO, 1 Comp, 0 CP Pairs, 1 Shared Pairs
+
+Trap Detected!
+
+Process Terminated @ Iteration: 25765
+Running PCB: PID:23 @ PC 92624
+Q0: 22
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 6
+IO2: 9
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 27, CP Pairs 6, Shared Resource 4
+
+
+Timer Interrupt Detected!
+
+Timer Interupt @ Iteration: 26027
+Running PCB: PID:32 @ PC 75536
+Q0: 21
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 6
+IO2: 9
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 27, CP Pairs 6, Shared Resource 4
+
+
+IO1 Interrupt Detected!
+
+IO 1 Interupt @ Iteration: 26027
+Running PCB: PID:32 @ PC 75536
+Q0: 22
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 9
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 27, CP Pairs 6, Shared Resource 4
+
+
+IO2 Interrupt Detected!
+
+IO 2 Interupt @ Iteration: 26027
+Running PCB: PID:32 @ PC 72960
+Q0: 23
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 8
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 27, CP Pairs 6, Shared Resource 4
+
+
+Trap Detected!
+
+Process Terminated @ Iteration: 26028
+Running PCB: PID:43 @ PC 78960
+Q0: 22
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 8
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 27, CP Pairs 6, Shared Resource 4
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 26140
+Running PCB: PID:44 @ PC 87120
+Q0: 21
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 9
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 27, CP Pairs 6, Shared Resource 4
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 26330
+Running PCB: PID:45 @ PC 72608
+Q0: 20
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 6
+IO2: 9
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 27, CP Pairs 6, Shared Resource 4
+
+
+Trap Detected!
+
+Process Terminated @ Iteration: 26331
+Running PCB: PID:46 @ PC 68464
+Q0: 19
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 6
+IO2: 9
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 26, CP Pairs 6, Shared Resource 4
+
+
+Syncronization Service Detected!
+
+Process 46 requests lock
+Running PCB: PID:46 @ PC 68464
+Q0: 19
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 6
+IO2: 9
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 26, CP Pairs 6, Shared Resource 4
+
+
+Syncronization Service Detected!
+
+Process 46 requests lock
+Running PCB: PID:47 @ PC 68464
+Q0: 18
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 6
+IO2: 9
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 26, CP Pairs 6, Shared Resource 4
+
+
+Syncronization Service Detected!
+
+Process 47 requests lock
+Running PCB: PID:14 @ PC 86992
+Q0: 17
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 6
+IO2: 9
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 26, CP Pairs 6, Shared Resource 4
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 26471
+Running PCB: PID:15 @ PC 86064
+Q0: 16
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 6
+IO2: 10
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 26, CP Pairs 6, Shared Resource 4
+
+
+Trap Detected!
+
+Process Terminated @ Iteration: 26472
+Running PCB: PID:48 @ PC 87056
+Q0: 15
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 6
+IO2: 10
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 25, CP Pairs 6, Shared Resource 4
+
+
+Trap Detected!
+
+Process Terminated @ Iteration: 26473
+Running PCB: PID:49 @ PC 91776
+Q0: 14
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 6
+IO2: 10
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 24, CP Pairs 6, Shared Resource 4
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 26608
+Running PCB: PID:50 @ PC 90272
+Q0: 13
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 6
+IO2: 11
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 24, CP Pairs 6, Shared Resource 4
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 26802
+Running PCB: PID:51 @ PC 87728
+Q0: 12
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 7
+IO2: 11
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 24, CP Pairs 6, Shared Resource 4
+
+
+ Trying to create: 5 IO, 1 Comp, 1 CP Pairs, 1 Shared Pairs
+
+Timer Interrupt Detected!
+
+Timer Interupt @ Iteration: 30495
+Running PCB: PID:52 @ PC 95104
+Q0: 21
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 7
+IO2: 11
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 29, CP Pairs 7, Shared Resource 5
+
+
+Syncronization Service Detected!
+
+Process 52 requests lock
+Running PCB: PID:52 @ PC -2144448696
+Q0: 21
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 7
+IO2: 11
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 29, CP Pairs 7, Shared Resource 5
+
+
+Syncronization Service Detected!
+
+Process 52 requests lock
+Running PCB: PID:53 @ PC -2144448696
+Q0: 20
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 7
+IO2: 11
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 29, CP Pairs 7, Shared Resource 5
+
+
+Syncronization Service Detected!
+
+Process 53 requests lock
+Running PCB: PID:35 @ PC 89360
+Q0: 19
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 7
+IO2: 11
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 6, IO 29, CP Pairs 7, Shared Resource 5
+
+
+Trap Detected!
+
+Process Terminated @ Iteration: 30499
+Running PCB: PID:36 @ PC 88432
+Q0: 18
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 7
+IO2: 11
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 29, CP Pairs 7, Shared Resource 5
+
+
+ Trying to create: 2 IO, 1 Comp, 1 CP Pairs, 0 Shared Pairs
+
+Trap Detected!
+
+Process Terminated @ Iteration: 35590
+Running PCB: PID:56 @ PC 98560
+Q0: 22
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 7
+IO2: 11
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 31, CP Pairs 8, Shared Resource 5
+
+
+Timer Interrupt Detected!
+
+Timer Interupt @ Iteration: 35591
+Running PCB: PID:57 @ PC 92656
+Q0: 21
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 7
+IO2: 11
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 31, CP Pairs 8, Shared Resource 5
+
+
+IO1 Interrupt Detected!
+
+IO 1 Interupt @ Iteration: 35622
+Running PCB: PID:57 @ PC 92656
+Q0: 22
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 6
+IO2: 11
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 31, CP Pairs 8, Shared Resource 5
+
+
+IO2 Interrupt Detected!
+
+IO 2 Interupt @ Iteration: 35622
+Running PCB: PID:57 @ PC 74016
+Q0: 23
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 6
+IO2: 10
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 31, CP Pairs 8, Shared Resource 5
+
+
+Trap Detected!
+
+Process Terminated @ Iteration: 35623
+Running PCB: PID:58 @ PC 83472
+Q0: 22
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 6
+IO2: 10
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 30, CP Pairs 8, Shared Resource 5
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 35773
+Running PCB: PID:59 @ PC 81040
+Q0: 21
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 7
+IO2: 10
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 30, CP Pairs 8, Shared Resource 5
+
+
+Trap Detected!
+
+Process Terminated @ Iteration: 35774
+Running PCB: PID:60 @ PC 84496
+Q0: 20
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 7
+IO2: 10
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 29, CP Pairs 8, Shared Resource 5
+
+
+Trap Detected!
+
+Process Terminated @ Iteration: 35775
+Running PCB: PID:61 @ PC 78928
+Q0: 19
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 7
+IO2: 10
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 28, CP Pairs 8, Shared Resource 5
+
+
+ Trying to create: 5 IO, 0 Comp, 0 CP Pairs, 1 Shared Pairs
+
+ Trying to create: 4 IO, 0 Comp, 1 CP Pairs, 1 Shared Pairs
+
+Trap Detected!
+
+Process Terminated @ Iteration: 40424
+Running PCB: PID:16 @ PC 102912
+Q0: 30
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 7
+IO2: 10
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 4, IO 37, CP Pairs 9, Shared Resource 7
+
+
+Trap Detected!
+
+Process Terminated @ Iteration: 40425
+Running PCB: PID:17 @ PC 75536
+Q0: 29
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 7
+IO2: 10
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 4, IO 36, CP Pairs 9, Shared Resource 7
+
+
+Trap Detected!
+
+Process Terminated @ Iteration: 40426
+Running PCB: PID:64 @ PC 72960
+Q0: 28
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 7
+IO2: 10
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 4, IO 35, CP Pairs 9, Shared Resource 7
+
+
+Timer Interrupt Detected!
+
+Timer Interupt @ Iteration: 40456
+Running PCB: PID:65 @ PC 95136
+Q0: 27
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 7
+IO2: 10
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 4, IO 35, CP Pairs 9, Shared Resource 7
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 40575
+Running PCB: PID:66 @ PC 88080
+Q0: 26
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 7
+IO2: 11
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 4, IO 35, CP Pairs 9, Shared Resource 7
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 40834
+Running PCB: PID:67 @ PC 87728
+Q0: 25
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 8
+IO2: 11
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 4, IO 35, CP Pairs 9, Shared Resource 7
+
+
+Trap Detected!
+
+Process Terminated @ Iteration: 40835
+Running PCB: PID:68 @ PC 86000
+Q0: 24
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 8
+IO2: 11
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 4, IO 34, CP Pairs 9, Shared Resource 7
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 41002
+Running PCB: PID:69 @ PC 73248
+Q0: 23
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 8
+IO2: 12
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 4, IO 34, CP Pairs 9, Shared Resource 7
+
+
+Trap Detected!
+
+Process Terminated @ Iteration: 43547
+Running PCB: PID:70 @ PC 92944
+Q0: 22
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 8
+IO2: 12
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 3, IO 34, CP Pairs 9, Shared Resource 7
+
+
+Syncronization Service Detected!
+
+Process 70 requests lock
+Running PCB: PID:70 @ PC 92944
+Q0: 22
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 8
+IO2: 12
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 3, IO 34, CP Pairs 9, Shared Resource 7
+
+
+Syncronization Service Detected!
+
+Process 70 requests lock
+Running PCB: PID:71 @ PC 92944
+Q0: 21
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 8
+IO2: 12
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 3, IO 34, CP Pairs 9, Shared Resource 7
+
+
+Syncronization Service Detected!
+
+Process 71 requests lock
+Running PCB: PID:23 @ PC 94224
+Q0: 20
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 8
+IO2: 12
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 3, IO 34, CP Pairs 9, Shared Resource 7
+
+
+Trap Detected!
+
+Process Terminated @ Iteration: 43551
+Running PCB: PID:51 @ PC 93296
+Q0: 19
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 8
+IO2: 12
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 2, IO 34, CP Pairs 9, Shared Resource 7
+
+
+ Trying to create: 3 IO, 1 Comp, 0 CP Pairs, 0 Shared Pairs
+
+IO1 Interrupt Detected!
+
+Timer Interrupt Detected!
+
+Timer Interupt @ Iteration: 44482
+Running PCB: PID:74 @ PC 84496
+Q0: 22
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 8
+IO2: 12
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 3, IO 37, CP Pairs 9, Shared Resource 7
+
+
+IO 1 Interupt @ Iteration: 44482
+Running PCB: PID:74 @ PC 84496
+Q0: 23
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 7
+IO2: 12
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 3, IO 37, CP Pairs 9, Shared Resource 7
+
+
+IO2 Interrupt Detected!
+
+IO 2 Interupt @ Iteration: 44482
+Running PCB: PID:74 @ PC 74368
+Q0: 24
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 7
+IO2: 11
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 3, IO 37, CP Pairs 9, Shared Resource 7
+
+
+Trap Detected!
+
+Process Terminated @ Iteration: 44483
+Running PCB: PID:75 @ PC 102064
+Q0: 23
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 7
+IO2: 11
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 3, IO 36, CP Pairs 9, Shared Resource 7
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 44657
+Running PCB: PID:76 @ PC 89392
+Q0: 22
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 7
+IO2: 12
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 3, IO 36, CP Pairs 9, Shared Resource 7
+
+
+ Trying to create: 3 IO, 2 Comp, 0 CP Pairs, 1 Shared Pairs
+
+Timer Interrupt Detected!
+
+Timer Interupt @ Iteration: 48864
+Running PCB: PID:77 @ PC 106096
+Q0: 26
+Q1: 3
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 7
+IO2: 12
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 39, CP Pairs 9, Shared Resource 8
+
+
+Syncronization Service Detected!
+
+Process 77 requests lock
+Running PCB: PID:77 @ PC 106096
+Q0: 26
+Q1: 3
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 7
+IO2: 12
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 39, CP Pairs 9, Shared Resource 8
+
+
+Syncronization Service Detected!
+
+Process 77 requests lock
+Running PCB: PID:78 @ PC 106096
+Q0: 25
+Q1: 3
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 7
+IO2: 12
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 39, CP Pairs 9, Shared Resource 8
+
+
+Syncronization Service Detected!
+
+Process 78 requests lock
+Running PCB: PID:21 @ PC 98496
+Q0: 24
+Q1: 3
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 7
+IO2: 12
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 39, CP Pairs 9, Shared Resource 8
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 48982
+Running PCB: PID:18 @ PC 97568
+Q0: 26
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 8
+IO2: 12
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 39, CP Pairs 9, Shared Resource 8
+
+
+Trap Detected!
+
+Process Terminated @ Iteration: 48983
+Running PCB: PID:79 @ PC 74016
+Q0: 25
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 8
+IO2: 12
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 38, CP Pairs 9, Shared Resource 8
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 49140
+Running PCB: PID:80 @ PC 102944
+Q0: 24
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 9
+IO2: 12
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 38, CP Pairs 9, Shared Resource 8
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 49319
+Running PCB: PID:81 @ PC 91424
+Q0: 23
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 9
+IO2: 13
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 38, CP Pairs 9, Shared Resource 8
+
+
+Trap Detected!
+
+Process Terminated @ Iteration: 49320
+Running PCB: PID:82 @ PC 78928
+Q0: 22
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 9
+IO2: 13
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 37, CP Pairs 9, Shared Resource 8
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 49537
+Running PCB: PID:83 @ PC 98528
+Q0: 21
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 10
+IO2: 13
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 37, CP Pairs 9, Shared Resource 8
+
+
+Trap Detected!
+
+Process Terminated @ Iteration: 49538
+Running PCB: PID:86 @ PC 87024
+Q0: 20
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 10
+IO2: 13
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 36, CP Pairs 9, Shared Resource 8
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 49675
+Running PCB: PID:87 @ PC 72608
+Q0: 19
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 11
+IO2: 13
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 36, CP Pairs 9, Shared Resource 8
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 49858
+Running PCB: PID:88 @ PC 100048
+Q0: 18
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 11
+IO2: 14
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 36, CP Pairs 9, Shared Resource 8
+
+---- HALTING SIMULATION ON ITERATION 50000 ----
+
+ Trying to create: 1 IO, 1 Comp, 0 CP Pairs, 0 Shared Pairs
+
+ Trying to create: 0 IO, 2 Comp, 0 CP Pairs, 1 Shared Pairs
+
+ Trying to create: 3 IO, 1 Comp, 1 CP Pairs, 1 Shared Pairs
+
+ Trying to create: 4 IO, 2 Comp, 0 CP Pairs, 0 Shared Pairs
+
+ Trying to create: 1 IO, 2 Comp, 0 CP Pairs, 0 Shared Pairs
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 122
+Running PCB: PID:2 @ PC 0
+Q0: 18
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 1
+IO2: 0
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 8, IO 9, CP Pairs 1, Shared Resource 2
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 222
+Running PCB: PID:3 @ PC 0
+Q0: 17
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 1
+IO2: 1
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 8, IO 9, CP Pairs 1, Shared Resource 2
+
+
+ Trying to create: 2 IO, 2 Comp, 0 CP Pairs, 0 Shared Pairs
+
+Timer Interrupt Detected!
+
+Timer Interupt @ Iteration: 4353
+Running PCB: PID:4 @ PC 0
+Q0: 20
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 1
+IO2: 1
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 10, IO 11, CP Pairs 1, Shared Resource 2
+
+
+ Trying to create: 3 IO, 2 Comp, 0 CP Pairs, 0 Shared Pairs
+
+Timer Interrupt Detected!
+
+Timer Interupt @ Iteration: 9579
+Running PCB: PID:5 @ PC 0
+Q0: 26
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 1
+IO2: 1
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 12, IO 14, CP Pairs 1, Shared Resource 2
+
+
+IO1 Interrupt Detected!
+
+IO 1 Interupt @ Iteration: 9633
+Running PCB: PID:5 @ PC 54
+Q0: 27
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 0
+IO2: 1
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 12, IO 14, CP Pairs 1, Shared Resource 2
+
+
+IO2 Interrupt Detected!
+
+IO 2 Interupt @ Iteration: 9633
+Running PCB: PID:5 @ PC 54
+Q0: 28
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 0
+IO2: 0
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 12, IO 14, CP Pairs 1, Shared Resource 2
+
+
+ Trying to create: 4 IO, 2 Comp, 1 CP Pairs, 1 Shared Pairs
+
+ Trying to create: 3 IO, 1 Comp, 1 CP Pairs, 1 Shared Pairs
+
+Trap Detected!
+
+Process Terminated @ Iteration: 17435
+Running PCB: PID:8 @ PC 0
+Q0: 41
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 0
+IO2: 0
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 14, IO 21, CP Pairs 3, Shared Resource 4
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 17620
+Running PCB: PID:9 @ PC 0
+Q0: 40
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 1
+IO2: 0
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 14, IO 21, CP Pairs 3, Shared Resource 4
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 17894
+Running PCB: PID:10 @ PC 0
+Q0: 39
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 1
+IO2: 1
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 14, IO 21, CP Pairs 3, Shared Resource 4
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 18061
+Running PCB: PID:11 @ PC 0
+Q0: 38
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 2
+IO2: 1
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 14, IO 21, CP Pairs 3, Shared Resource 4
+
+
+Timer Interrupt Detected!
+
+Timer Interupt @ Iteration: 19165
+Running PCB: PID:12 @ PC 0
+Q0: 38
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 2
+IO2: 1
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 14, IO 21, CP Pairs 3, Shared Resource 4
+
+
+Syncronization Service Detected!
+
+Process 12 requests lock
+Running PCB: PID:12 @ PC 0
+Q0: 38
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 2
+IO2: 1
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 14, IO 21, CP Pairs 3, Shared Resource 4
+
+
+Syncronization Service Detected!
+
+Process 12 requests lock
+Running PCB: PID:13 @ PC 70
+Q0: 37
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 2
+IO2: 1
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 14, IO 21, CP Pairs 3, Shared Resource 4
+
+
+Syncronization Service Detected!
+
+Consumer 13 calls wait for produced.
+Running PCB: PID:16 @ PC 90
+Q0: 37
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 2
+IO2: 1
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 14, IO 21, CP Pairs 3, Shared Resource 4
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 19335
+Running PCB: PID:17 @ PC 0
+Q0: 36
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 1
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 14, IO 21, CP Pairs 3, Shared Resource 4
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 19475
+Running PCB: PID:18 @ PC 0
+Q0: 35
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 1
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 14, IO 21, CP Pairs 3, Shared Resource 4
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 19588
+Running PCB: PID:19 @ PC 0
+Q0: 34
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 2
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 14, IO 21, CP Pairs 3, Shared Resource 4
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 19698
+Running PCB: PID:20 @ PC 0
+Q0: 33
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 3
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 14, IO 21, CP Pairs 3, Shared Resource 4
+
+
+ Trying to create: 4 IO, 1 Comp, 0 CP Pairs, 0 Shared Pairs
+
+IO2 Interrupt Detected!
+
+IO 2 Interupt @ Iteration: 23990
+Running PCB: PID:20 @ PC 1801
+Q0: 39
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 2
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 15, IO 25, CP Pairs 3, Shared Resource 4
+
+
+Timer Interrupt Detected!
+
+Timer Interupt @ Iteration: 23991
+Running PCB: PID:21 @ PC 0
+Q0: 38
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 2
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 15, IO 25, CP Pairs 3, Shared Resource 4
+
+
+IO1 Interrupt Detected!
+
+IO 1 Interupt @ Iteration: 23991
+Running PCB: PID:21 @ PC 0
+Q0: 39
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 2
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 15, IO 25, CP Pairs 3, Shared Resource 4
+
+
+ Trying to create: 5 IO, 0 Comp, 0 CP Pairs, 0 Shared Pairs
+
+ Trying to create: 1 IO, 1 Comp, 0 CP Pairs, 0 Shared Pairs
+
+IO2 Interrupt Detected!
+
+IO 2 Interupt @ Iteration: 29588
+Running PCB: PID:21 @ PC 688
+Q0: 48
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 1
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 16, IO 31, CP Pairs 3, Shared Resource 4
+
+
+Timer Interrupt Detected!
+
+Timer Interupt @ Iteration: 29589
+Running PCB: PID:22 @ PC 0
+Q0: 47
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 1
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 16, IO 31, CP Pairs 3, Shared Resource 4
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 29749
+Running PCB: PID:23 @ PC 0
+Q0: 46
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 1
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 16, IO 31, CP Pairs 3, Shared Resource 4
+
+
+ Trying to create: 4 IO, 1 Comp, 0 CP Pairs, 0 Shared Pairs
+
+IO2 Interrupt Detected!
+
+IO 2 Interupt @ Iteration: 34934
+Running PCB: PID:23 @ PC 224
+Q0: 52
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 0
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 17, IO 35, CP Pairs 3, Shared Resource 4
+
+
+Timer Interrupt Detected!
+
+Timer Interupt @ Iteration: 34935
+Running PCB: PID:24 @ PC 0
+Q0: 51
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 0
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 17, IO 35, CP Pairs 3, Shared Resource 4
+
+
+IO1 Interrupt Detected!
+
+IO 1 Interupt @ Iteration: 34957
+Running PCB: PID:24 @ PC 22
+Q0: 52
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 0
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 17, IO 35, CP Pairs 3, Shared Resource 4
+
+
+ Trying to create: 3 IO, 0 Comp, 1 CP Pairs, 0 Shared Pairs
+
+Trap Detected!
+
+Process Terminated @ Iteration: 38115
+Running PCB: PID:25 @ PC 0
+Q0: 56
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 0
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 16, IO 38, CP Pairs 4, Shared Resource 4
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 38222
+Running PCB: PID:26 @ PC 0
+Q0: 57
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 1
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 16, IO 38, CP Pairs 4, Shared Resource 4
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 38378
+Running PCB: PID:27 @ PC 0
+Q0: 56
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 2
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 16, IO 38, CP Pairs 4, Shared Resource 4
+
+
+ Trying to create: 2 IO, 1 Comp, 1 CP Pairs, 1 Shared Pairs
+
+IO2 Interrupt Detected!
+
+IO 2 Interupt @ Iteration: 41341
+Running PCB: PID:27 @ PC 2963
+Q0: 62
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 1
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 17, IO 40, CP Pairs 5, Shared Resource 5
+
+
+Timer Interrupt Detected!
+
+Timer Interupt @ Iteration: 41342
+Running PCB: PID:28 @ PC 0
+Q0: 61
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 1
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 17, IO 40, CP Pairs 5, Shared Resource 5
+
+
+ Trying to create: 0 IO, 0 Comp, 0 CP Pairs, 1 Shared Pairs
+
+IO2 Interrupt Detected!
+
+IO 2 Interupt @ Iteration: 46773
+Running PCB: PID:28 @ PC 341
+Q0: 63
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 0
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 17, IO 40, CP Pairs 5, Shared Resource 6
+
+
+Timer Interrupt Detected!
+
+Timer Interupt @ Iteration: 46774
+Running PCB: PID:29 @ PC 0
+Q0: 62
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 0
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 17, IO 40, CP Pairs 5, Shared Resource 6
+
+
+IO1 Interrupt Detected!
+
+Timer Interrupt Detected!
+
+Timer Interupt @ Iteration: 46774
+Running PCB: PID:30 @ PC 0
+Q0: 61
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 0
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 17, IO 40, CP Pairs 5, Shared Resource 6
+
+
+IO 1 Interupt @ Iteration: 46774
+Running PCB: PID:30 @ PC 0
+Q0: 62
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 2
+IO2: 0
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 17, IO 40, CP Pairs 5, Shared Resource 6
+
+
+IO1 Interrupt Detected!
+
+IO 1 Interupt @ Iteration: 46775
+Running PCB: PID:30 @ PC 1
+Q0: 63
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 1
+IO2: 0
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 17, IO 40, CP Pairs 5, Shared Resource 6
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 46889
+Running PCB: PID:31 @ PC 0
+Q0: 62
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 2
+IO2: 0
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 17, IO 40, CP Pairs 5, Shared Resource 6
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 47060
+Running PCB: PID:32 @ PC 0
+Q0: 61
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 2
+IO2: 1
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 17, IO 40, CP Pairs 5, Shared Resource 6
+
+
+ Trying to create: 3 IO, 2 Comp, 1 CP Pairs, 1 Shared Pairs
+---- HALTING SIMULATION ON ITERATION 50000 ----
+
+ Trying to create: 1 IO, 1 Comp, 1 CP Pairs, 0 Shared Pairs
+
+ Trying to create: 0 IO, 1 Comp, 0 CP Pairs, 0 Shared Pairs
+
+ Trying to create: 2 IO, 1 Comp, 0 CP Pairs, 0 Shared Pairs
+
+ Trying to create: 2 IO, 2 Comp, 1 CP Pairs, 1 Shared Pairs
+
+ Trying to create: 0 IO, 0 Comp, 0 CP Pairs, 1 Shared Pairs
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 159
+Running PCB: PID:2 @ PC 0
+Q0: 13
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 0
+IO2: 1
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 5, CP Pairs 2, Shared Resource 2
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 341
+Running PCB: PID:3 @ PC 0
+Q0: 12
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 0
+IO2: 2
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 5, IO 5, CP Pairs 2, Shared Resource 2
+
+
+ Trying to create: 3 IO, 2 Comp, 1 CP Pairs, 0 Shared Pairs
+
+Timer Interrupt Detected!
+Test PC: 0
+
+Timer Interupt @ Iteration: 5249
+Running PCB: PID:4 @ PC 0
+Q0: 18
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 0
+IO2: 2
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 7, IO 8, CP Pairs 3, Shared Resource 2
+
+
+Syncronization Service Detected!
+
+Process 4 requests lock
+Running PCB: PID:4 @ PC 0
+Q0: 18
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 0
+IO2: 2
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 7, IO 8, CP Pairs 3, Shared Resource 2
+
+
+Syncronization Service Detected!
+
+Process 4 requests lock
+Running PCB: PID:5 @ PC 70
+Q0: 17
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 0
+IO2: 2
+Blocked: 0
+Waiting: 0
+Type Counts: Comp 7, IO 8, CP Pairs 3, Shared Resource 2
+
+
+Syncronization Service Detected!
+
+Consumer 5 calls wait for produced.
+Running PCB: PID:6 @ PC 90
+Q0: 17
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 0
+IO2: 2
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 7, IO 8, CP Pairs 3, Shared Resource 2
+
+
+ Trying to create: 3 IO, 0 Comp, 0 CP Pairs, 0 Shared Pairs
+
+Trap Detected!
+Test PC: 0
+
+Process Terminated @ Iteration: 8447
+Running PCB: PID:7 @ PC 0
+Q0: 19
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 0
+IO2: 2
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 6, IO 11, CP Pairs 3, Shared Resource 2
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 8642
+Running PCB: PID:8 @ PC 0
+Q0: 19
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 0
+IO2: 3
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 6, IO 11, CP Pairs 3, Shared Resource 2
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 8888
+Running PCB: PID:9 @ PC 0
+Q0: 18
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 1
+IO2: 3
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 6, IO 11, CP Pairs 3, Shared Resource 2
+
+
+IO2 Interrupt Detected!
+
+Timer Interrupt Detected!
+Test PC: 0
+
+Timer Interupt @ Iteration: 11170
+Running PCB: PID:10 @ PC 0
+Q0: 17
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 1
+IO2: 3
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 6, IO 11, CP Pairs 3, Shared Resource 2
+
+
+IO 2 Interupt @ Iteration: 11170
+Running PCB: PID:10 @ PC 21
+Q0: 18
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 1
+IO2: 2
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 6, IO 11, CP Pairs 3, Shared Resource 2
+
+
+IO1 Interrupt Detected!
+
+IO 1 Interupt @ Iteration: 11171
+Running PCB: PID:10 @ PC 22
+Q0: 19
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 0
+IO2: 2
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 6, IO 11, CP Pairs 3, Shared Resource 2
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 11316
+Running PCB: PID:11 @ PC 0
+Q0: 18
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 1
+IO2: 2
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 6, IO 11, CP Pairs 3, Shared Resource 2
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 11471
+Running PCB: PID:12 @ PC 0
+Q0: 17
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 2
+IO2: 2
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 6, IO 11, CP Pairs 3, Shared Resource 2
+
+
+ Trying to create: 3 IO, 2 Comp, 0 CP Pairs, 1 Shared Pairs
+
+Timer Interrupt Detected!
+Test PC: 0
+
+Timer Interupt @ Iteration: 15020
+Running PCB: PID:13 @ PC 0
+Q0: 21
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 2
+IO2: 2
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 8, IO 14, CP Pairs 3, Shared Resource 3
+
+
+ Trying to create: 3 IO, 0 Comp, 1 CP Pairs, 1 Shared Pairs
+
+IO2 Interrupt Detected!
+
+Timer Interrupt Detected!
+Test PC: 0
+
+Timer Interupt @ Iteration: 18836
+Running PCB: PID:14 @ PC 0
+Q0: 28
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 2
+IO2: 2
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 8, IO 17, CP Pairs 4, Shared Resource 4
+
+
+IO 2 Interupt @ Iteration: 18836
+Running PCB: PID:14 @ PC 857
+Q0: 29
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 2
+IO2: 1
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 8, IO 17, CP Pairs 4, Shared Resource 4
+
+
+IO1 Interrupt Detected!
+
+IO 1 Interupt @ Iteration: 18837
+Running PCB: PID:14 @ PC 858
+Q0: 30
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 1
+IO2: 1
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 8, IO 17, CP Pairs 4, Shared Resource 4
+
+
+ Trying to create: 5 IO, 2 Comp, 0 CP Pairs, 0 Shared Pairs
+
+Syncronization Service Detected!
+
+Process 14 requests lock
+Running PCB: PID:14 @ PC 0
+Q0: 30
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 1
+IO2: 1
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 10, IO 22, CP Pairs 4, Shared Resource 4
+
+
+Syncronization Service Detected!
+
+Process 14 requests lock
+Running PCB: PID:15 @ PC 70
+Q0: 36
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 1
+IO2: 1
+Blocked: -1
+Waiting: 1
+Type Counts: Comp 10, IO 22, CP Pairs 4, Shared Resource 4
+
+
+Syncronization Service Detected!
+
+Consumer 15 calls wait for produced.
+Running PCB: PID:20 @ PC 90
+Q0: 36
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 1
+IO2: 1
+Blocked: -2
+Waiting: 2
+Type Counts: Comp 10, IO 22, CP Pairs 4, Shared Resource 4
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 20450
+Running PCB: PID:21 @ PC 0
+Q0: 35
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 2
+IO2: 1
+Blocked: -2
+Waiting: 2
+Type Counts: Comp 10, IO 22, CP Pairs 4, Shared Resource 4
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 20706
+Running PCB: PID:22 @ PC 0
+Q0: 34
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 1
+Blocked: -2
+Waiting: 2
+Type Counts: Comp 10, IO 22, CP Pairs 4, Shared Resource 4
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 20848
+Running PCB: PID:23 @ PC 0
+Q0: 33
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 1
+Blocked: -2
+Waiting: 2
+Type Counts: Comp 10, IO 22, CP Pairs 4, Shared Resource 4
+
+
+Timer Interrupt Detected!
+Test PC: 0
+
+Timer Interupt @ Iteration: 23185
+Running PCB: PID:24 @ PC 0
+Q0: 32
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 1
+Blocked: -2
+Waiting: 2
+Type Counts: Comp 10, IO 22, CP Pairs 4, Shared Resource 4
+
+
+ Trying to create: 3 IO, 1 Comp, 1 CP Pairs, 1 Shared Pairs
+
+ Trying to create: 0 IO, 1 Comp, 1 CP Pairs, 0 Shared Pairs
+
+Timer Interrupt Detected!
+Test PC: 0
+
+Timer Interupt @ Iteration: 28531
+Running PCB: PID:25 @ PC 0
+Q0: 42
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 1
+Blocked: -2
+Waiting: 2
+Type Counts: Comp 12, IO 25, CP Pairs 6, Shared Resource 5
+
+
+IO1 Interrupt Detected!
+
+IO 1 Interupt @ Iteration: 28531
+Running PCB: PID:25 @ PC 0
+Q0: 43
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 1
+Blocked: -2
+Waiting: 2
+Type Counts: Comp 12, IO 25, CP Pairs 6, Shared Resource 5
+
+
+IO2 Interrupt Detected!
+
+IO 2 Interupt @ Iteration: 28531
+Running PCB: PID:25 @ PC 0
+Q0: 44
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 0
+Blocked: -2
+Waiting: 2
+Type Counts: Comp 12, IO 25, CP Pairs 6, Shared Resource 5
+
+
+Syncronization Service Detected!
+
+Process 25 requests lock
+Running PCB: PID:25 @ PC 0
+Q0: 44
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 0
+Blocked: -2
+Waiting: 2
+Type Counts: Comp 12, IO 25, CP Pairs 6, Shared Resource 5
+
+
+Syncronization Service Detected!
+
+Process 25 requests lock
+Running PCB: PID:26 @ PC 70
+Q0: 43
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 0
+Blocked: -2
+Waiting: 2
+Type Counts: Comp 12, IO 25, CP Pairs 6, Shared Resource 5
+
+
+Syncronization Service Detected!
+
+Consumer 26 calls wait for produced.
+Running PCB: PID:4 @ PC 90
+Q0: 43
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 0
+Blocked: -3
+Waiting: 3
+Type Counts: Comp 12, IO 25, CP Pairs 6, Shared Resource 5
+
+
+Syncronization Service Detected!
+
+Producer 4 incremented counter to 1.
+
+Producer 4 signals produced.
+Running PCB: PID:4 @ PC 110
+Q0: 43
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 0
+Blocked: -2
+Waiting: 2
+Type Counts: Comp 12, IO 25, CP Pairs 6, Shared Resource 5
+
+
+Syncronization Service Detected!
+
+Process 4 releases lock
+Running PCB: PID:4 @ PC 120
+Q0: 44
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 0
+Blocked: -3
+Waiting: 2
+Type Counts: Comp 12, IO 25, CP Pairs 6, Shared Resource 5
+
+
+Timer Interrupt Detected!
+Test PC: 0
+
+Timer Interupt @ Iteration: 30974
+Running PCB: PID:27 @ PC 0
+Q0: 43
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 0
+Blocked: -3
+Waiting: 2
+Type Counts: Comp 12, IO 25, CP Pairs 6, Shared Resource 5
+
+
+Timer Interrupt Detected!
+Test PC: 0
+
+Timer Interupt @ Iteration: 30975
+Running PCB: PID:28 @ PC 0
+Q0: 42
+Q1: 2
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 0
+Blocked: -3
+Waiting: 2
+Type Counts: Comp 12, IO 25, CP Pairs 6, Shared Resource 5
+
+
+Timer Interrupt Detected!
+Test PC: 0
+
+Timer Interupt @ Iteration: 30976
+Running PCB: PID:29 @ PC 0
+Q0: 41
+Q1: 3
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 0
+Blocked: -3
+Waiting: 2
+Type Counts: Comp 12, IO 25, CP Pairs 6, Shared Resource 5
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 31209
+Running PCB: PID:3 @ PC 830
+Q0: 40
+Q1: 3
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 1
+Blocked: -3
+Waiting: 2
+Type Counts: Comp 12, IO 25, CP Pairs 6, Shared Resource 5
+
+
+ Trying to create: 0 IO, 0 Comp, 1 CP Pairs, 1 Shared Pairs
+
+Trap Detected!
+Test PC: 159
+
+Process Terminated @ Iteration: 34457
+Running PCB: PID:1 @ PC 159
+Q0: 41
+Q1: 3
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 1
+Blocked: -3
+Waiting: 2
+Type Counts: Comp 11, IO 25, CP Pairs 7, Shared Resource 6
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 34524
+Running PCB: PID:8 @ PC 246
+Q0: 40
+Q1: 3
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 2
+Blocked: -3
+Waiting: 2
+Type Counts: Comp 11, IO 25, CP Pairs 7, Shared Resource 6
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 34576
+Running PCB: PID:30 @ PC 0
+Q0: 39
+Q1: 3
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 3
+IO2: 3
+Blocked: -3
+Waiting: 2
+Type Counts: Comp 11, IO 25, CP Pairs 7, Shared Resource 6
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 34726
+Running PCB: PID:31 @ PC 0
+Q0: 38
+Q1: 3
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 3
+Blocked: -3
+Waiting: 2
+Type Counts: Comp 11, IO 25, CP Pairs 7, Shared Resource 6
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 34869
+Running PCB: PID:32 @ PC 0
+Q0: 37
+Q1: 3
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 3
+Blocked: -3
+Waiting: 2
+Type Counts: Comp 11, IO 25, CP Pairs 7, Shared Resource 6
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 34995
+Running PCB: PID:33 @ PC 0
+Q0: 36
+Q1: 3
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 4
+Blocked: -3
+Waiting: 2
+Type Counts: Comp 11, IO 25, CP Pairs 7, Shared Resource 6
+
+
+Timer Interrupt Detected!
+Test PC: 0
+
+Timer Interupt @ Iteration: 35176
+Running PCB: PID:34 @ PC 0
+Q0: 35
+Q1: 4
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 4
+Blocked: -3
+Waiting: 2
+Type Counts: Comp 11, IO 25, CP Pairs 7, Shared Resource 6
+
+
+IO2 Interrupt Detected!
+
+IO 2 Interupt @ Iteration: 35197
+Running PCB: PID:34 @ PC 21
+Q0: 36
+Q1: 4
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 3
+Blocked: -3
+Waiting: 2
+Type Counts: Comp 11, IO 25, CP Pairs 7, Shared Resource 6
+
+
+IO1 Interrupt Detected!
+
+IO 1 Interupt @ Iteration: 35198
+Running PCB: PID:34 @ PC 22
+Q0: 37
+Q1: 4
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 3
+Blocked: -3
+Waiting: 2
+Type Counts: Comp 11, IO 25, CP Pairs 7, Shared Resource 6
+
+
+ Trying to create: 0 IO, 2 Comp, 1 CP Pairs, 0 Shared Pairs
+
+ Trying to create: 0 IO, 0 Comp, 0 CP Pairs, 0 Shared Pairs
+
+Timer Interrupt Detected!
+Test PC: 0
+
+Timer Interupt @ Iteration: 40389
+Running PCB: PID:37 @ PC 0
+Q0: 45
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 3
+Blocked: -3
+Waiting: 2
+Type Counts: Comp 13, IO 25, CP Pairs 8, Shared Resource 6
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 40593
+Running PCB: PID:38 @ PC 0
+Q0: 44
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 4
+Blocked: -3
+Waiting: 2
+Type Counts: Comp 13, IO 25, CP Pairs 8, Shared Resource 6
+
+
+Trap Detected!
+
+IO 2 Trap Call @ Iteration: 40742
+Running PCB: PID:39 @ PC 0
+Q0: 43
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 5
+Blocked: -3
+Waiting: 2
+Type Counts: Comp 13, IO 25, CP Pairs 8, Shared Resource 6
+
+
+Trap Detected!
+
+IO 1 Trap Call @ Iteration: 40881
+Running PCB: PID:40 @ PC 0
+Q0: 42
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 5
+Blocked: -3
+Waiting: 2
+Type Counts: Comp 13, IO 25, CP Pairs 8, Shared Resource 6
+
+
+Syncronization Service Detected!
+
+Process 40 requests lock
+Running PCB: PID:40 @ PC 0
+Q0: 42
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 5
+Blocked: -3
+Waiting: 2
+Type Counts: Comp 13, IO 25, CP Pairs 8, Shared Resource 6
+
+
+Syncronization Service Detected!
+
+Process 40 requests lock
+Running PCB: PID:41 @ PC 70
+Q0: 41
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 5
+Blocked: -3
+Waiting: 2
+Type Counts: Comp 13, IO 25, CP Pairs 8, Shared Resource 6
+
+
+Syncronization Service Detected!
+
+Consumer 41 calls wait for produced.
+Running PCB: PID:9 @ PC 90
+Q0: 41
+Q1: 0
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 5
+Blocked: -4
+Waiting: 3
+Type Counts: Comp 13, IO 25, CP Pairs 8, Shared Resource 6
+
+
+ Trying to create: 2 IO, 0 Comp, 1 CP Pairs, 0 Shared Pairs
+
+IO2 Interrupt Detected!
+
+Timer Interrupt Detected!
+Test PC: 3549
+
+Timer Interupt @ Iteration: 45363
+Running PCB: PID:12 @ PC 3549
+Q0: 44
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 5
+Blocked: -4
+Waiting: 3
+Type Counts: Comp 13, IO 27, CP Pairs 9, Shared Resource 6
+
+
+IO 2 Interupt @ Iteration: 45363
+Running PCB: PID:12 @ PC 2221
+Q0: 45
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 5
+IO2: 4
+Blocked: -4
+Waiting: 3
+Type Counts: Comp 13, IO 27, CP Pairs 9, Shared Resource 6
+
+
+IO1 Interrupt Detected!
+
+IO 1 Interupt @ Iteration: 45364
+Running PCB: PID:12 @ PC 2222
+Q0: 46
+Q1: 1
+Q2: 0
+Q3: 0
+Q4: 0
+Q5: 0
+Q6: 0
+Q7: 0
+Q8: 0
+Q9: 0
+Q10: 0
+Q11: 0
+Q12: 0
+Q13: 0
+Q14: 0
+Q15: 0
+IO1: 4
+IO2: 4
+Blocked: -4
+Waiting: 3
+Type Counts: Comp 13, IO 27, CP Pairs 9, Shared Resource 6
+
+
+ Trying to create: 2 IO, 2 Comp, 1 CP Pairs, 1 Shared Pairs
+---- HALTING SIMULATION ON ITERATION 50000 ----
