@@ -123,6 +123,7 @@ void * OS_Simulator(void *arg) {
         // Check for Syncronization services
         // TODO: BREAK INNER IF STATE INTO FUNCTIONS
         syncro_flag = isAtSyncro(processes->runningProcess);
+		trapFlag = getInterruptType(syncro_flag);
         if (syncro_flag) {
             int error_bad_pcb_for_syncro = 0;
 
@@ -134,11 +135,11 @@ void * OS_Simulator(void *arg) {
 
                switch (syncro_flag) {
                     case LOCK_RESOURCE_1:
-						printf("\nProcess %d requests lock\n", processes->runningProcess->pid);
+						printf("\nProcess %d requests lock #1\n", processes->runningProcess->pid);
                         lock_tsr(pair->mutex);
                         break;
                     case UNLOCK_RESOURCE_1:
-						printf("\nProcess %d releases lock\n", processes->runningProcess->pid);
+						printf("\nProcess %d releases lock #1\n", processes->runningProcess->pid);
                         unlock_tsr(pair->mutex);
                         break;
                     case WAIT_RESOURCE_1:
@@ -169,25 +170,29 @@ void * OS_Simulator(void *arg) {
 				RESOURCE_PAIR_p pair = getResourcePair(processes->runningProcess);
 				switch (syncro_flag) {
 				case LOCK_RESOURCE_1:
+					printf("\nProcess %d requests lock #1\n", processes->runningProcess->pid);
 					lock_tsr(pair->mutex_1);
 					break;
 				case LOCK_RESOURCE_2:
+					printf("\nProcess %d requests lock #2\n", processes->runningProcess->pid);
 					lock_tsr(pair->mutex_2);
 					break;
 				case UNLOCK_RESOURCE_1:
+					printf("\nProcess %d releases lock #2\n", processes->runningProcess->pid);
 					unlock_tsr(pair->mutex_1);
 					break;
 				case UNLOCK_RESOURCE_2:
-						unlock_tsr(pair->mutex_2);
-						break;
-					default:
-						break;
+					printf("\nProcess %d releases lock #2\n", processes->runningProcess->pid);
+					unlock_tsr(pair->mutex_2);
+					break;
+				default:
+					break;
 				}
 			}
 			else {
 				assert(error_bad_pcb_for_syncro);
 			}
-			printInterupt(syncro_flag);
+			printInterupt(trapFlag);
         }
         
 		assert(ss_getSize(sysStack) == 0);
@@ -772,7 +777,6 @@ int dispatcherLock(PCB_p process, CUSTOM_MUTEX_p mutex) {
 	if (processes->runningProcess == process) {
 		processes->runningProcess = p_dequeue(processes->readyProcesses);
 		setState(processes->runningProcess, RUNNING);
-		total_blocked--;
 	}
 
 	ss_push(sysStack, getPC(processes->runningProcess));
@@ -1268,6 +1272,9 @@ int printInterupt(int interupt) {
 	case WAIT_INTERRUPT:
 		printf("\nWait Trap Call @ Iteration: %d\n", iterationCount);
 		break;
+	default:
+		printf("\nUnknown Interrupt %d @ Iteration: %d\n", interupt, iterationCount);
+		break;
     }
     printf("Running PCB: PID:%d @ PC %d\n", getPid(processes->runningProcess), currentPC);
     pQSizeToString(processes->readyProcesses, buffer, MAX_BUFFER_SIZE);
@@ -1278,6 +1285,29 @@ int printInterupt(int interupt) {
 	printf("Waiting: %d\n", total_waiting);
     printf("Type Counts: Comp %d, IO %d, CP Pairs %d, Shared Resource %d\n\n", 
             total_comp_processes, total_io_processes, total_cp_pairs, total_resource_pairs);
+}
+
+int getInterruptType(int flag) {
+	switch (flag)	{
+	case LOCK_RESOURCE_1:
+	case LOCK_RESOURCE_2:
+		return LOCK_INTERRUPT;
+		break;
+	case UNLOCK_RESOURCE_1:
+	case UNLOCK_RESOURCE_2:
+		return UNLOCK_INTERRUPT;
+		break;
+	case WAIT_RESOURCE_1:
+		return WAIT_INTERRUPT;
+		break;
+	case SIGNAL_RESOURCE_1:
+			return SIGNAL_INTERRUPT;
+			break;
+	default:
+		break;
+	}
+
+	return -1;
 }
 
 // Added for problem 4

@@ -276,3 +276,5 @@ void destruct_Custom_Mutex(CUSTOM_MUTEX_p mutex);
 void destruct_Custom_Cond(CUSTOM_COND_p cond);
 
 void check_for_deadlock();
+
+int getInterruptType(int);
