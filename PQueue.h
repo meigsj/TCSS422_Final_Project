@@ -3,9 +3,7 @@ TCSS422 - Operating Systems
 Final Project
 
 Group Members:
-Kirtwinder Gulati
 Shaun Coleman
-Ayub Tiba
 Joshua Meigs
 */
 

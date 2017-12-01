@@ -3,38 +3,20 @@ TCSS422 - Operating Systems
 Final Project
 
 Group Members:
-Kirtwinder Gulati
 Shaun Coleman
-Ayub Tiba
 Joshua Meigs
 */
+#pragma once
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
 #include "FIFOq.h"
 #include "pcb.h"
 #include "PQueue.h"
+#include "Simple_Stack.h"
+#include "Deadlock_Monitor.h"
 
-// value to denote current interupt is a timer interupt
-#define TIMER_INTERUPT 1
 
-// value to denote current interupt is a IO 1 interupt
-#define IO_1_INTERUPT 2
-
-// value to denote current interupt is a IO 2 interupt
-#define IO_2_INTERUPT 3
-
-// value to denote a TRAP call to IO 1
-#define IO_1_TRAP 4
-
-// value to denote a TRAP call to IO 2
-#define IO_2_TRAP 5
-
-// value to denote a program was halted
-#define PCB_TERMINATED 6
-
-// value to denote no interupt or trap detected
-#define NO_INTERUPT 0
 
 // value to denote a successful function return
 #define SUCCESSFUL 0
@@ -100,6 +82,17 @@ Joshua Meigs
 // A Constant used to test the io device's interrupt frequency
 #define IO_FREQ 10000
 
+// An enum used to denote which interrupt is occuring for the scheduler
+enum interrupt_type { NO_INTERUPT, TIMER_INTERUPT, IO_1_INTERUPT, IO_2_INTERUPT, IO_1_TRAP
+    , IO_2_TRAP, PCB_TERMINATED, LOCK_INTERRUPT, UNLOCK_INTERRUPT, WAIT_INTERRUPT, SIGNAL_INTERRUPT
+};
+
+// An enum used to denote which syncronization services was requested
+enum syncro_code { NO_RESOURCE_SYNCRO, LOCK_RESOURCE_1, UNLOCK_RESOURCE_1, LOCK_RESOURCE_2, UNLOCK_RESOURCE_2
+                    , SIGNAL_RESOURCE_1, WAIT_RESOURCE_1};
+
+enum code_wait_code {COND_NOT_READY, COND_READY};
+
 typedef struct process_queues {
     // all currently used process queues and the running process pcb
     FIFOq_p newProcesses;
@@ -130,14 +123,7 @@ typedef struct io_device {
 
 typedef IO_DEVICE_s* IO_DEVICE_p;
 
-typedef struct custom_mutex {
-	// NULL if no process holds the mutex, otherwise the pointer to the process
-	PCB_p owner;
-	// A FIFO_q of processes blocked waiting for the mutex
-	FIFOq_p blocked;
-} CUSTOM_MUTEX_s;
 
-typedef CUSTOM_MUTEX_s* CUSTOM_MUTEX_p;
 
 typedef struct custom_cond {
 	// int representing the state
@@ -164,17 +150,7 @@ typedef struct cp_pair {
 
 typedef CP_PAIR_s* CP_PAIR_p;
 
-typedef struct resource_pair {
-	// pointers to the processes in the pair
-	PCB_p process_1;
-	PCB_p process_2;
 
-	// Syncronization vars
-	CUSTOM_MUTEX_p mutex_1;
-	CUSTOM_MUTEX_p mutex_2;
-} RESOURCE_PAIR_s;
-
-typedef RESOURCE_PAIR_s* RESOURCE_PAIR_p;
 
 // A function to act as the main loop for the simulator
 //void OS_Simulator();
@@ -183,7 +159,7 @@ typedef RESOURCE_PAIR_s* RESOURCE_PAIR_p;
 int pseudoISR();
 
 // A function to simulate an OS scheduler
-int scheduler(int, PCB_p);
+int scheduler(int, PCB_p, CUSTOM_MUTEX_p, CUSTOM_COND_p);
 
 // A function to simulate a dispatcher for timer interrupts
 int dispatcher();
@@ -257,14 +233,6 @@ CP_PAIR_p getPCPair(PCB_p);
 
 CP_PAIR_p getPCPair(PCB_p);
 
-int simulate_mutex_lock(PCB_p, CUSTOM_MUTEX_p);
-
-int simulate_mutex_unlock(CUSTOM_MUTEX_p);
-
-int simulate_cond_wait(PCB_p, CUSTOM_COND_p);
-
-int simulate_cond_signal(PCB_p, CUSTOM_COND_p);
-
 int createIOProcess();
 
 int createComputeIntensiveProcess();
@@ -278,3 +246,33 @@ void initialize_CP_Pair(CP_PAIR_p);
 void timer_check();
 
 void IO_check();
+
+int lock_tsr(CUSTOM_MUTEX_p);
+
+int unlock_tsr(CUSTOM_MUTEX_p mutex);
+
+int wait_tsr(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond);
+
+int signal_tsr(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond);
+
+int dispatcherLock(PCB_p process, CUSTOM_MUTEX_p mutex);
+
+int dispatcherUnlock(CUSTOM_MUTEX_p mutex);
+
+int dispatcherWait(PCB_p process, CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond);
+
+int dispatcherSignal(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond);
+
+int isAtSyncro(PCB_p pcb);
+
+RESOURCE_PAIR_p getResourcePair(PCB_p process);
+
+void destruct_Resource_Pair(RESOURCE_PAIR_p the_pair);
+
+void destruct_CP_Pair(CP_PAIR_p pair);
+
+void destruct_Custom_Mutex(CUSTOM_MUTEX_p mutex);
+
+void destruct_Custom_Cond(CUSTOM_COND_p cond);
+
+void check_for_deadlock();

@@ -3,11 +3,10 @@ TCSS422 - Operating Systems
 Final Project
 
 Group Members:
-Kirtwinder Gulati
 Shaun Coleman
-Ayub Tiba
 Joshua Meigs
 */
+
 #include "FIFOq.h"
 
 // Allocates memory for a FIFOq and returns a FIFOq pointer

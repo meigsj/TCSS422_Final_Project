@@ -3,9 +3,7 @@ TCSS422 - Operating Systems
 Final Project
 
 Group Members:
-Kirtwinder Gulati
 Shaun Coleman
-Ayub Tiba
 Joshua Meigs
 */
 
@@ -87,8 +85,6 @@ int initialize_pcb(PCB_p my_pcb) {
 			my_pcb->lock_2_pcs[i] = 0;
 			my_pcb->unlock_1_pcs[i] = 0;
 			my_pcb->unlock_2_pcs[i] = 0;
-			my_pcb->trylock_1_pcs[i] = 0;
-			my_pcb->trylock_2_pcs[i] = 0;
 			my_pcb->wait_1_pcs[i] = 0;
 			my_pcb->signal_1_pcs[i] = 0;
 		}
