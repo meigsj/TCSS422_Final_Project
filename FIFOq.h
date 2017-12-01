@@ -3,9 +3,7 @@ TCSS422 - Operating Systems
 Final Project
 
 Group Members:
-Kirtwinder Gulati
 Shaun Coleman
-Ayub Tiba
 Joshua Meigs
 */
 
@@ -94,3 +92,6 @@ int nodeCount(FIFOq_p);
 // ADDED FOR PROBLEM 4
 // A function to set the priority of all contained PCBs to 0
 int q_resetPriority(FIFOq_p);
+
+// A function to linearly search the queue to see if the specified pcb is contained
+int q_contains(FIFOq_p queue, PCB_p pcb);
