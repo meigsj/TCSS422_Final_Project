@@ -656,7 +656,7 @@ int dispatcherTrap(FIFOq_p IO_Queue, PCB_p running) {
 	setNodePCB(node, running);
 	q_enqueue(IO_Queue, node);
 
-	if (processes->runningProcess == running) {
+	if (processes->runningProcess->pid == running->pid) {
 		// dequeue
 		processes->runningProcess = p_dequeue(processes->readyProcesses);
 		// update state to running
@@ -1089,7 +1089,7 @@ int createSharedResourcePair() {
     initializeNode(node_1);
     initializeNode(node_2);
     setNodePCB(node_1, process_1);
-    setNodePCB(node_1, process_2);
+    setNodePCB(node_2, process_2);
     q_enqueue(processes->newProcesses, node_1);
     q_enqueue(processes->newProcesses, node_2);
 
@@ -1233,9 +1233,12 @@ int simulateProgramStep() {
 
 // Moves proceeses from the new queue to the ready queue
 int moveNewToReady() {
+    int i = 0;
+    int newInQ = nodeCount(processes->newProcesses);
     // Move to Scheduler
     // set new processes to ready
     while (!q_is_empty(processes->newProcesses)) {
+        
         // initialize new node
         Node_p node = construct_Node();
         initializeNode(node);
@@ -1247,7 +1250,31 @@ int moveNewToReady() {
         // enqueue 
         setNodePCB(node, pcb);
         p_enqueue(processes->readyProcesses, node);
+        i++;
     }
+
+    printf("Moved %d processes.  %d detected in new queue.", i, newInQ);
+}
+
+int countAllNodes() {
+    int total = 1; // Running Process
+
+    total += getTotalNodesCount(processes->readyProcesses);
+    total += nodeCount(processes->newProcesses);
+    total += nodeCount(processes->IO_1_Processes);
+    total += nodeCount(processes->IO_2_Processes);
+
+    for (int i = 0; i < total_cp_pairs; i++) {
+        total += nodeCount(cp_pairs[i]->mutex->blocked);
+        total += nodeCount(cp_pairs[i]->produced->waiting);
+        total += nodeCount(cp_pairs[i]->consumed->waiting);
+    }
+
+    for (int i = 0; i < total_resource_pairs; i++) {
+        total += nodeCount(resource_pairs[i]->mutex_1->blocked);
+        total += nodeCount(resource_pairs[i]->mutex_2->blocked);
+    }
+    return total;
 }
 
 // Updated for problem 4
@@ -1297,8 +1324,9 @@ int printInterupt(int interupt) {
     printf("IO2: %d\n", nodeCount(processes->IO_2_Processes));
 	printf("Blocked: %d\n", total_blocked);
 	printf("Waiting: %d\n", total_waiting);
-    printf("Type Counts: Comp %d, IO %d, CP Pairs %d, Shared Resource %d\n\n", 
+    printf("Type Counts: Comp %d, IO %d, CP Pairs %d, Shared Resource %d\n", 
             total_comp_processes, total_io_processes, total_cp_pairs, total_resource_pairs);
+    printf("Total Nodes: %d\n\n", countAllNodes());
 }
 
 int getInterruptType(int flag) {
@@ -1419,12 +1447,8 @@ int main() {
     // Seed RNG
     srand(time(NULL));
 
-
-
     // Initialize Queues
     initializeProcessQueues();
-
-
 
     // Added for Problem 3
     // SetQuantums
@@ -1451,6 +1475,8 @@ int main() {
 	total_terminated = 0;
 	total_blocked = 0;
 	total_waiting = 0;
+    total_comp_processes = 1;
+    total_io_processes = 0;
     timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));
     // create starting processes
     // set a process to running
