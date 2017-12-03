@@ -196,7 +196,8 @@ void * OS_Simulator(void *arg) {
         }
         
 		assert(ss_getSize(sysStack) == 0);
-        
+        assert(getTotalNodesCount(processes->readyProcesses) <= (PRO_CON_MAX + SHARED_RESOURCE_MAX + COMPUTE_PROCESS_MAX + IO_PROCESS_MAX));
+
 		//check stop condition for the simulation
         if (iterationCount >= HALT_CONDITION) {
             printf("---- HALTING SIMULATION ON ITERATION %d ----\n", iterationCount);
@@ -216,7 +217,8 @@ void * timer_thread(void * s) {
     struct timespec ts;
     pthread_mutex_lock(&timer_lock);
     ts.tv_sec = 0;
-    ts.tv_nsec = timer;//(timer*1000);
+    ts.tv_nsec = timer/2;//(timer*1000);
+    int i = 10000;
 
     for (;;) {
         pthread_mutex_lock(&global_shutdown_lock);
@@ -224,7 +226,9 @@ void * timer_thread(void * s) {
             break;
         }
 
-        nanosleep(&ts, NULL);
+        for (int j = 0; j < i; j++) {}
+
+        //nanosleep(&ts, NULL);
         pthread_mutex_unlock(&global_shutdown_lock);
         while (!ISR_FINISHED) {
             pthread_cond_wait(&timer_cond, &timer_lock);
@@ -232,7 +236,7 @@ void * timer_thread(void * s) {
         ISR_FINISHED = 0;
 
         //TODO add locks for grabbing the timer and setting the timer
-        ts.tv_nsec = timer;
+        ts.tv_nsec = timer/2;
     }
 }
 
@@ -1038,8 +1042,8 @@ int createConsumerProducerPair() {
 int createSharedResourcePair() {
     PCB_p process_1 = NULL;
     PCB_p process_2 = NULL;
-    Node_p pro_node;
-    Node_p con_code;
+    Node_p node_1;
+    Node_p node_2;
     RESOURCE_PAIR_p pair;
 
     if (total_resource_pairs >= SHARED_RESOURCE_MAX) return 1; // MAGIC NUMBER
@@ -1078,6 +1082,16 @@ int createSharedResourcePair() {
     pair->process_2 = process_2;
     resource_pairs[total_resource_pairs] = pair;
     total_resource_pairs++;
+
+    // enqueue
+    node_1 = construct_Node();
+    node_2 = construct_Node();
+    initializeNode(node_1);
+    initializeNode(node_2);
+    setNodePCB(node_1, process_1);
+    setNodePCB(node_1, process_2);
+    q_enqueue(processes->newProcesses, node_1);
+    q_enqueue(processes->newProcesses, node_2);
 
     return SUCCESSFUL;
 }
@@ -1399,6 +1413,7 @@ void check_for_deadlock() {
 
 int main() {
     pthread_t os;
+
     shutting_down = 0;
     ISR_FINISHED = 0;
     // Seed RNG

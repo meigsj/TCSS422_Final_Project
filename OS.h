@@ -29,7 +29,7 @@ Joshua Meigs
 
 // The amount of loop iterations before halting the simulation
 // Set low for output txt, tested at 500,000 iterations and no halting condition
-#define HALT_CONDITION 50000
+#define HALT_CONDITION 100000
 
 // The amount of loop iterations before creating new processes
 #define NEW_PROCESS_ITERATION 4000
