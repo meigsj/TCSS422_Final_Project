@@ -104,6 +104,7 @@ void * OS_Simulator(void *arg) {
         if ((iterationCount % NEW_PROCESS_ITERATION) == 0) {
             createNewProcesses(processes->newProcesses);
         }
+
         ////  TO REMOVE AND REPLACE WITH CHECK CONDITION FOR TIMER INTERUPT
         //Trigger timer and check for timer interupt
         timer_check();
@@ -143,7 +144,7 @@ void * OS_Simulator(void *arg) {
                         unlock_tsr(pair->mutex);
                         break;
                     case WAIT_RESOURCE_1:
-                        if (pair->producer == processes->runningProcess) {
+                        if (pair->producer->pid == processes->runningProcess->pid) {
 							printf("\nProducer %d calls wait for consumed.\n", pair->producer->pid);
                             wait_tsr(pair->mutex, pair->consumed);
                         } else {
@@ -152,7 +153,7 @@ void * OS_Simulator(void *arg) {
                         }
                         break;
                     case SIGNAL_RESOURCE_1:
-                        if (pair->producer == processes->runningProcess) {
+                        if (pair->producer->pid == processes->runningProcess->pid) {
 							pair->counter++;
 							printf("\nProducer %d incremented counter to %d.\n", pair->producer->pid, pair->counter);
 							signal_tsr(pair->mutex, pair->produced);
@@ -218,7 +219,7 @@ void * timer_thread(void * s) {
     pthread_mutex_lock(&timer_lock);
     ts.tv_sec = 0;
     ts.tv_nsec = timer/2;//(timer*1000);
-    int i = 10000;
+    int i = timer * 1000;
 
     for (;;) {
         pthread_mutex_lock(&global_shutdown_lock);
@@ -237,6 +238,7 @@ void * timer_thread(void * s) {
 
         //TODO add locks for grabbing the timer and setting the timer
         ts.tv_nsec = timer/2;
+        int i = timer * 100;
     }
 }
 
@@ -389,7 +391,7 @@ int pseudoISR() {
     int state = getState(running);
 
     // set state to interupted if the process was not halted
-    if (state != HALTED || state != WAITING) {
+    if (state != HALTED && state != WAITING) {
         setState(running, INTERRUPTED);
     }
 
@@ -431,12 +433,12 @@ int IO_Interupt_Routine(int IO_interupt) {
 // A function to simulate a TSR
 int pseudoTSR(int trap_interupt) {
     PCB_p running = processes->runningProcess;
-    setPC(running, currentPC);
+    setPC(processes->runningProcess, currentPC);
     if (trap_interupt == PCB_TERMINATED) {
-        setState(running, HALTED);
-        setTermination(running, time(NULL));
+        setState(processes->runningProcess, HALTED);
+        setTermination(processes->runningProcess, time(NULL));
     } else {
-        setState(running, WAITING);
+        setState(processes->runningProcess, WAITING);
     }
     
     timer_check();
@@ -602,6 +604,7 @@ int dispatcher() {
             p_enqueue(processes->readyProcesses, node);
             break;
         case WAITING:
+            printf("\n Not enqueueing a waiting process.\n");
             // do not enqueue running proccess if waiting
             // process will be enqueued to proper IO device
             // once the TSR resumes
@@ -655,6 +658,8 @@ int dispatcherTrap(FIFOq_p IO_Queue, PCB_p running) {
 	// enqueue
 	setNodePCB(node, running);
 	q_enqueue(IO_Queue, node);
+
+    printf("\nP->Running %d, Running %d\n", processes->runningProcess->pid, running->pid);
 
 	if (processes->runningProcess->pid == running->pid) {
 		// dequeue
@@ -778,7 +783,7 @@ int dispatcherLock(PCB_p process, CUSTOM_MUTEX_p mutex) {
     q_enqueue(mutex->blocked, node);
 	total_blocked++;
 
-	if (processes->runningProcess == process) {
+	if (processes->runningProcess->pid == process->pid) {
 		processes->runningProcess = p_dequeue(processes->readyProcesses);
 		setState(processes->runningProcess, RUNNING);
 	}
@@ -825,7 +830,7 @@ int dispatcherWait(PCB_p process, CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond) {
 		total_blocked--;
     }
 
-	if (processes->runningProcess == process) {
+	if (processes->runningProcess->pid == process->pid) {
 		processes->runningProcess = p_dequeue(processes->readyProcesses);
 		setState(processes->runningProcess, RUNNING);
 	}
@@ -1006,15 +1011,17 @@ int createConsumerProducerPair() {
     setTerminate(consumer, 0);
 
     // Set syncro trap calls
-    producer->lock_1_pcs[0] = 70;
-    producer->wait_1_pcs[0] = 90;
-    producer->signal_1_pcs[0] = 110;
-    producer->unlock_1_pcs[0] = 120;
+    producer->lock_1_pcs[0] = 7;
+    producer->wait_1_pcs[0] = 11;
+    producer->signal_1_pcs[0] = 9;
+    producer->unlock_1_pcs[0] = 12;
+    consumer->maxpc = 100;
 
-    consumer->lock_1_pcs[0] = 70;
-    consumer->wait_1_pcs[0] = 90;
-    consumer->signal_1_pcs[0] = 110;
-    consumer->unlock_1_pcs[0] = 120;
+    consumer->lock_1_pcs[0] = 7;
+    consumer->wait_1_pcs[0] = 9;
+    consumer->signal_1_pcs[0] = 11;
+    consumer->unlock_1_pcs[0] = 12;
+    consumer->maxpc = 100;
 
     // initalize CP_PAIR
     pair = (CP_PAIR_p)malloc(sizeof(CP_PAIR_s));
@@ -1483,7 +1490,6 @@ int main() {
     setState(processes->runningProcess, RUNNING);
     setTerminate(processes->runningProcess, 0);
     setRandomMaxPC(processes->runningProcess);
-    setRandomIOTraps(processes->runningProcess);
     trap_flag = 0;
     syncro_flag = 0;
 
