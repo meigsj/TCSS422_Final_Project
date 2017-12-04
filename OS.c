@@ -213,8 +213,8 @@ void * timer_thread(void * s) {
 
     struct timespec ts;
     pthread_mutex_lock(&timer_lock);
-    //ts.tv_sec = 0;
-    //ts.tv_nsec = timer;//(timer*1000);
+    ts.tv_sec = 0;
+    ts.tv_nsec = timer;//(timer*1000);
 
     for (;;) {
         pthread_mutex_lock(&global_shutdown_lock);
@@ -222,8 +222,7 @@ void * timer_thread(void * s) {
             break;
         }
 
-        //nanosleep(&ts, NULL);
-        while(timerDownCounter());
+        nanosleep(&ts, NULL);
         pthread_mutex_unlock(&global_shutdown_lock);
         while (!ISR_FINISHED) {
             pthread_cond_wait(&timer_cond, &timer_lock);
@@ -231,7 +230,7 @@ void * timer_thread(void * s) {
         ISR_FINISHED = 0;
 
         //TODO add locks for grabbing the timer and setting the timer
-        //ts.tv_nsec = timer;
+        ts.tv_nsec = timer;
     }
 }
 
@@ -259,7 +258,7 @@ void * io1_thread(void * s) {
         pthread_mutex_unlock(&IO_1_active_lock);
 
         // Sleep thread then unlock to signal IO 1 device is ready
-        while(timerDownCounter());
+        while(!timerDownCounter());
         pthread_mutex_unlock(&IO_1_lock);
 
         // Wait until Interupt Service completes
@@ -305,7 +304,7 @@ void * io2_thread(void * s) {
         //printf("Checking IO Two Completed: %d\n", IO_2_activated);
         pthread_mutex_unlock(&IO_2_active_lock);
         // Sleep thread then unlock to signal IO 2 device is ready
-        while(timerDownCounter());
+        while(!timerDownCounter());
         pthread_mutex_unlock(&IO_2_lock);
 
         // Wait until Interupt Service completes
