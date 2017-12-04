@@ -52,7 +52,7 @@ int initializeNode(Node_p node) {
     node->next = NULL;
 }
 
-// returns a 1 if the queue has member nodes, or 0 if the queue is empty
+// returns a 0 if the queue has member nodes, or 1 if the queue is empty
 int q_is_empty(FIFOq_p queue) {
     if (!queue) return POINTER_NULL;
     
