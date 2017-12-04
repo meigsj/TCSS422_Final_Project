@@ -6,6 +6,7 @@ Group Members:
 Shaun Coleman
 Joshua Meigs
 */
+
 #pragma once
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,8 +16,6 @@ Joshua Meigs
 #include "PQueue.h"
 #include "Simple_Stack.h"
 #include "Deadlock_Monitor.h"
-
-
 
 // value to denote a successful function return
 #define SUCCESSFUL 0
@@ -123,8 +122,6 @@ typedef struct io_device {
 
 typedef IO_DEVICE_s* IO_DEVICE_p;
 
-
-
 typedef struct custom_cond {
 	// int representing the state
 	int state;
@@ -149,8 +146,6 @@ typedef struct cp_pair {
 } CP_PAIR_s;
 
 typedef CP_PAIR_s* CP_PAIR_p;
-
-
 
 // A function to act as the main loop for the simulator
 //void OS_Simulator();
