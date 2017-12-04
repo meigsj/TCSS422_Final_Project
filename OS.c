@@ -7,6 +7,17 @@ Shaun Coleman
 Joshua Meigs
 */
 
+/*
+TODO: CHECKS
+Correct output
+    Need print once a Resource pair process gets both locks
+check CP pair is correctly incrementing + printing number
+check processes are terminating - noting some terminations and an assert making sure CP and Resource pairs are not terminated
+Change IO to use a loop instead of sleep
+Check that locks are used correctly for shared vars between the main thread and the IO/Timer threads
+Code Cleanup
+*/
+
 #include <time.h>
 #include <pthread.h>
 #include <assert.h>
@@ -223,7 +234,7 @@ void * timer_thread(void * s) {
     pthread_mutex_lock(&timer_lock);
     ts.tv_sec = 0;
     ts.tv_nsec = timer/2;//(timer*1000);
-    int i = timer * 2000;
+    int i = timer * IO_QUANTUM_MULTIPLIER;
 
     for (;;) {
         pthread_mutex_lock(&global_shutdown_lock);
@@ -243,10 +254,11 @@ void * timer_thread(void * s) {
 
         //TODO add locks for grabbing the timer and setting the timer
         ts.tv_nsec = timer/2;
-        int i = timer * 100;
+        i = timer * IO_QUANTUM_MULTIPLIER;
     }
 }
 
+// TODO: Check that we are correctly using locks for all vars shared by main thread
 void * io1_thread(void * s) {
     struct timespec ts;
     ts.tv_sec = 0;

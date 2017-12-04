@@ -81,6 +81,9 @@ Joshua Meigs
 // A Constant used to test the io device's interrupt frequency
 #define IO_FREQ 10000
 
+// A Constant used to multiply the quantum for timer "sleep" loop
+#define IO_QUANTUM_MULTIPLIER 2000
+
 // An enum used to denote which interrupt is occuring for the scheduler
 enum interrupt_type { NO_INTERUPT, TIMER_INTERUPT, IO_1_INTERUPT, IO_2_INTERUPT, IO_1_TRAP
     , IO_2_TRAP, PCB_TERMINATED, LOCK_INTERRUPT, UNLOCK_INTERRUPT, WAIT_INTERRUPT, SIGNAL_INTERRUPT
