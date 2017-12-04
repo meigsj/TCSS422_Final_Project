@@ -65,10 +65,10 @@ Joshua Meigs
 #define COMPUTE_PROCESS_MAX 25
 
 // The max number +1 of new producer/consumer pairs to make per process creation
-#define CREATE_PRO_CON_MAX 5//2
+#define CREATE_PRO_CON_MAX 2-2
 
 // The max number +1 of new shared resource pairs to make per process creation
-#define CREATE_SHARED_RESOURCE_MAX 2-2
+#define CREATE_SHARED_RESOURCE_MAX 5
 
 // The max number +1 of new IO Processes to make per process creation
 #define CREATE_IO_PROCESS_MAX 6-6

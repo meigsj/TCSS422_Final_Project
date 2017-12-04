@@ -91,13 +91,13 @@ void * OS_Simulator(void *arg) {
     // One cycle is one instruction
     for (;;) { // for spider
         int trapFlag = 0;
+        
         // update counters
         iterationCount++;
         quantum_post_reset++;
 
 		//DOES DEADLOCK CHECK
 
-        // increments Current PC and checks MAX_PC of the running PCB
         simulateProgramStep();
 
         // Create new processes
@@ -179,7 +179,7 @@ void * OS_Simulator(void *arg) {
 					lock_tsr(pair->mutex_2);
 					break;
 				case UNLOCK_RESOURCE_1:
-					printf("\nProcess %d releases lock #2\n", processes->runningProcess->pid);
+					printf("\nProcess %d releases lock #1\n", processes->runningProcess->pid);
 					unlock_tsr(pair->mutex_1);
 					break;
 				case UNLOCK_RESOURCE_2:
@@ -219,7 +219,7 @@ void * timer_thread(void * s) {
     pthread_mutex_lock(&timer_lock);
     ts.tv_sec = 0;
     ts.tv_nsec = timer/2;//(timer*1000);
-    int i = timer * 1000;
+    int i = timer * 10000;
 
     for (;;) {
         pthread_mutex_lock(&global_shutdown_lock);
@@ -403,7 +403,6 @@ int pseudoISR() {
     // Update Timer
     timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));
     // IRET (update current pc)
-	assert(!stack_is_empty(sysStack));
 	assert(!stack_is_empty(sysStack));
     currentPC = ss_pop(sysStack);
     return SUCCESSFUL;
@@ -642,6 +641,9 @@ int dispatcherIO(FIFOq_p IO_Queue) {
     setNodePCB(node, finishedPcb);
     p_enqueue(processes->readyProcesses, node);
 
+    ss_pop(sysStack);
+    ss_push(sysStack, processes->runningProcess->pid);
+
     return SUCCESSFUL;
 }
 
@@ -678,7 +680,7 @@ int lock_tsr(CUSTOM_MUTEX_p mutex) {
     PCB_p running = processes->runningProcess;
     setPC(running, currentPC);
     
-    if (!mutex->owner) {
+    if (mutex->owner == NULL || mutex->owner->pid == processes->runningProcess->pid) {
         setState(running, INTERRUPTED);
     } else {
         setState(running, WAITING);
@@ -691,6 +693,8 @@ int lock_tsr(CUSTOM_MUTEX_p mutex) {
         scheduler(LOCK_INTERRUPT, running, mutex, NULL);
     } else {
         mutex->owner = running;
+        ss_pop(sysStack);
+        ss_push(sysStack, getPC(processes->runningProcess));
     }
 
     syncro_flag = NO_RESOURCE_SYNCRO;
@@ -702,7 +706,6 @@ int lock_tsr(CUSTOM_MUTEX_p mutex) {
 }
 
 int unlock_tsr(CUSTOM_MUTEX_p mutex) {
-
     setPC(processes->runningProcess, currentPC);
     setState(processes->runningProcess, INTERRUPTED);
 
@@ -710,7 +713,9 @@ int unlock_tsr(CUSTOM_MUTEX_p mutex) {
     IO_check();
     
     if (q_is_empty(mutex->blocked)) {
-        mutex->owner == NULL;
+        mutex->owner = NULL;
+        ss_pop(sysStack);
+        ss_push(sysStack, getPC(processes->runningProcess));
     } else {
         scheduler(UNLOCK_INTERRUPT, NULL, mutex, NULL);
     }
@@ -720,6 +725,7 @@ int unlock_tsr(CUSTOM_MUTEX_p mutex) {
     // IRET (update current pc)
 	assert(!stack_is_empty(sysStack));
     currentPC = ss_pop(sysStack);
+  
     return SUCCESSFUL;
 }
 
@@ -740,6 +746,8 @@ int wait_tsr(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond) {
         scheduler(WAIT_INTERRUPT, running, mutex, cond);
     } else {
         cond->state = COND_NOT_READY;
+        ss_pop(sysStack);
+        ss_push(sysStack, processes->runningProcess->pid);
     }
 
     syncro_flag = NO_RESOURCE_SYNCRO;
@@ -758,6 +766,8 @@ int signal_tsr(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond) {
 
     if (q_is_empty(cond->waiting)) {
         cond->state = COND_READY;
+        ss_pop(sysStack);
+        ss_push(sysStack, processes->runningProcess->pid);
     } else {
         scheduler(SIGNAL_INTERRUPT, NULL, mutex, cond);
     }
@@ -794,13 +804,15 @@ int dispatcherLock(PCB_p process, CUSTOM_MUTEX_p mutex) {
 int dispatcherUnlock(CUSTOM_MUTEX_p mutex) {
     mutex->owner = q_dequeue(mutex->blocked);
     setState(mutex->owner, READY);
+    ss_pop(sysStack);
 
     //Added node here so that p_enque would have a node passed in and not the PCB
     Node_p node = construct_Node();
     initializeNode(node);
     setNodePCB(node, mutex->owner);
     p_enqueue(processes->readyProcesses, node);
-	total_blocked--;
+    total_blocked--;
+    ss_push(sysStack, getPC(processes->runningProcess));
 }
 
 int dispatcherWait(PCB_p process, CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond) {
@@ -819,7 +831,7 @@ int dispatcherWait(PCB_p process, CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond) {
     
     // unlock lock TODO: replace with lock tsr call?
     if (q_is_empty(mutex->blocked)) {
-        mutex->owner == NULL;
+        mutex->owner = NULL;
     } else {
 		Node_p another_node = construct_Node();//ADDED FOR 11/30 TODO:
 		initializeNode(another_node);
@@ -857,6 +869,9 @@ int dispatcherSignal(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond) {
     setNodePCB(node, wokePcb);
     q_enqueue(mutex->blocked, node);
 	total_blocked++;
+
+    ss_pop(sysStack);
+    ss_push(sysStack, processes->runningProcess->pid);
 }
 
 
@@ -898,7 +913,7 @@ int isAtSyncro(PCB_p pcb) {
         }
     }
 
-    if (type == RESOURCE_PAIR) { //Meant to have for loop like above?
+    if (type == RESOURCE_PAIR) {
 		for (int i = 0; i < SYNCRO_SIZE; i++) {
 			if (currentPC == pcb->lock_1_pcs[i]) return LOCK_RESOURCE_1;
 			if (currentPC == pcb->unlock_1_pcs[i]) return UNLOCK_RESOURCE_1;
@@ -916,7 +931,7 @@ int createNewProcesses() {
     int newComp = rand() % CREATE_CUMPUTE_PROCESS_MAX;
     int newCP = rand() % CREATE_PRO_CON_MAX;
     int newShared = rand() % CREATE_SHARED_RESOURCE_MAX;
-    printf("\n Trying to create: %d IO, %d Comp, %d CP Pairs, %d Shared Pairs\n", newIO, newComp, newCP, newShared);
+    //printf("\n Trying to create: %d IO, %d Comp, %d CP Pairs, %d Shared Pairs\n", newIO, newComp, newCP, newShared);
 
     for(int i = 0; i < newIO; i++) {
         if (total_io_processes >= IO_PROCESS_MAX) break;
@@ -1001,10 +1016,6 @@ int createConsumerProducerPair() {
     // Mark each processes as a consumer/producer pair
     setType(producer, CONPRO_PAIR);
     setType(consumer, CONPRO_PAIR);
-
-    // give PCB random Max PC, and Traps
-    setRandomMaxPC(producer);
-    setRandomMaxPC(consumer);
     
     // Set to not terminate
     setTerminate(producer, 0);
@@ -1064,23 +1075,24 @@ int createSharedResourcePair() {
     setType(process_1, RESOURCE_PAIR);
     setType(process_2, RESOURCE_PAIR);
 
-    setRandomMaxPC(process_1);
-    setRandomMaxPC(process_2);
+    process_1->maxpc = 120;
+    process_2->maxpc = 120;
 
     // Set to not terminate
     setTerminate(process_1, 0);
     setTerminate(process_2, 0);
 
     // Set up
-    process_1->lock_1_pcs[0] = 100;
-    process_1->lock_2_pcs[0] = 300;
-    process_1->unlock_1_pcs[0] = 1000;
-    process_1->unlock_2_pcs[0] = 1100;
-
-    process_2->lock_1_pcs[0] = 100;
-    process_2->lock_2_pcs[0] = 300;
-    process_2->unlock_1_pcs[0] = 1000;
-    process_2->unlock_2_pcs[0] = 1100;
+    process_1->lock_1_pcs[0] = 10;
+    process_1->lock_2_pcs[0] = 30;
+    process_1->unlock_2_pcs[0] = 100;
+    process_1->unlock_1_pcs[0] = 110;
+    
+    process_2->lock_1_pcs[0] = 10;
+    process_2->lock_2_pcs[0] = 30;
+    process_2->unlock_2_pcs[0] = 100;
+    process_2->unlock_1_pcs[0] = 110;
+    
 
     // initalize RESOURCE_PAIR
     pair = (RESOURCE_PAIR_p)malloc(sizeof(RESOURCE_PAIR_s));
@@ -1432,18 +1444,28 @@ void check_for_deadlock() {
 	int deadlocks[SHARED_RESOURCE_MAX] = { 0,0,0,0,0,0,0,0,0,0 };
 	int deadlock_amount = 0;
 	int i = 0;
+
+    printf("\nChecking for Deadlocks. . .\n");
+
 	testResourcePairs(resource_pairs, deadlocks, total_resource_pairs);
 	for (i = 0; i < total_resource_pairs; i++) {
 		if (deadlocks[i] == -1) { // MAGIC NUMBER
-			printf("\nDeadlock found at: %d\nWith: %d", i, resource_pairs[i]);
 			destruct_Resource_Pair(resource_pairs[i]);
 			resource_pairs[i] = resource_pairs[total_resource_pairs - 1];
 			deadlocks[i] = deadlocks[total_resource_pairs - 1];
 			deadlock_amount++;
 			total_resource_pairs--;
+            total_blocked -= 2;
 			i--;
 		}
 	}
+
+    if (deadlock_amount > 0) {
+        printf("Found %d Deadlocks.  Deadlocked processes terminated.\n", deadlock_amount);
+    } else {
+        printf("No Deadlocks detected.\n");
+    }
+
 }
 
 int main() {
