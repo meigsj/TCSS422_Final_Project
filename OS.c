@@ -91,7 +91,7 @@ void * OS_Simulator(void *arg) {
     // One cycle is one instruction
     for (;;) { // for spider
         int trapFlag = 0;
-        
+
         // update counters
         iterationCount++;
         quantum_post_reset++;
@@ -105,14 +105,11 @@ void * OS_Simulator(void *arg) {
             createNewProcesses(processes->newProcesses);
         }
 
-        ////  TO REMOVE AND REPLACE WITH CHECK CONDITION FOR TIMER INTERUPT
-        //Trigger timer and check for timer interupt
-        timer_check();
-
         // Trigger IO counters and check for IO interupts
         IO_check();
 
         // Check for Traps (termination is checked as a trap here too)
+        // TODO implement fix as per syncro
         trapFlag = isAtTrap(processes->runningProcess);
         if (trapFlag == IO_1_TRAP || trapFlag == IO_2_TRAP || trapFlag == PCB_TERMINATED) {
             printf("\nTrap Detected!\n");
@@ -193,15 +190,21 @@ void * OS_Simulator(void *arg) {
 			else {
 				assert(error_bad_pcb_for_syncro);
 			}
+
+            //currentPC--;
 			printInterupt(trapFlag);
         }
         
+        //Trigger timer and check for timer interupt
+        timer_check();
+
 		assert(ss_getSize(sysStack) == 0);
-        assert(getTotalNodesCount(processes->readyProcesses) <= (PRO_CON_MAX + SHARED_RESOURCE_MAX + COMPUTE_PROCESS_MAX + IO_PROCESS_MAX));
+        assert(getTotalNodesCount(processes->readyProcesses) <= (PRO_CON_MAX + SHARED_RESOURCE_MAX + COMPUTE_PROCESS_MAX*2 + IO_PROCESS_MAX*2));
 
 		//check stop condition for the simulation
         if (iterationCount >= HALT_CONDITION) {
             printf("---- HALTING SIMULATION ON ITERATION %d ----\n", iterationCount);
+            printf("-------- TOTAL DEADLOCKED PAIRS %d ---------\n", total_deadlock_pairs);
             pthread_mutex_lock(&global_shutdown_lock);
             shutting_down = 1;
             pthread_mutex_unlock(&global_shutdown_lock);
@@ -219,7 +222,7 @@ void * timer_thread(void * s) {
     pthread_mutex_lock(&timer_lock);
     ts.tv_sec = 0;
     ts.tv_nsec = timer/2;//(timer*1000);
-    int i = timer * 10000;
+    int i = timer * 1000;
 
     for (;;) {
         pthread_mutex_lock(&global_shutdown_lock);
@@ -330,8 +333,10 @@ void * io2_thread(void * s) {
     }
 }
 
-void timer_check() {
+int timer_check() {
+    int ret = 0;
     if (pthread_mutex_trylock(&timer_lock) == 0) {
+        ret = 1;
         printf("\nTimer Interrupt Detected!\n");
         int state = RUNNING;
         if (processes->runningProcess) state = getState(processes->runningProcess);
@@ -350,6 +355,8 @@ void timer_check() {
         }
         pthread_mutex_unlock(&timer_lock);
     }
+
+    return ret;
 }
 
 void IO_check() {
@@ -441,6 +448,7 @@ int pseudoTSR(int trap_interupt) {
     }
     
     timer_check();
+
     IO_check();
 
     // Activate counter if not in use (IO_Queue is empty)
@@ -687,6 +695,7 @@ int lock_tsr(CUSTOM_MUTEX_p mutex) {
     }
 
     timer_check();
+
     IO_check();
 
     if (getState(running) == WAITING) {
@@ -708,8 +717,11 @@ int lock_tsr(CUSTOM_MUTEX_p mutex) {
 int unlock_tsr(CUSTOM_MUTEX_p mutex) {
     setPC(processes->runningProcess, currentPC);
     setState(processes->runningProcess, INTERRUPTED);
-
+    
+    currentPC++;
     timer_check();
+    currentPC--;
+
     IO_check();
     
     if (q_is_empty(mutex->blocked)) {
@@ -1075,23 +1087,23 @@ int createSharedResourcePair() {
     setType(process_1, RESOURCE_PAIR);
     setType(process_2, RESOURCE_PAIR);
 
-    process_1->maxpc = 120;
-    process_2->maxpc = 120;
+    process_1->maxpc = 1200;
+    process_2->maxpc = 1200;
 
     // Set to not terminate
     setTerminate(process_1, 0);
     setTerminate(process_2, 0);
 
     // Set up
-    process_1->lock_1_pcs[0] = 10;
-    process_1->lock_2_pcs[0] = 30;
-    process_1->unlock_2_pcs[0] = 100;
-    process_1->unlock_1_pcs[0] = 110;
+    process_1->lock_1_pcs[0] = 100;
+    process_1->lock_2_pcs[0] = 300;
+    process_1->unlock_2_pcs[0] = 1000;
+    process_1->unlock_1_pcs[0] = 1100;
     
-    process_2->lock_1_pcs[0] = 10;
-    process_2->lock_2_pcs[0] = 30;
-    process_2->unlock_2_pcs[0] = 100;
-    process_2->unlock_1_pcs[0] = 110;
+    process_2->lock_1_pcs[0] = 100;
+    process_2->lock_2_pcs[0] = 300;
+    process_2->unlock_2_pcs[0] = 1000;
+    process_2->unlock_1_pcs[0] = 1100;
     
 
     // initalize RESOURCE_PAIR
@@ -1362,8 +1374,8 @@ int getInterruptType(int flag) {
 		return WAIT_INTERRUPT;
 		break;
 	case SIGNAL_RESOURCE_1:
-			return SIGNAL_INTERRUPT;
-			break;
+		return SIGNAL_INTERRUPT;
+		break;
 	default:
 		break;
 	}
@@ -1450,6 +1462,9 @@ void check_for_deadlock() {
 	testResourcePairs(resource_pairs, deadlocks, total_resource_pairs);
 	for (i = 0; i < total_resource_pairs; i++) {
 		if (deadlocks[i] == -1) { // MAGIC NUMBER
+            printf("Deadlock: PID: %d PID: %d Mutex 1 Owner: %d Mutex 2 Owner %d\n", resource_pairs[i]->process_1->pid, resource_pairs[i]->process_2->pid, 
+                resource_pairs[i]->mutex_1->owner->pid, resource_pairs[i]->mutex_2->owner->pid);
+
 			destruct_Resource_Pair(resource_pairs[i]);
 			resource_pairs[i] = resource_pairs[total_resource_pairs - 1];
 			deadlocks[i] = deadlocks[total_resource_pairs - 1];
@@ -1459,6 +1474,8 @@ void check_for_deadlock() {
 			i--;
 		}
 	}
+
+    total_deadlock_pairs += deadlock_amount;
 
     if (deadlock_amount > 0) {
         printf("Found %d Deadlocks.  Deadlocked processes terminated.\n", deadlock_amount);
@@ -1506,6 +1523,7 @@ int main() {
 	total_waiting = 0;
     total_comp_processes = 1;
     total_io_processes = 0;
+
     timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));
     // create starting processes
     // set a process to running
