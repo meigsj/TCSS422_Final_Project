@@ -120,7 +120,6 @@ void * OS_Simulator(void *arg) {
         IO_check();
 
         // Check for Traps (termination is checked as a trap here too)
-        // TODO implement fix as per syncro
         trapFlag = isAtTrap(processes->runningProcess);
         if (trapFlag == IO_1_TRAP || trapFlag == IO_2_TRAP || trapFlag == PCB_TERMINATED) {
             printf("\nTrap Detected!\n");
@@ -130,77 +129,14 @@ void * OS_Simulator(void *arg) {
         }
 
         // Check for Syncronization services
-        // TODO: BREAK INNER IF STATE INTO FUNCTIONS
+
         syncro_flag = isAtSyncro(processes->runningProcess);
 		trapFlag = getInterruptType(syncro_flag);
         if (syncro_flag) {
-            int error_bad_pcb_for_syncro = 0;
-
             printf("\nSyncronization Service Detected!\n");
 			ss_push(sysStack, currentPC);
 
-            if (getType(processes->runningProcess) == CONPRO_PAIR) {
-                CP_PAIR_p pair = getPCPair(processes->runningProcess);
-
-               switch (syncro_flag) {
-                    case LOCK_RESOURCE_1:
-						printf("\nProcess %d requests lock #1\n", processes->runningProcess->pid);
-                        lock_tsr(pair->mutex);
-                        break;
-                    case UNLOCK_RESOURCE_1:
-						printf("\nProcess %d releases lock #1\n", processes->runningProcess->pid);
-                        unlock_tsr(pair->mutex);
-                        break;
-                    case WAIT_RESOURCE_1:
-                        if (pair->producer->pid == processes->runningProcess->pid) {
-							printf("\nProducer %d calls wait for consumed.\n", pair->producer->pid);
-                            wait_tsr(pair->mutex, pair->consumed);
-                        } else {
-							printf("\nConsumer %d calls wait for produced.\n", pair->consumer->pid);
-                            wait_tsr(pair->mutex, pair->produced);
-                        }
-                        break;
-                    case SIGNAL_RESOURCE_1:
-                        if (pair->producer->pid == processes->runningProcess->pid) {
-							pair->counter++;
-							printf("\nProducer %d incremented counter to %d.\n", pair->producer->pid, pair->counter);
-							signal_tsr(pair->mutex, pair->produced);
-							printf("\nProducer %d signals produced.\n", pair->producer->pid);
-                        } else {
-							printf("\nConsumer %d: Counter is %d.\n", pair->consumer->pid, pair->counter);
-                            signal_tsr(pair->mutex, pair->consumed);
-							printf("\nConsumer %d signals consumed.\n", pair->consumer->pid);
-                        }
-                        break;
-                    default:
-                        break;
-               }
-            } else if (getType(processes->runningProcess) == RESOURCE_PAIR) {
-				RESOURCE_PAIR_p pair = getResourcePair(processes->runningProcess);
-				switch (syncro_flag) {
-				case LOCK_RESOURCE_1:
-					printf("\nProcess %d requests lock #1\n", processes->runningProcess->pid);
-					lock_tsr(pair->mutex_1);
-					break;
-				case LOCK_RESOURCE_2:
-					printf("\nProcess %d requests lock #2\n", processes->runningProcess->pid);
-					lock_tsr(pair->mutex_2);
-					break;
-				case UNLOCK_RESOURCE_1:
-					printf("\nProcess %d releases lock #1\n", processes->runningProcess->pid);
-					unlock_tsr(pair->mutex_1);
-					break;
-				case UNLOCK_RESOURCE_2:
-					printf("\nProcess %d releases lock #2\n", processes->runningProcess->pid);
-					unlock_tsr(pair->mutex_2);
-					break;
-				default:
-					break;
-				}
-			}
-			else {
-				assert(error_bad_pcb_for_syncro);
-			}
+			check_for_syncro_trap(syncro_flag);
 
             //currentPC--;
 			printInterupt(trapFlag);
@@ -225,6 +161,77 @@ void * OS_Simulator(void *arg) {
 
 		//check for processes type
     }
+
+}
+
+
+void check_for_syncro_trap(int syncro_flag) {
+	int error_bad_pcb_for_syncro = 0;
+	if (getType(processes->runningProcess) == CONPRO_PAIR) {
+		CP_PAIR_p pair = getPCPair(processes->runningProcess);
+
+		switch (syncro_flag) {
+		case LOCK_RESOURCE_1:
+			printf("\nProcess %d requests lock #1\n", processes->runningProcess->pid);
+			lock_tsr(pair->mutex);
+			break;
+		case UNLOCK_RESOURCE_1:
+			printf("\nProcess %d releases lock #1\n", processes->runningProcess->pid);
+			unlock_tsr(pair->mutex);
+			break;
+		case WAIT_RESOURCE_1:
+			if (pair->producer->pid == processes->runningProcess->pid) {
+				printf("\nProducer %d calls wait for consumed.\n", pair->producer->pid);
+				wait_tsr(pair->mutex, pair->consumed);
+			}
+			else {
+				printf("\nConsumer %d calls wait for produced.\n", pair->consumer->pid);
+				wait_tsr(pair->mutex, pair->produced);
+			}
+			break;
+		case SIGNAL_RESOURCE_1:
+			if (pair->producer->pid == processes->runningProcess->pid) {
+				pair->counter++;
+				printf("\nProducer %d incremented counter to %d.\n", pair->producer->pid, pair->counter);
+				signal_tsr(pair->mutex, pair->produced);
+				printf("\nProducer %d signals produced.\n", pair->producer->pid);
+			}
+			else {
+				printf("\nConsumer %d: Counter is %d.\n", pair->consumer->pid, pair->counter);
+				signal_tsr(pair->mutex, pair->consumed);
+				printf("\nConsumer %d signals consumed.\n", pair->consumer->pid);
+			}
+			break;
+		default:
+			break;
+		}
+	}
+	else if (getType(processes->runningProcess) == RESOURCE_PAIR) {
+		RESOURCE_PAIR_p pair = getResourcePair(processes->runningProcess);
+		switch (syncro_flag) {
+		case LOCK_RESOURCE_1:
+			printf("\nProcess %d requests lock #1\n", processes->runningProcess->pid);
+			lock_tsr(pair->mutex_1);
+			break;
+		case LOCK_RESOURCE_2:
+			printf("\nProcess %d requests lock #2\n", processes->runningProcess->pid);
+			lock_tsr(pair->mutex_2);
+			break;
+		case UNLOCK_RESOURCE_1:
+			printf("\nProcess %d releases lock #1\n", processes->runningProcess->pid);
+			unlock_tsr(pair->mutex_1);
+			break;
+		case UNLOCK_RESOURCE_2:
+			printf("\nProcess %d releases lock #2\n", processes->runningProcess->pid);
+			unlock_tsr(pair->mutex_2);
+			break;
+		default:
+			break;
+		}
+	}
+	else {
+		assert(error_bad_pcb_for_syncro);
+	}
 
 }
 
@@ -356,7 +363,7 @@ int timer_check() {
             printInterupt(TIMER_INTERUPT);
         }
         pthread_mutex_unlock(&timer_lock);
-    }
+	}
 
     return ret;
 }
@@ -854,7 +861,7 @@ int dispatcherWait(PCB_p process, CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond) {
     if (q_is_empty(mutex->blocked)) {
         mutex->owner = NULL;
     } else {
-		Node_p another_node = construct_Node();//ADDED FOR 11/30 TODO:
+		Node_p another_node = construct_Node();
 		initializeNode(another_node);
         mutex->owner = q_dequeue(mutex->blocked);
         setState(mutex->owner, READY);
@@ -1263,8 +1270,6 @@ int simulateProgramStep() {
         currentPC = 0;
         setTermCount(processes->runningProcess, getTermCount(processes->runningProcess)+1);
     }
-    
-    // TODO simulate counter and possibly syncro services
 
     return SUCCESSFUL;
 }
@@ -1494,6 +1499,16 @@ void check_for_deadlock() {
 
 }
 
+void free_syncro_service_processes() {
+	for (int i = 0; i < total_resource_pairs; i++) {
+		destruct_Resource_Pair(resource_pairs[i]);
+	}
+
+	for (int i = 0; i < total_cp_pairs; i++) {
+		destruct_CP_Pair(cp_pairs[i]);
+	}
+}
+
 int main() {
     pthread_t os;
 
@@ -1564,5 +1579,5 @@ int main() {
     // free resources
     freeProcessQueues();
 	destructStack(sysStack);
-// TODO Add frees for syncro services vars and structs
+	free_syncro_service_processes();
 }

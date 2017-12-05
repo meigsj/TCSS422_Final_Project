@@ -278,3 +278,5 @@ void check_for_deadlock();
 int getInterruptType(int);
 
 int countAllNodes();
+
+void check_for_syncro_trap(int syncro_flag);
