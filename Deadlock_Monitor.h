@@ -20,7 +20,7 @@ Joshua Meigs
 #define DEADLOCK_FOUND -1
 #define NO_DEADLOCK_FOUND 0
 #define MAX_SHARED_RESOURCE_EDGES 4
-
+#define MAX_NAME_SIZE_RESOURCE 4
 struct dl_lock_node;
 
 typedef struct dl_proc_node {
@@ -44,6 +44,11 @@ typedef struct resource_pair {
 	// pointers to the processes in the pair
 	PCB_p process_1;
 	PCB_p process_2;
+
+	char process_1_name[MAX_NAME_SIZE_RESOURCE];
+	char process_2_name[MAX_NAME_SIZE_RESOURCE];
+	char mutex_1_name[MAX_NAME_SIZE_RESOURCE];
+	char mutex_2_name[MAX_NAME_SIZE_RESOURCE];
 
 	// Syncronization vars
 	CUSTOM_MUTEX_p mutex_1;

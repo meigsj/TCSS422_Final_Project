@@ -43,6 +43,9 @@ int total_terminated;
 int total_blocked;
 int total_waiting;
 
+int con_pro_name_starting_point;
+
+int resource_pair_starting_point;
 //Tests
 pthread_mutex_t timer_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t timer_cond = PTHREAD_COND_INITIALIZER;
@@ -108,7 +111,6 @@ void * OS_Simulator(void *arg) {
         quantum_post_reset++;
 
 		//DOES DEADLOCK CHECK
-
         simulateProgramStep();
 
         // Create new processes
@@ -144,6 +146,7 @@ void * OS_Simulator(void *arg) {
         
         //Trigger timer and check for timer interupt
         timer_check();
+		//if step is finished, loop back to the start, otherwise keep going
 
 		assert(ss_getSize(sysStack) == 0);
         assert(getTotalNodesCount(processes->readyProcesses) <= (PRO_CON_MAX + SHARED_RESOURCE_MAX + COMPUTE_PROCESS_MAX*2 + IO_PROCESS_MAX*2));
@@ -167,39 +170,56 @@ void * OS_Simulator(void *arg) {
 
 void check_for_syncro_trap(int syncro_flag) {
 	int error_bad_pcb_for_syncro = 0;
+	//TODO: Rewrite it so that Mutexs are given name fields in the structs as well, to shorten amount of space taken by array calls
 	if (getType(processes->runningProcess) == CONPRO_PAIR) {
 		CP_PAIR_p pair = getPCPair(processes->runningProcess);
 
 		switch (syncro_flag) {
 		case LOCK_RESOURCE_1:
-			printf("\nProcess %d requests lock #1\n", processes->runningProcess->pid);
+			if (processes->runningProcess->pid == pair->producer->pid) {
+				printf("\nProcess %s requests lock M%c", pair->producer_name, pair->producer_name[0]); //NEED TO PRINT IF SUCC
+			}
+			else {
+				printf("\nProcess %s requests lock M%c", pair->consumer_name, pair->consumer_name[0]);
+			}		
 			lock_tsr(pair->mutex);
+			if (getState(processes->runningProcess) ==  INTERRUPTED) {
+				printf("Request on the lock was succesful\n");
+			}
 			break;
 		case UNLOCK_RESOURCE_1:
-			printf("\nProcess %d releases lock #1\n", processes->runningProcess->pid);
+			if (processes->runningProcess->pid == pair->producer->pid) {
+				printf("\nProcess %s releases lock M%c\n", pair->producer_name, pair->producer_name[0]); //NEED TO PRINT IF SUCC
+			}
+			else {
+				printf("\nProcess %s releases lock M%c\n", pair->consumer_name, pair->consumer_name[0]);
+			}
 			unlock_tsr(pair->mutex);
+			if (getState(processes->runningProcess) ==  INTERRUPTED) {
+				printf("Request on the lock was succesful\n");
+			}
 			break;
 		case WAIT_RESOURCE_1:
 			if (pair->producer->pid == processes->runningProcess->pid) {
-				printf("\nProducer %d calls wait for consumed.\n", pair->producer->pid);
+				printf("\nProducer %s calls wait on cond %s with mutex %s.\n", pair->producer_name, pair->producer_name, pair->consumer_name);
 				wait_tsr(pair->mutex, pair->consumed);
 			}
 			else {
-				printf("\nConsumer %d calls wait for produced.\n", pair->consumer->pid);
+				printf("\nProducer %s calls wait on cond %s with mutex %s.\n", pair->consumer_name, pair->consumer_name, pair->producer_name);
 				wait_tsr(pair->mutex, pair->produced);
 			}
 			break;
 		case SIGNAL_RESOURCE_1:
 			if (pair->producer->pid == processes->runningProcess->pid) {
 				pair->counter++;
-				printf("\nProducer %d incremented counter to %d.\n", pair->producer->pid, pair->counter);
+				printf("\nProducer %s incremented variable %c%c: %d.\n",pair->producer_name , pair->producer_name[0], pair->consumer_name[0], pair->counter);
 				signal_tsr(pair->mutex, pair->produced);
-				printf("\nProducer %d signals produced.\n", pair->producer->pid);
+				printf("\nProducer %s signals produced on cond %s.\n", pair->producer_name, pair->consumer_name);
 			}
 			else {
-				printf("\nConsumer %d: Counter is %d.\n", pair->consumer->pid, pair->counter);
+				printf("\nConsumer %s read variable %c%c: %d\n", pair->consumer_name, pair->producer_name[0], pair->consumer_name[0], pair->counter);
 				signal_tsr(pair->mutex, pair->consumed);
-				printf("\nConsumer %d signals consumed.\n", pair->consumer->pid);
+				printf("\nProducer %s signals produced on cond %s.\n", pair->consumer_name, pair->producer_name);
 			}
 			break;
 		default:
@@ -210,23 +230,46 @@ void check_for_syncro_trap(int syncro_flag) {
 		RESOURCE_PAIR_p pair = getResourcePair(processes->runningProcess);
 		switch (syncro_flag) {
 		case LOCK_RESOURCE_1:
-			printf("\nProcess %d requests lock #1\n", processes->runningProcess->pid);
 			lock_tsr(pair->mutex_1);
+			if (processes->runningProcess->pid == pair->process_1->pid) {
+				printf("\nProcess %s requests lock %s - ", pair->process_1_name, pair->mutex_1_name);
+			}
+			else {
+				printf("\nProcess %s requests lock %s - ", pair->process_2_name, pair->mutex_1_name);
+			}
 			break;
 		case LOCK_RESOURCE_2:
-			printf("\nProcess %d requests lock #2\n", processes->runningProcess->pid);
 			lock_tsr(pair->mutex_2);
+			if (processes->runningProcess->pid == pair->process_1->pid) {
+				printf("\nProcess %s requests lock %s - ", pair->process_1_name, pair->mutex_2_name);
+			}
+			else {
+				printf("\nProcess %s requests lock %s - ", pair->process_2_name, pair->mutex_2_name);
+			}
 			break;
 		case UNLOCK_RESOURCE_1:
-			printf("\nProcess %d releases lock #1\n", processes->runningProcess->pid);
+			if (processes->runningProcess->pid == pair->process_1->pid) {
+				printf("\nProcess %s releases lock %s", pair->process_1_name, pair->mutex_1_name);
+			}
+			else {
+				printf("\nProcess %s releases lock %s", pair->process_2_name, pair->mutex_1_name);
+			}
 			unlock_tsr(pair->mutex_1);
 			break;
 		case UNLOCK_RESOURCE_2:
-			printf("\nProcess %d releases lock #2\n", processes->runningProcess->pid);
+			if (processes->runningProcess->pid == pair->process_1->pid) {
+				printf("\nProcess %s releases lock %s", pair->process_1_name, pair->mutex_2_name);
+			}
+			else {
+				printf("\nProcess %s releases lock %s ", pair->process_2_name, pair->mutex_2_name);
+			}
 			unlock_tsr(pair->mutex_2);
 			break;
 		default:
 			break;
+		}
+		if (pair->mutex_1->owner && pair->mutex_2->owner) {
+			printf("Mutex's %s and %s are in use\n", pair->mutex_1_name, pair->mutex_2_name);
 		}
 	}
 	else {
@@ -460,6 +503,7 @@ int pseudoTSR(int trap_interupt) {
 
     IO_check();
 
+	//TODO: Remove Dead Code
 	/*
     // Activate counter if not in use (IO_Queue is empty)
     // IO Traps only
@@ -706,12 +750,12 @@ int lock_tsr(CUSTOM_MUTEX_p mutex) {
     
     if (mutex->owner == NULL || mutex->owner->pid == processes->runningProcess->pid) {
         setState(running, INTERRUPTED);
+		
     } else {
         setState(running, WAITING);
     }
 
     timer_check();
-
     IO_check();
 
     if (getState(running) == WAITING) {
@@ -734,9 +778,7 @@ int unlock_tsr(CUSTOM_MUTEX_p mutex) {
     setPC(processes->runningProcess, currentPC);
     setState(processes->runningProcess, INTERRUPTED);
     
-    currentPC++;
     timer_check();
-    currentPC--;
 
     IO_check();
     
@@ -775,7 +817,7 @@ int wait_tsr(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond) {
     } else {
         cond->state = COND_NOT_READY;
         ss_pop(sysStack);
-        ss_push(sysStack, processes->runningProcess->pid);
+		ss_push(sysStack, getPC(processes->runningProcess));
     }
 
     syncro_flag = NO_RESOURCE_SYNCRO;
@@ -795,7 +837,7 @@ int signal_tsr(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond) {
     if (q_is_empty(cond->waiting)) {
         cond->state = COND_READY;
         ss_pop(sysStack);
-        ss_push(sysStack, processes->runningProcess->pid);
+        ss_push(sysStack, getPC(processes->runningProcess));
     } else {
         scheduler(SIGNAL_INTERRUPT, NULL, mutex, cond);
     }
@@ -915,7 +957,7 @@ int isAtTrap(PCB_p pcb) {
     
     if (terminate && terminate <= term_count) return PCB_TERMINATED;
 
-    if (!pcb->io_1_traps[0] && !pcb->io_2_traps[0]) return 0; // MAGIC NUMBER
+    if (!pcb->io_1_traps[0] && !pcb->io_2_traps[0]) return 0;
 
     for (int i=0; i < IO_TRAP_SIZE; i++) {
         if (currentPC == pcb->io_1_traps[i]) return IO_1_TRAP;
@@ -1045,6 +1087,8 @@ int createConsumerProducerPair() {
     setType(producer, CONPRO_PAIR);
     setType(consumer, CONPRO_PAIR);
     
+
+
     // Set to not terminate
     setTerminate(producer, 0);
     setTerminate(consumer, 0);
@@ -1054,7 +1098,7 @@ int createConsumerProducerPair() {
     producer->wait_1_pcs[0] = 11;
     producer->signal_1_pcs[0] = 9;
     producer->unlock_1_pcs[0] = 12;
-    consumer->maxpc = 100;
+    producer->maxpc = 100;
 
     consumer->lock_1_pcs[0] = 7;
     consumer->wait_1_pcs[0] = 9;
@@ -1071,6 +1115,17 @@ int createConsumerProducerPair() {
     cp_pairs[total_cp_pairs] = pair;
     total_cp_pairs++;
 
+	//give names to the pair
+	for (int i = 0; i < MAX_NAME_SIZE_CONPRO-1; i++) {
+		pair->producer_name[i] = con_pro_name_starting_point + total_cp_pairs;
+	}
+	pair->producer_name[MAX_NAME_SIZE_CONPRO-1] = '\0'; 
+	con_pro_name_starting_point++;
+	for (int i = 0; i < MAX_NAME_SIZE_CONPRO-1; i++) {
+		pair->consumer_name[i] = con_pro_name_starting_point + total_cp_pairs;
+	}
+	pair->consumer_name[MAX_NAME_SIZE_CONPRO-1] = '\0';
+
     // enqueue
     pro_node = construct_Node();
     con_code = construct_Node();
@@ -1078,8 +1133,10 @@ int createConsumerProducerPair() {
     initializeNode(con_code);
     setNodePCB(pro_node, producer);
     setNodePCB(con_code, consumer);
-    q_enqueue(processes->newProcesses, pro_node);
-    q_enqueue(processes->newProcesses, con_code);
+	q_enqueue(processes->newProcesses, pro_node);
+	q_enqueue(processes->newProcesses, con_code);
+	
+
 
     return SUCCESSFUL;
 }
@@ -1129,6 +1186,32 @@ int createSharedResourcePair() {
     pair->process_2 = process_2;
     resource_pairs[total_resource_pairs] = pair;
     total_resource_pairs++;
+
+	// give names to the pair //TODO MAGIC
+	if (resource_pair_starting_point > UPPERCASE_Z && resource_pair_starting_point < LOWERCASE_A) {
+		resource_pair_starting_point = LOWERCASE_A;
+	}
+	for (int i = 0; i < 3; i++) {
+		pair->process_1_name[i] = resource_pair_starting_point + total_resource_pairs;
+	}
+	pair->process_1_name[MAX_NAME_SIZE_RESOURCE-1] = '\0';
+	resource_pair_starting_point++;
+	for (int i = 0; i < MAX_NAME_SIZE_RESOURCE - 1; i++) {
+		pair->process_2_name[i] = resource_pair_starting_point + total_resource_pairs;
+	}
+	pair->process_2_name[MAX_NAME_SIZE_RESOURCE - 1] = '\0';
+
+	pair->mutex_1_name[0] = 'M';
+	pair->mutex_2_name[0] = 'M';
+
+	pair->mutex_1_name[1] = pair->process_1_name[0];
+	pair->mutex_1_name[2] = pair->process_2_name[0];
+	pair->mutex_1_name[3] = '\0';
+
+	pair->mutex_2_name[1] = pair->process_2_name[0];
+	pair->mutex_2_name[2] = pair->process_1_name[0];
+	pair->mutex_2_name[3] = '\0';
+
 
     // enqueue
     node_1 = construct_Node();
@@ -1467,7 +1550,8 @@ void destruct_Custom_Cond(CUSTOM_COND_p cond) {
 }
 
 void check_for_deadlock() {
-	int deadlocks[SHARED_RESOURCE_MAX] = { 0,0,0,0,0,0,0,0,0,0 };
+
+	int deadlocks[CREATE_SHARED_RESOURCE_MAX];
 	int deadlock_amount = 0;
 	int i = 0;
 
@@ -1475,8 +1559,8 @@ void check_for_deadlock() {
 
 	testResourcePairs(resource_pairs, deadlocks, total_resource_pairs);
 	for (i = 0; i < total_resource_pairs; i++) {
-		if (deadlocks[i] == -1) { // MAGIC NUMBER
-            printf("Deadlock: PID: %d PID: %d Mutex 1 Owner: %d Mutex 2 Owner %d\n", resource_pairs[i]->process_1->pid, resource_pairs[i]->process_2->pid, 
+		if (deadlocks[i] == DEADLOCK_FOUND) {
+            printf("Deadlock: PID: %s PID: %s Mutex 1 Owner: %s Mutex 2 Owner %s\n", resource_pairs[i]->process_1_name, resource_pairs[i]->process_2_name,
                 resource_pairs[i]->mutex_1->owner->pid, resource_pairs[i]->mutex_2->owner->pid);
 
 			destruct_Resource_Pair(resource_pairs[i]);
@@ -1484,7 +1568,7 @@ void check_for_deadlock() {
 			deadlocks[i] = deadlocks[total_resource_pairs - 1];
 			deadlock_amount++;
 			total_resource_pairs--;
-            total_blocked -= 2;
+            total_blocked -= 2; //decrement by both processes in pair from total blocked
 			i--;
 		}
 	}
@@ -1547,6 +1631,9 @@ int main() {
 	total_waiting = 0;
     total_comp_processes = 1;
     total_io_processes = 0;
+	//TODO: put into the structs to clean up globals?
+	con_pro_name_starting_point = 64;
+	resource_pair_starting_point = 64;
 
     timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));
     // create starting processes
@@ -1556,15 +1643,6 @@ int main() {
     setRandomMaxPC(processes->runningProcess);
     trap_flag = 0;
     syncro_flag = 0;
-
-	//Test Correctness of the Deadlock Monitor
-	//initialize_test_resource_pairs();
-	//createSharedResourcePair();
-	//initialize_test_resource_pairs();
-	//createSharedResourcePair();
-	//initialize_test_resource_pairs();
-	//check_for_deadlock();
-
 
     for (int i = 0; i < INIT_CREATE_CALLS; i++) {
         createNewProcesses();

@@ -84,6 +84,15 @@ Joshua Meigs
 // A Constant used to multiply the quantum for timer "sleep" loop
 #define IO_QUANTUM_MULTIPLIER 2000
 
+
+#define MAX_NAME_SIZE_CONPRO 3
+
+#define UPPERCASE_A 64
+
+#define UPPERCASE_Z 89
+
+#define LOWERCASE_A 96
+
 // An enum used to denote which interrupt is occuring for the scheduler
 enum interrupt_type { NO_INTERUPT, TIMER_INTERUPT, IO_1_INTERUPT, IO_2_INTERUPT, IO_1_TRAP
     , IO_2_TRAP, PCB_TERMINATED, LOCK_INTERRUPT, UNLOCK_INTERRUPT, WAIT_INTERRUPT, SIGNAL_INTERRUPT
@@ -138,6 +147,9 @@ typedef struct cp_pair {
 	// pointers to the processes in the pair
 	PCB_p consumer;
 	PCB_p producer;
+	
+	char consumer_name[MAX_NAME_SIZE_CONPRO];
+	char producer_name[MAX_NAME_SIZE_CONPRO];
 
 	// Shared counter to increment/read
 	int counter;
