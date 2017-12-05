@@ -56,6 +56,8 @@ pthread_mutex_t IO_2_active_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t IO_1_global_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t IO_2_global_lock = PTHREAD_MUTEX_INITIALIZER;
 
+pthread_mutex_t TIMER_global_lock = PTHREAD_MUTEX_INITIALIZER;
+
 PROCESS_QUEUES_p processes;
 
 // TODO - Make into structs?
@@ -232,11 +234,10 @@ void * timer_thread(void * s) {
         while (shutting_down) {
             break;
         }
-
-        for (int j = 0; j < i; j++) {}
-
-        //nanosleep(&ts, NULL);
         pthread_mutex_unlock(&global_shutdown_lock);
+        for (int j = 0; j < i; j++) {}
+        //nanosleep(&ts, NULL);
+
         while (!ISR_FINISHED) {
             pthread_cond_wait(&timer_cond, &timer_lock);
         }
