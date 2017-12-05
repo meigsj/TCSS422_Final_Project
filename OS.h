@@ -6,6 +6,7 @@ Group Members:
 Shaun Coleman
 Joshua Meigs
 */
+
 #pragma once
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,8 +16,6 @@ Joshua Meigs
 #include "PQueue.h"
 #include "Simple_Stack.h"
 #include "Deadlock_Monitor.h"
-
-
 
 // value to denote a successful function return
 #define SUCCESSFUL 0
@@ -82,6 +81,9 @@ Joshua Meigs
 // A Constant used to test the io device's interrupt frequency
 #define IO_FREQ 10000
 
+// A Constant used to multiply the quantum for timer "sleep" loop
+#define IO_QUANTUM_MULTIPLIER 2000
+
 // An enum used to denote which interrupt is occuring for the scheduler
 enum interrupt_type { NO_INTERUPT, TIMER_INTERUPT, IO_1_INTERUPT, IO_2_INTERUPT, IO_1_TRAP
     , IO_2_TRAP, PCB_TERMINATED, LOCK_INTERRUPT, UNLOCK_INTERRUPT, WAIT_INTERRUPT, SIGNAL_INTERRUPT
@@ -123,8 +125,6 @@ typedef struct io_device {
 
 typedef IO_DEVICE_s* IO_DEVICE_p;
 
-
-
 typedef struct custom_cond {
 	// int representing the state
 	int state;
@@ -149,8 +149,6 @@ typedef struct cp_pair {
 } CP_PAIR_s;
 
 typedef CP_PAIR_s* CP_PAIR_p;
-
-
 
 // A function to act as the main loop for the simulator
 //void OS_Simulator();
@@ -280,3 +278,5 @@ void check_for_deadlock();
 int getInterruptType(int);
 
 int countAllNodes();
+
+void check_for_syncro_trap(int syncro_flag);

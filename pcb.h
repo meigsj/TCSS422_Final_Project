@@ -22,8 +22,8 @@ Joshua Meigs
 #define IDLE_PROCESS_PID 0
 
 // Ranges for random calculations
-#define TERM_COUNT_RANGE 5 + 1
-#define MAX_PC_RANGE (5000 + 1 - 2000) + 2000
+#define TERM_COUNT_RANGE 2 + 1
+#define MAX_PC_RANGE (2000 + 1 - 1000) + 1000
 #define TRAP_STEP_RANGE (300 + 1 - 100) + 100
 
 
