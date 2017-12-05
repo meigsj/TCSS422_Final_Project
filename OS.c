@@ -211,11 +211,13 @@ void check_for_syncro_trap(int syncro_flag) {
 				pair->counter++;
 				printf("\nProducer %s incremented variable %c%c: %d.\n",pair->producer_name , pair->producer_name[0], pair->consumer_name[0], pair->counter);
 				signal_tsr(pair->mutex, pair->produced);
-				printf("\nProducer %s signals produced on cond .\n", pair->producer_name);
+                pair->filled = FILLED;
+				printf("\nProducer %s signals produced on cond.\n", pair->producer_name);
 			}
 			else {
 				printf("\nConsumer %s read variable %c%c: %d\n", pair->consumer_name, pair->producer_name[0], pair->consumer_name[0], pair->counter);
 				signal_tsr(pair->mutex, pair->consumed);
+                pair->filled = EMPTY;
 				printf("\nConsumer %s signals Consumed on cond.\n", pair->consumer_name);
 			}
 			break;
@@ -800,23 +802,13 @@ int wait_tsr(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond) {
     PCB_p running = processes->runningProcess;
     setPC(running, currentPC);
 
-    if (cond->state == COND_READY) {
-        setState(running, INTERRUPTED);
-    } else {
-        setState(running, WAITING);
-    }
+    setState(running, WAITING);
 
     timer_check();
     IO_check();
 
-    if (getState(running) == WAITING) {
-        scheduler(WAIT_INTERRUPT, running, mutex, cond);
-    } else {
-        cond->state = COND_NOT_READY;
-        ss_pop(sysStack);
-		ss_push(sysStack, getPC(processes->runningProcess));
-    }
-
+    scheduler(WAIT_INTERRUPT, running, mutex, cond);
+   
     syncro_flag = NO_RESOURCE_SYNCRO;
 
     // IRET (update current pc)
@@ -832,7 +824,6 @@ int signal_tsr(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond) {
     IO_check();
 	
     if (q_is_empty(cond->waiting)) {
-		cond->state = COND_READY;
         ss_pop(sysStack);
         ss_push(sysStack, getPC(processes->runningProcess));
     } else {
@@ -1083,8 +1074,6 @@ int createConsumerProducerPair() {
     // Mark each processes as a consumer/producer pair
     setType(producer, CONPRO_PAIR);
     setType(consumer, CONPRO_PAIR);
-    
-
 
     // Set to not terminate
     setTerminate(producer, 0);
@@ -1110,8 +1099,7 @@ int createConsumerProducerPair() {
     pair->producer = producer;
     pair->consumer = consumer;
 
-	pair->consumed->state = COND_READY;
-
+    pair->filled = EMPTY;
 
     cp_pairs[total_cp_pairs] = pair;
     total_cp_pairs++;
@@ -1284,6 +1272,17 @@ CP_PAIR_p getPCPair(PCB_p process) {
     return NULL;
 }
 
+// Performs a linear search to see if the passed process is a producer
+int isProducer(PCB_p process) {
+    for (int i = 0; i < PRO_CON_MAX; i++) {
+        if (cp_pairs[i]->producer == process) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
 // Performs a linear search for a Producer/Consumer pair using the passed process
 RESOURCE_PAIR_p getResourcePair(PCB_p process) {
     for (int i = 0; i < SHARED_RESOURCE_MAX; i++) {
@@ -1352,6 +1351,38 @@ int simulateProgramStep() {
     if(currentPC > getMaxPC(processes->runningProcess)) {
         currentPC = 0;
         setTermCount(processes->runningProcess, getTermCount(processes->runningProcess)+1);
+    }
+
+    // Simulate while check for consumer/producer pairs
+    if (getType(processes->runningProcess) == CONPRO_PAIR) {
+        CP_PAIR_p pair = getPCPair(processes->runningProcess);
+        int is_producer = (processes->runningProcess == pair->producer);
+        int isAtWhile = 0;
+
+        for (int i = 0; i < SYNCRO_SIZE; i++) {
+            if (processes->runningProcess->wait_1_pcs[i] == currentPC) {
+                isAtWhile = 1;
+                printf("While Detected @ PC %d, Filled: %d ", currentPC, pair->filled);
+                break;
+            }
+        }
+
+        // If while condition is false don't fall unto while (skip a PC)
+        // Producer: while(filled == FILLED)
+        // Consumer: while(filled == EMPTY)
+        if (isAtWhile) {
+            if (is_producer && pair->filled == EMPTY) {
+                printf(" and Producer skipped");
+                currentPC++;
+            } else if (!is_producer && pair->filled == FILLED) {
+                printf(" and Consumer skipped");
+                currentPC++;
+            }
+
+            printf("\n");
+        }
+
+        
     }
 
     return SUCCESSFUL;

@@ -102,7 +102,7 @@ enum interrupt_type { NO_INTERUPT, TIMER_INTERUPT, IO_1_INTERUPT, IO_2_INTERUPT,
 enum syncro_code { NO_RESOURCE_SYNCRO, LOCK_RESOURCE_1, UNLOCK_RESOURCE_1, LOCK_RESOURCE_2, UNLOCK_RESOURCE_2
                     , SIGNAL_RESOURCE_1, WAIT_RESOURCE_1};
 
-enum code_wait_code {COND_NOT_READY, COND_READY};
+enum code_wait_code {EMPTY, FILLED};
 
 typedef struct process_queues {
     // all currently used process queues and the running process pcb
@@ -153,6 +153,9 @@ typedef struct cp_pair {
 
 	// Shared counter to increment/read
 	int counter;
+
+    // Shared flag to simulate while loop for wait
+    int filled;
 
 	// Syncronization vars
 	CUSTOM_MUTEX_p mutex;
@@ -292,3 +295,5 @@ int getInterruptType(int);
 int countAllNodes();
 
 void check_for_syncro_trap(int syncro_flag);
+
+int isProducer(PCB_p process);
