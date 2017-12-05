@@ -74,6 +74,7 @@ int initialize_pcb(PCB_p my_pcb) {
         my_pcb->terminate = 0;
         my_pcb->term_count = 0;
         my_pcb->creation = setCreation(my_pcb, time(NULL));
+        my_pcb->step_finished = STEP_UNKNOWN;
         
         for (int i = 0; i < IO_TRAP_SIZE; i++) {
             my_pcb->io_1_traps[i] = NO_TRAP;

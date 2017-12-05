@@ -47,6 +47,8 @@ enum state_type {NEW, READY, RUNNING, INTERRUPTED, WAITING, HALTED};
 
 enum process_type { NO_TYPE, IO, COMP_INTENSIVE, CONPRO_PAIR, RESOURCE_PAIR };
 
+enum step_state {STEP_UNKNOWN, STEP_FINISHED, STEP_UNFINISHED};
+
 typedef struct pcb {
     // Process control block
     unsigned int pid; // process identification
@@ -62,6 +64,7 @@ typedef struct pcb {
     unsigned int maxpc; // the maximum pc value for the process
     unsigned int terminate; // the number of times the maxpc must be reached to terminate the process
     unsigned int term_count; // the number of times the maxpc was reached
+    unsigned int step_finished;
     
     time_t creation; // the time when the process was created
     time_t termination; // the time when the process was terminated

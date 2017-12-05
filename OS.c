@@ -119,34 +119,30 @@ void * OS_Simulator(void *arg) {
         }
 
         // Trigger IO counters and check for IO interupts
-        IO_check();
+        // Trigger timer and check for timer interupt
+        if (timer_check() && processes->runningProcess->step_finished == STEP_FINISHED) continue;
+        if (IO_check() && processes->runningProcess->step_finished == STEP_FINISHED) continue;
 
-        // Check for Traps (termination is checked as a trap here too)
+        // Set step to finished as if replaced here the TSR will still complete
+        processes->runningProcess->step_finished = STEP_FINISHED;
+
+        // Check for IO Traps, Syncronization Traps and Termination
         trapFlag = isAtTrap(processes->runningProcess);
+        syncro_flag = isAtSyncro(processes->runningProcess);
         if (trapFlag == IO_1_TRAP || trapFlag == IO_2_TRAP || trapFlag == PCB_TERMINATED) {
             printf("\nTrap Detected!\n");
             ss_push(sysStack, currentPC);
             pseudoTSR(trapFlag);
             printInterupt(trapFlag);
-        }
-
-        // Check for Syncronization services
-
-        syncro_flag = isAtSyncro(processes->runningProcess);
-		trapFlag = getInterruptType(syncro_flag);
-        if (syncro_flag) {
+        } else if (syncro_flag) {
+            trapFlag = getInterruptType(syncro_flag);
             printf("\nSyncronization Service Detected!\n");
 			ss_push(sysStack, currentPC);
 
 			check_for_syncro_trap(syncro_flag);
 
-            //currentPC--;
 			printInterupt(trapFlag);
         }
-        
-        //Trigger timer and check for timer interupt
-        timer_check();
-		//if step is finished, loop back to the start, otherwise keep going
 
 		assert(ss_getSize(sysStack) == 0);
         assert(getTotalNodesCount(processes->readyProcesses) <= (PRO_CON_MAX + SHARED_RESOURCE_MAX + COMPUTE_PROCESS_MAX*2 + IO_PROCESS_MAX*2));
@@ -410,7 +406,8 @@ int timer_check() {
     return ret;
 }
 
-void IO_check() {
+int IO_check() {
+    int proc_replaced = 0;
     if (IO_1_activated && pthread_mutex_trylock(&IO_1_lock) == 0) {
         printf("\nIO1 Interrupt Detected!\n");
         ss_push(sysStack,currentPC);
@@ -469,13 +466,14 @@ int pseudoISR() {
 // Added for problem 4
 // A function to simulate a an IO Interrupt routine
 int IO_Interupt_Routine(int IO_interupt) {
+    int replaced = 0;
     if (getState(processes->runningProcess) == RUNNING)
         setState(processes->runningProcess, INTERRUPTED);
 
     // save pc to pcb
     setPC(processes->runningProcess, currentPC);
 
-    timer_check();
+    replaced = timer_check();
 
     // scheduler up call
     scheduler(IO_interupt, NULL, NULL, NULL);
@@ -483,7 +481,7 @@ int IO_Interupt_Routine(int IO_interupt) {
     // IRET (update current pc)
 	assert(!stack_is_empty(sysStack));
     currentPC = ss_pop(sysStack);
-    return SUCCESSFUL;
+    return replaced;
 }
 
 // Added for problem 4
@@ -670,7 +668,6 @@ int dispatcher() {
             p_enqueue(processes->readyProcesses, node);
             break;
         case WAITING:
-            printf("\n Not enqueueing a waiting process.\n");
             // do not enqueue running proccess if waiting
             // process will be enqueued to proper IO device
             // once the TSR resumes
@@ -728,7 +725,7 @@ int dispatcherTrap(FIFOq_p IO_Queue, PCB_p running) {
 	setNodePCB(node, running);
 	q_enqueue(IO_Queue, node);
 
-    printf("\nP->Running %d, Running %d\n", processes->runningProcess->pid, running->pid);
+    //printf("\nP->Running %d, Running %d\n", processes->runningProcess->pid, running->pid);
 
 	if (processes->runningProcess->pid == running->pid) {
 		// dequeue
@@ -1157,10 +1154,10 @@ int createSharedResourcePair() {
     setTerminate(process_2, 0);
 
     // Set up
-    process_1->lock_1_pcs[0] = 100;
-    process_1->lock_2_pcs[0] = 300;
-    process_1->unlock_2_pcs[0] = 1000;
-    process_1->unlock_1_pcs[0] = 1100;
+    process_1->lock_1_pcs[0] = 300;
+    process_1->lock_2_pcs[0] = 100;
+    process_1->unlock_2_pcs[0] = 1100;
+    process_1->unlock_1_pcs[0] = 1000;
     
     process_2->lock_1_pcs[0] = 100;
     process_2->lock_2_pcs[0] = 300;
@@ -1346,8 +1343,14 @@ int IO_2_DownCounter() {
 // Added for problem 4
 // A function to simulate the program executing one instruction and stepping to the next
 int simulateProgramStep() {
+    // if step is unfinished do not increment pc to avoid skipping steps
+    if (processes->runningProcess->step_finished == STEP_UNFINISHED) return STEP_UNFINISHED;
+    
+    // Otherwise step is finished, increment to next step and set to unfinished
+    processes->runningProcess->step_finished = STEP_UNFINISHED;
     currentPC++;
 
+    // Reset PC if past maximum PC
     if(currentPC > getMaxPC(processes->runningProcess)) {
         currentPC = 0;
         setTermCount(processes->runningProcess, getTermCount(processes->runningProcess)+1);

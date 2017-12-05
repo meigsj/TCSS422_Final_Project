@@ -258,7 +258,7 @@ void initialize_CP_Pair(CP_PAIR_p);
 
 int timer_check();
 
-void IO_check();
+int IO_check();
 
 int lock_tsr(CUSTOM_MUTEX_p);
 
