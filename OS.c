@@ -177,7 +177,7 @@ void check_for_syncro_trap(int syncro_flag) {
 		switch (syncro_flag) {
 		case LOCK_RESOURCE_1:
 			if (processes->runningProcess->pid == pair->producer->pid) {
-				printf("\nProcess %s requests lock M%c", pair->producer_name, pair->producer_name[0]); //NEED TO PRINT IF SUCC
+				printf("\nProcess %s requests lock M%c", pair->producer_name, pair->producer_name[0]); 
 			}
 			else {
 				printf("\nProcess %s requests lock M%c", pair->consumer_name, pair->consumer_name[0]);
@@ -189,23 +189,20 @@ void check_for_syncro_trap(int syncro_flag) {
 			break;
 		case UNLOCK_RESOURCE_1:
 			if (processes->runningProcess->pid == pair->producer->pid) {
-				printf("\nProcess %s releases lock M%c\n", pair->producer_name, pair->producer_name[0]); //NEED TO PRINT IF SUCC
+				printf("\nProcess %s releases lock M%c\n", pair->producer_name, pair->producer_name[0]);
 			}
 			else {
 				printf("\nProcess %s releases lock M%c\n", pair->consumer_name, pair->consumer_name[0]);
 			}
 			unlock_tsr(pair->mutex);
-			if (getState(processes->runningProcess) ==  INTERRUPTED) {
-				printf("Request on the lock was succesful\n");
-			}
 			break;
 		case WAIT_RESOURCE_1:
 			if (pair->producer->pid == processes->runningProcess->pid) {
-				printf("\nProducer %s calls wait on cond %s with mutex %s.\n", pair->producer_name, pair->producer_name, pair->consumer_name);
+				printf("\nProducer %s calls wait on cond with mutex %s.\n", pair->producer_name,  pair->consumer_name);
 				wait_tsr(pair->mutex, pair->consumed);
 			}
 			else {
-				printf("\nProducer %s calls wait on cond %s with mutex %s.\n", pair->consumer_name, pair->consumer_name, pair->producer_name);
+				printf("\nProducer %s calls wait on cond  with mutex %s.\n", pair->consumer_name,  pair->producer_name);
 				wait_tsr(pair->mutex, pair->produced);
 			}
 			break;
@@ -214,12 +211,12 @@ void check_for_syncro_trap(int syncro_flag) {
 				pair->counter++;
 				printf("\nProducer %s incremented variable %c%c: %d.\n",pair->producer_name , pair->producer_name[0], pair->consumer_name[0], pair->counter);
 				signal_tsr(pair->mutex, pair->produced);
-				printf("\nProducer %s signals produced on cond %s.\n", pair->producer_name, pair->consumer_name);
+				printf("\nProducer %s signals produced on cond .\n", pair->producer_name);
 			}
 			else {
 				printf("\nConsumer %s read variable %c%c: %d\n", pair->consumer_name, pair->producer_name[0], pair->consumer_name[0], pair->counter);
 				signal_tsr(pair->mutex, pair->consumed);
-				printf("\nProducer %s signals produced on cond %s.\n", pair->consumer_name, pair->producer_name);
+				printf("\nConsumer %s signals Consumed on cond.\n", pair->consumer_name);
 			}
 			break;
 		default:
@@ -833,9 +830,9 @@ int signal_tsr(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond) {
 
     timer_check();
     IO_check();
-
+	
     if (q_is_empty(cond->waiting)) {
-        cond->state = COND_READY;
+		cond->state = COND_READY;
         ss_pop(sysStack);
         ss_push(sysStack, getPC(processes->runningProcess));
     } else {
@@ -1095,8 +1092,8 @@ int createConsumerProducerPair() {
 
     // Set syncro trap calls
     producer->lock_1_pcs[0] = 7;
-    producer->wait_1_pcs[0] = 11;
-    producer->signal_1_pcs[0] = 9;
+    producer->wait_1_pcs[0] = 9;
+    producer->signal_1_pcs[0] = 11;
     producer->unlock_1_pcs[0] = 12;
     producer->maxpc = 100;
 
@@ -1106,11 +1103,15 @@ int createConsumerProducerPair() {
     consumer->unlock_1_pcs[0] = 12;
     consumer->maxpc = 100;
 
+
     // initalize CP_PAIR
     pair = (CP_PAIR_p)malloc(sizeof(CP_PAIR_s));
     initialize_CP_Pair(pair);
     pair->producer = producer;
     pair->consumer = consumer;
+
+	pair->consumed->state = COND_READY;
+
 
     cp_pairs[total_cp_pairs] = pair;
     total_cp_pairs++;
@@ -1347,8 +1348,7 @@ int IO_2_DownCounter() {
 // A function to simulate the program executing one instruction and stepping to the next
 int simulateProgramStep() {
     currentPC++;
-    // need to check that max_pc is correct
-    // setters/getters inside of pcb maybe?
+
     if(currentPC > getMaxPC(processes->runningProcess)) {
         currentPC = 0;
         setTermCount(processes->runningProcess, getTermCount(processes->runningProcess)+1);
