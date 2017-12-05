@@ -29,7 +29,7 @@ Joshua Meigs
 
 // The amount of loop iterations before halting the simulation
 // Set low for output txt, tested at 500,000 iterations and no halting condition
-#define HALT_CONDITION 50000
+#define HALT_CONDITION 100000
 
 // The amount of loop iterations before creating new processes
 #define NEW_PROCESS_ITERATION 4000
@@ -68,7 +68,7 @@ Joshua Meigs
 #define CREATE_PRO_CON_MAX 2
 
 // The max number +1 of new shared resource pairs to make per process creation
-#define CREATE_SHARED_RESOURCE_MAX 2
+#define CREATE_SHARED_RESOURCE_MAX 5
 
 // The max number +1 of new IO Processes to make per process creation
 #define CREATE_IO_PROCESS_MAX 6
@@ -243,7 +243,7 @@ void initialize_Resource_Pair(RESOURCE_PAIR_p pair);
 
 void initialize_CP_Pair(CP_PAIR_p);
 
-void timer_check();
+int timer_check();
 
 void IO_check();
 
@@ -276,3 +276,7 @@ void destruct_Custom_Mutex(CUSTOM_MUTEX_p mutex);
 void destruct_Custom_Cond(CUSTOM_COND_p cond);
 
 void check_for_deadlock();
+
+int getInterruptType(int);
+
+int countAllNodes();
