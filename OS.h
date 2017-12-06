@@ -17,6 +17,9 @@ Joshua Meigs
 #include "Simple_Stack.h"
 #include "Deadlock_Monitor.h"
 
+// value to determine if deadlock will be possible
+#define DEADLOCK 1
+
 // value to denote a successful function return
 #define SUCCESSFUL 0
 

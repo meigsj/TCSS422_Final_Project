@@ -74,7 +74,6 @@ pthread_mutex_t IO_2_global_lock = PTHREAD_MUTEX_INITIALIZER;
 
 PROCESS_QUEUES_p processes;
 
-// TODO - Make into structs?
 int total_cp_pairs;
 CP_PAIR_p cp_pairs[PRO_CON_MAX];
 
@@ -110,7 +109,7 @@ void * OS_Simulator(void *arg) {
     // One cycle is one instruction
     for (;;) { // for spider
         int trapFlag = 0;
-
+       
         // update counters
         iterationCount++;
         quantum_post_reset++;
@@ -1086,17 +1085,17 @@ int createConsumerProducerPair() {
     setTerminate(consumer, 0);
 
     // Set syncro trap calls
-    producer->lock_1_pcs[0] = 7;
-    producer->wait_1_pcs[0] = 9;
-    producer->signal_1_pcs[0] = 11;
-    producer->unlock_1_pcs[0] = 12;
-    producer->maxpc = 100;
+    producer->lock_1_pcs[0] = CP_LOCK_PC * CP_DIALATE;
+    producer->wait_1_pcs[0] = CP_WAIT_PC * CP_DIALATE;
+    producer->signal_1_pcs[0] = CP_SIGNAL_PC * CP_DIALATE;
+    producer->unlock_1_pcs[0] = CP_UNLOCK_PC * CP_DIALATE;
+    producer->maxpc = CP_MAX_PC;
 
-    consumer->lock_1_pcs[0] = 7;
-    consumer->wait_1_pcs[0] = 9;
-    consumer->signal_1_pcs[0] = 11;
-    consumer->unlock_1_pcs[0] = 12;
-    consumer->maxpc = 100;
+    consumer->lock_1_pcs[0] = CP_LOCK_PC * CP_DIALATE;
+    consumer->wait_1_pcs[0] = CP_WAIT_PC * CP_DIALATE;
+    consumer->signal_1_pcs[0] = CP_SIGNAL_PC * CP_DIALATE;
+    consumer->unlock_1_pcs[0] = CP_UNLOCK_PC * CP_DIALATE;
+    consumer->maxpc = CP_MAX_PC;
 
 
     // initalize CP_PAIR
@@ -1131,8 +1130,6 @@ int createConsumerProducerPair() {
 	q_enqueue(processes->newProcesses, pro_node);
 	q_enqueue(processes->newProcesses, con_code);
 	
-
-
     return SUCCESSFUL;
 }
 
@@ -1155,23 +1152,29 @@ int createSharedResourcePair() {
     setType(process_1, RESOURCE_PAIR);
     setType(process_2, RESOURCE_PAIR);
 
-    process_1->maxpc = 1200;
-    process_2->maxpc = 1200;
+    process_1->maxpc = RES_MAX_PC;
+    process_2->maxpc = RES_MAX_PC;
 
     // Set to not terminate
     setTerminate(process_1, 0);
     setTerminate(process_2, 0);
 
-    // Set up
-    process_1->lock_1_pcs[0] = 300;
-    process_1->lock_2_pcs[0] = 100;
-    process_1->unlock_2_pcs[0] = 1100;
-    process_1->unlock_1_pcs[0] = 1000;
-    
-    process_2->lock_1_pcs[0] = 100;
-    process_2->lock_2_pcs[0] = 300;
-    process_2->unlock_2_pcs[0] = 1000;
-    process_2->unlock_1_pcs[0] = 1100;
+    // Set up pseudo shared resource program
+    if (DEADLOCK) {
+        process_1->lock_1_pcs[0] = RES_LOCK2_PC * RES_DIALATE;
+        process_1->lock_2_pcs[0] = RES_LOCK1_PC * RES_DIALATE;
+        process_1->unlock_2_pcs[0] = RES_UNLOCK1_PC * RES_DIALATE;
+        process_1->unlock_1_pcs[0] = RES_UNLOCK2_PC * RES_DIALATE;
+    } else {
+        process_1->lock_1_pcs[0] = RES_LOCK1_PC * RES_DIALATE;
+        process_1->lock_2_pcs[0] = RES_LOCK2_PC * RES_DIALATE;
+        process_1->unlock_2_pcs[0] = RES_UNLOCK2_PC * RES_DIALATE;
+        process_1->unlock_1_pcs[0] = RES_UNLOCK1_PC * RES_DIALATE;
+    }
+    process_2->lock_1_pcs[0] = RES_LOCK1_PC * RES_DIALATE;
+    process_2->lock_2_pcs[0] = RES_LOCK2_PC * RES_DIALATE;
+    process_2->unlock_2_pcs[0] = RES_UNLOCK2_PC * RES_DIALATE;
+    process_2->unlock_1_pcs[0] = RES_UNLOCK1_PC * RES_DIALATE;
     
 
     // initalize RESOURCE_PAIR
@@ -1387,9 +1390,7 @@ int simulateProgramStep() {
             } else if (!is_producer && pair->filled == FILLED) {
                 currentPC++;
             }
-        }
-
-        
+        } 
     }
 
     return SUCCESSFUL;

@@ -26,6 +26,20 @@ Joshua Meigs
 #define MAX_PC_RANGE (2000 + 1 - 1000) + 1000
 #define TRAP_STEP_RANGE (300 + 1 - 100) + 100
 
+#define CP_LOCK_PC 7
+#define CP_WAIT_PC 9
+#define CP_SIGNAL_PC 11
+#define CP_UNLOCK_PC 12
+#define CP_MAX_PC 100
+#define CP_DIALATE 1
+
+#define RES_LOCK1_PC 1
+#define RES_LOCK2_PC 3
+#define RES_UNLOCK2_PC 10
+#define RES_UNLOCK1_PC 11
+#define RES_MAX_PC 1200
+#define RES_DIALATE 1
+
 
 typedef struct cpu_context {
     // CPU state for the LC-3 processor
