@@ -343,8 +343,6 @@ void * io1_thread(void * s) {
 		i = IO_1_counter * IO_QUANTUM_MULTIPLIER;
         pthread_mutex_unlock(&IO_1_active_lock);
 
-        printf("IO 1 Loops = %d\n", i);
-
         // Sleep thread then unlock to signal IO 1 device is ready
         for (int j = 0; j < i; j++) {}
 
@@ -379,7 +377,6 @@ void * io2_thread(void * s) {
 		i = IO_2_counter * IO_QUANTUM_MULTIPLIER;
         pthread_mutex_unlock(&IO_2_active_lock);
 
-        printf("IO 2 Loops = %d\n", i);
         for (int j = 0; j < i; j++) {}
 
         // Wait until Interupt Service completes -- Unlocks(signals) IO_2_lock
@@ -504,8 +501,6 @@ int IO_Interupt_Routine(int IO_interupt) {
     // IRET (update current pc)
 	assert(!stack_is_empty(sysStack));
     currentPC = ss_pop(sysStack);
-    printf("IO 1 Quantum: %d\n", IO_1_counter);
-    printf("IO 2 Quantum: %d\n", IO_2_counter);
     return replaced;
 }
 
@@ -549,8 +544,6 @@ int pseudoTSR(int trap_interupt) {
     // IRET (update current pc)
 	assert(!stack_is_empty(sysStack));
     currentPC = ss_pop(sysStack);
-    printf("IO 1 Quantum: %d\n", IO_1_counter);
-    printf("IO 2 Quantum: %d\n", IO_2_counter);
     return SUCCESSFUL;
 }
 
@@ -1381,7 +1374,6 @@ int simulateProgramStep() {
         for (int i = 0; i < SYNCRO_SIZE; i++) {
             if (processes->runningProcess->wait_1_pcs[i] == currentPC) {
                 isAtWhile = 1;
-                printf("While Detected @ PC %d, Filled: %d ", currentPC, pair->filled);
                 break;
             }
         }
@@ -1391,14 +1383,10 @@ int simulateProgramStep() {
         // Consumer: while(filled == EMPTY)
         if (isAtWhile) {
             if (is_producer && pair->filled == EMPTY) {
-                printf(" and Producer skipped");
                 currentPC++;
             } else if (!is_producer && pair->filled == FILLED) {
-                printf(" and Consumer skipped");
                 currentPC++;
             }
-
-            printf("\n");
         }
 
         
@@ -1431,7 +1419,6 @@ int moveNewToReady() {
         i++;
     }
 
-    printf("Moved %d processes.  %d detected in new queue.", i, newInQ);
 }
 
 int countAllNodes() {
