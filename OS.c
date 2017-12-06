@@ -43,8 +43,13 @@ int total_terminated;
 int total_blocked;
 int total_waiting;
 
-int con_pro_name_starting_point;
+int overall_processes_created;
+int overall_IO_processes_created;
+int overall_comp_processes_created;
+int overall_CP_processes_created;
+int overall_shared_resource_processes_created;
 
+int con_pro_name_starting_point;
 int resource_pair_starting_point;
 //Tests
 pthread_mutex_t timer_lock = PTHREAD_MUTEX_INITIALIZER;
@@ -149,9 +154,15 @@ void * OS_Simulator(void *arg) {
 
 		//check stop condition for the simulation
         if (iterationCount >= HALT_CONDITION) {
-            printf("---- HALTING SIMULATION ON ITERATION %d ----\n", iterationCount);
-			printf("------- TOTAL TERMINATED PROCESSES %d ------\n", total_terminated);
-            printf("-------- TOTAL DEADLOCKED PAIRS %d ---------\n", total_deadlock_pairs);
+            printf("---- HALTING SIMULATION ON ITERATION %d ------\n", iterationCount);
+			printf("------- TOTAL TERMINATED PROCESSES %d --------\n", total_terminated);
+            printf("-------- TOTAL DEADLOCKED PAIRS %d -----------\n", total_deadlock_pairs);
+			printf("---------TOTAL PROCCESSES CREATED %d ---------\n", overall_processes_created);
+			printf("------- TOTAL IO PROCESSES CREATED %d --------\n", overall_IO_processes_created);
+			printf("------- TOTAL COMP PROCESSES CREATED %d ------\n", overall_comp_processes_created);
+			printf("------- TOTAL CP PROCESSES CREATED %d --------\n", overall_CP_processes_created);
+			printf("--TOTAL SHARED RESOURCE PROCESSES CREATED %d--\n", overall_shared_resource_processes_created);
+
             pthread_mutex_lock(&global_shutdown_lock);
             shutting_down = 1;
             pthread_mutex_unlock(&global_shutdown_lock);
@@ -1008,21 +1019,29 @@ int createNewProcesses() {
     for(int i = 0; i < newIO; i++) {
         if (total_io_processes >= IO_PROCESS_MAX) break;
         createIOProcess();
+		overall_processes_created++;
+		overall_IO_processes_created++;
     }
 
     for (int i = 0; i < newComp; i++) {
         if (total_comp_processes >= COMPUTE_PROCESS_MAX) break;
         createComputeIntensiveProcess();
+		overall_processes_created++;
+		overall_comp_processes_created++;
     }
 
     for (int i = 0; i < newCP; i++) {
         if (total_cp_pairs >= PRO_CON_MAX) break;
         createConsumerProducerPair();
+		overall_processes_created+=2;
+		overall_CP_processes_created += 2;
     }
 
     for (int i = 0; i < newShared; i++) {
         if (total_resource_pairs >= SHARED_RESOURCE_MAX) break;
         createSharedResourcePair();
+		overall_processes_created+=2;
+		overall_shared_resource_processes_created += 2;
     }
 }
 
@@ -1691,9 +1710,15 @@ int main() {
 	total_waiting = 0;
     total_comp_processes = 1;
     total_io_processes = 0;
-	//TODO: put into the structs to clean up globals?
-	con_pro_name_starting_point = 64;
-	resource_pair_starting_point = 64;
+	
+	overall_IO_processes_created = 0;
+	overall_comp_processes_created = 0;
+	overall_CP_processes_created = 0;
+	overall_shared_resource_processes_created = 0;
+	overall_processes_created = 0;
+
+	con_pro_name_starting_point = UPPERCASE_A;
+	resource_pair_starting_point = UPPERCASE_A;
 
     timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));
     // create starting processes
