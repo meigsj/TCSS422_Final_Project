@@ -85,15 +85,16 @@ int syncro_flag;
 void * OS_Simulator(void *arg) {
     char* buffer[MAX_BUFFER_SIZE];
     int deadlocks[SHARED_RESOURCE_MAX] = {0};
-    pthread_t the_timer_thread;
-    pthread_create(&the_timer_thread, NULL, timer_thread, NULL);
-
+    
     pthread_t the_io_1_thread;
     pthread_create(&the_io_1_thread, NULL, io1_thread, NULL);
 
     pthread_t the_io_2_thread;
     pthread_create(&the_io_2_thread, NULL, io2_thread, NULL);
-	
+
+	pthread_t the_timer_thread;
+    pthread_create(&the_timer_thread, NULL, timer_thread, NULL);
+
 	int i = 0;
 	// Main Loop
     // One cycle is one instruction
@@ -381,7 +382,7 @@ void * io2_thread(void * s) {
 
 int timer_check() {
     int ret = 0;
-    if (pthread_mutex_trylock(&timer_lock) == 0) {
+    if (iterationCount > 5 && pthread_mutex_trylock(&timer_lock) == 0) {
         ret = 1;
         overall_timer_interrupts++;
         printf("\nTimer Interrupt Detected!\n");
