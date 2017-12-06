@@ -7,17 +7,6 @@ Shaun Coleman
 Joshua Meigs
 */
 
-/*
-TODO: CHECKS
-Correct output
-    Need print once a Resource pair process gets both locks
-check CP pair is correctly incrementing + printing number
-check processes are terminating - noting some terminations and an assert making sure CP and Resource pairs are not terminated
-Change IO to use a loop instead of sleep
-Check that locks are used correctly for shared vars between the main thread and the IO/Timer threads
-Code Cleanup
-*/
-
 #include <time.h>
 #include <pthread.h>
 #include <assert.h>
@@ -48,6 +37,7 @@ int overall_IO_processes_created;
 int overall_comp_processes_created;
 int overall_CP_processes_created;
 int overall_shared_resource_processes_created;
+int overall_timer_interrupts;
 
 int con_pro_name_starting_point;
 int resource_pair_starting_point;
@@ -93,8 +83,8 @@ int syncro_flag;
 // Updated for Problem 4
 // The top level of the OS simulator
 void * OS_Simulator(void *arg) {
-
     char* buffer[MAX_BUFFER_SIZE];
+    int deadlocks[SHARED_RESOURCE_MAX] = {0};
     pthread_t the_timer_thread;
     pthread_create(&the_timer_thread, NULL, timer_thread, NULL);
 
@@ -103,7 +93,7 @@ void * OS_Simulator(void *arg) {
 
     pthread_t the_io_2_thread;
     pthread_create(&the_io_2_thread, NULL, io2_thread, NULL);
-	int deadlocks[SHARED_RESOURCE_MAX] = {0};
+	
 	int i = 0;
 	// Main Loop
     // One cycle is one instruction
@@ -153,14 +143,15 @@ void * OS_Simulator(void *arg) {
 
 		//check stop condition for the simulation
         if (iterationCount >= HALT_CONDITION) {
-            printf("---- HALTING SIMULATION ON ITERATION %d ------\n", iterationCount);
-			printf("------- TOTAL TERMINATED PROCESSES %d --------\n", total_terminated);
-            printf("-------- TOTAL DEADLOCKED PAIRS %d -----------\n", total_deadlock_pairs);
-			printf("---------TOTAL PROCCESSES CREATED %d ---------\n", overall_processes_created);
-			printf("------- TOTAL IO PROCESSES CREATED %d --------\n", overall_IO_processes_created);
-			printf("------- TOTAL COMP PROCESSES CREATED %d ------\n", overall_comp_processes_created);
-			printf("------- TOTAL CP PROCESSES CREATED %d --------\n", overall_CP_processes_created);
-			printf("--TOTAL SHARED RESOURCE PROCESSES CREATED %d--\n", overall_shared_resource_processes_created);
+            printf("---- HALTING SIMULATION ON ITERATION:         %d\n", iterationCount);
+			printf("---- TOTAL TERMINATED PROCESSES:              %d\n", total_terminated);
+            printf("---- TOTAL DEADLOCKED PAIRS:                  %d\n", total_deadlock_pairs);
+			printf("---- TOTAL PROCCESSES CREATED:                %d\n", overall_processes_created);
+			printf("---- TOTAL IO PROCESSES CREATED:              %d\n", overall_IO_processes_created);
+			printf("---- TOTAL COMP PROCESSES CREATED:            %d\n", overall_comp_processes_created);
+			printf("---- TOTAL C/P PROCESSES CREATED:             %d\n", overall_CP_processes_created);
+			printf("---- TOTAL SHARED RESOURCE PROCESSES CREATED: %d\n", overall_shared_resource_processes_created);
+            printf("---- AVERAGE QUANTUM PER TIMER INT:           %d",  HALT_CONDITION / overall_timer_interrupts);
 
             pthread_mutex_lock(&global_shutdown_lock);
             shutting_down = 1;
@@ -168,7 +159,6 @@ void * OS_Simulator(void *arg) {
             break;
         }
 
-		//check for processes type
     }
 
 }
@@ -176,7 +166,7 @@ void * OS_Simulator(void *arg) {
 
 void check_for_syncro_trap(int syncro_flag) {
 	int error_bad_pcb_for_syncro = 0;
-	//TODO: Rewrite it so that Mutexs are given name fields in the structs as well, to shorten amount of space taken by array calls
+	
 	if (getType(processes->runningProcess) == CONPRO_PAIR) {
 		CP_PAIR_p pair = getPCPair(processes->runningProcess);
 
@@ -301,9 +291,9 @@ void check_for_syncro_trap(int syncro_flag) {
 }
 
 void * timer_thread(void * s) {
-    int i = timer * IO_QUANTUM_MULTIPLIER;
     pthread_mutex_lock(&timer_lock);
-    
+    int i = timer * IO_QUANTUM_MULTIPLIER;
+
     for (;;) {
         pthread_mutex_lock(&global_shutdown_lock);
         while (shutting_down) {
@@ -393,6 +383,7 @@ int timer_check() {
     int ret = 0;
     if (pthread_mutex_trylock(&timer_lock) == 0) {
         ret = 1;
+        overall_timer_interrupts++;
         printf("\nTimer Interrupt Detected!\n");
         int state = RUNNING;
         if (processes->runningProcess) state = getState(processes->runningProcess);
@@ -619,6 +610,18 @@ int scheduler(int interupt, PCB_p running, CUSTOM_MUTEX_p mutex, CUSTOM_COND_p c
         q_resetPriority(processes->IO_1_Processes);
         q_resetPriority(processes->IO_2_Processes);
 		setPriority(processes->runningProcess, 0);
+
+        for (int i = 0; i < total_cp_pairs; i++) {
+            q_resetPriority(cp_pairs[i]->mutex->blocked);
+            q_resetPriority(cp_pairs[i]->produced->waiting);
+            q_resetPriority(cp_pairs[i]->consumed->waiting);
+        }
+
+        for (int i = 0; i < total_resource_pairs; i++) {
+            q_resetPriority(resource_pairs[i]->mutex_1->blocked);
+            q_resetPriority(resource_pairs[i]->mutex_2->blocked);
+        }
+
         quantum_post_reset = 0;
 		check_for_deadlock();
     }
@@ -1640,6 +1643,36 @@ void free_syncro_service_processes() {
 	}
 }
 
+void initialize_global_vars() {
+    currentPC = 0;
+    iterationCount = 0;
+    quantum_post_reset = 0;
+    IOSR_1_finished = 0;
+    IOSR_2_finished = 0;
+    IO_1_counter = 0;
+    IO_2_counter = 0;
+    IO_1_activated = 0;
+    IO_2_activated = 0;
+    total_cp_pairs = 0;
+    total_resource_pairs = 0;
+    total_deadlock_pairs = 0;
+    total_terminated = 0;
+    total_blocked = 0;
+    total_waiting = 0;
+    total_comp_processes = 1;
+    total_io_processes = 0;
+
+    overall_IO_processes_created = 0;
+    overall_comp_processes_created = 1;
+    overall_CP_processes_created = 0;
+    overall_shared_resource_processes_created = 0;
+    overall_processes_created = 0;
+    overall_timer_interrupts = 0;
+
+    con_pro_name_starting_point = UPPERCASE_A;
+    resource_pair_starting_point = UPPERCASE_A;
+}
+
 int main() {
     pthread_t os;
 
@@ -1654,39 +1687,14 @@ int main() {
     // Added for Problem 3
     // SetQuantums
     for (int i = 0; i <= MAX_PRIORITY; i++) {
-        // Set Quantum to ten times one more than the priority level squared
+        // Set Quantum to ten times one more than the priority level squared (i+1)^2 * 10
         // i.e. Priority 0 -> Quantum 10
         setQuantum(processes->readyProcesses, i, (i + 1)*(i + 1) * 10);
     }
 
     // Initialize Global Vars
     sysStack = createSimpleStack();
-	currentPC = 0;
-    iterationCount = 0;
-    quantum_post_reset = 0;
-    IOSR_1_finished = 0;
-    IOSR_2_finished = 0;
-    IO_1_counter = 0;
-    IO_2_counter = 0;
-    IO_1_activated = 0;
-    IO_2_activated = 0;
-    total_cp_pairs = 0;
-	total_resource_pairs = 0;
-	total_deadlock_pairs = 0;
-	total_terminated = 0;
-	total_blocked = 0;
-	total_waiting = 0;
-    total_comp_processes = 1;
-    total_io_processes = 0;
-	
-	overall_IO_processes_created = 0;
-	overall_comp_processes_created = 0;
-	overall_CP_processes_created = 0;
-	overall_shared_resource_processes_created = 0;
-	overall_processes_created = 0;
-
-	con_pro_name_starting_point = UPPERCASE_A;
-	resource_pair_starting_point = UPPERCASE_A;
+    initialize_global_vars();
 
     timer = getQuantum(processes->readyProcesses, getPriority(processes->runningProcess));
     // create starting processes

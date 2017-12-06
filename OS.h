@@ -17,9 +17,17 @@ Joshua Meigs
 #include "Simple_Stack.h"
 #include "Deadlock_Monitor.h"
 
-// value to determine if deadlock will be possible
-#define DEADLOCK 1
+// value to determine if deadlock will be possible (0 for not possible otherwise possible)
+#define DEADLOCK 0
 
+// A Constant used to multiply the quantum for timer "sleep" loop
+#define IO_QUANTUM_MULTIPLIER 3000
+
+// The amount of loop iterations before creating new processes
+#define NEW_PROCESS_ITERATION 9000
+
+// The initial number of create process calls to start the program with
+#define INIT_CREATE_CALLS 3
 // value to denote a successful function return
 #define SUCCESSFUL 0
 
@@ -30,23 +38,10 @@ Joshua Meigs
 #define MAX_BUFFER_SIZE 2048
 
 // The amount of loop iterations before halting the simulation
-// Set low for output txt, tested at 500,000 iterations and no halting condition
 #define HALT_CONDITION 100000
 
-// The amount of loop iterations before creating new processes
-#define NEW_PROCESS_ITERATION 4000
-
 // The amount of time before all processes are reset to priority 0
-// 4 times the quantum size of the middle priority
-// Note: Originally was using a higher multiplier but was reduced
-// to demonstrate the priority reset for the test output
-#define RESET_QUANTUM (((((MAX_PRIORITY/2)+1) * (MAX_PRIORITY/2)+1) * 10) * 15)
-
-// The initial number of create process calls to start the program with
-#define INIT_CREATE_CALLS 5
-
-// the max number of processes that will not terminate
-#define MAX_PRIVILEGED 4
+#define RESET_QUANTUM (((((MAX_PRIORITY/2)+1) * (MAX_PRIORITY/2)+1) * 10) * 30)
 
 // the number of zombie processes that triggers an empty zombies function
 #define MAX_ZOMBIES 4
@@ -73,19 +68,10 @@ Joshua Meigs
 #define CREATE_SHARED_RESOURCE_MAX 5
 
 // The max number +1 of new IO Processes to make per process creation
-#define CREATE_IO_PROCESS_MAX 6
+#define CREATE_IO_PROCESS_MAX 8
 
 // The max number +1 of new computation intensive processes to make per process creation
-#define CREATE_CUMPUTE_PROCESS_MAX 3
-
-// A Constant used to test the timer's frequency
-#define TIMER_FREQ 1000
-
-// A Constant used to test the io device's interrupt frequency
-#define IO_FREQ 10000
-
-// A Constant used to multiply the quantum for timer "sleep" loop
-#define IO_QUANTUM_MULTIPLIER 5000
+#define CREATE_CUMPUTE_PROCESS_MAX 4
 
 #define MAX_NAME_SIZE_CONPRO 3
 
