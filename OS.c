@@ -211,7 +211,7 @@ void check_for_syncro_trap(int syncro_flag) {
 				wait_tsr(pair->mutex, pair->consumed);
 			}
 			else {
-				printf("\nProducer %s calls wait on cond  with mutex %s.\n", pair->consumer_name,  pair->producer_name);
+				printf("\nConsumer %s calls wait on cond  with mutex %s.\n", pair->consumer_name,  pair->producer_name);
 				wait_tsr(pair->mutex, pair->produced);
 			}
 			break;
@@ -706,7 +706,7 @@ int dispatcherIO(FIFOq_p IO_Queue) {
     p_enqueue(processes->readyProcesses, node);
 
     ss_pop(sysStack);
-    ss_push(sysStack, processes->runningProcess->pid);
+    ss_push(sysStack, getPC(processes->runningProcess));
 
     return SUCCESSFUL;
 }
@@ -926,7 +926,7 @@ int dispatcherSignal(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond) {
 	total_blocked++;
 
     ss_pop(sysStack);
-    ss_push(sysStack, processes->runningProcess->pid);
+	ss_push(sysStack, getPC(processes->runningProcess));
 }
 
 
