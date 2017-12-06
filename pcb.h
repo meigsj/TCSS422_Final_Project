@@ -37,7 +37,7 @@ Joshua Meigs
 #define RES_LOCK2_PC 3
 #define RES_UNLOCK2_PC 10
 #define RES_UNLOCK1_PC 11
-#define RES_MAX_PC 1200
+#define RES_MAX_PC 200
 #define RES_DIALATE 1
 
 
