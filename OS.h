@@ -18,10 +18,10 @@ Joshua Meigs
 #include "Deadlock_Monitor.h"
 
 // value to determine if deadlock will be possible (0 for not possible otherwise possible)
-#define DEADLOCK 0
+#define DEADLOCK 1
 
 // A Constant used to multiply the quantum for timer "sleep" loop
-#define IO_QUANTUM_MULTIPLIER 3000
+#define IO_QUANTUM_MULTIPLIER 2000
 
 // The amount of loop iterations before creating new processes
 #define NEW_PROCESS_ITERATION 9000
@@ -41,7 +41,7 @@ Joshua Meigs
 #define HALT_CONDITION 100000
 
 // The amount of time before all processes are reset to priority 0
-#define RESET_QUANTUM (((((MAX_PRIORITY/2)+1) * (MAX_PRIORITY/2)+1) * 10) * 30)
+#define RESET_QUANTUM (((((MAX_PRIORITY/2)+1) * (MAX_PRIORITY/2)+1) * 10) * 65)
 
 // the number of zombie processes that triggers an empty zombies function
 #define MAX_ZOMBIES 4
