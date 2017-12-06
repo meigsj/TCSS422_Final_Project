@@ -82,8 +82,7 @@ Joshua Meigs
 #define IO_FREQ 10000
 
 // A Constant used to multiply the quantum for timer "sleep" loop
-#define IO_QUANTUM_MULTIPLIER 2000
-
+#define IO_QUANTUM_MULTIPLIER 5000
 
 #define MAX_NAME_SIZE_CONPRO 3
 

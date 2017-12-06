@@ -302,41 +302,29 @@ void check_for_syncro_trap(int syncro_flag) {
 }
 
 void * timer_thread(void * s) {
-
-    struct timespec ts;
-    pthread_mutex_lock(&timer_lock);
-    ts.tv_sec = 0;
-    ts.tv_nsec = timer/2;//(timer*1000);
     int i = timer * IO_QUANTUM_MULTIPLIER;
-
+    pthread_mutex_lock(&timer_lock);
+    
     for (;;) {
         pthread_mutex_lock(&global_shutdown_lock);
         while (shutting_down) {
             break;
         }
-
-        for (int j = 0; j < i; j++) {}
-
-        //nanosleep(&ts, NULL);
         pthread_mutex_unlock(&global_shutdown_lock);
+        
+        for (int j = 0; j < i; j++) {}
 
         while (!ISR_FINISHED) {
             pthread_cond_wait(&timer_cond, &timer_lock);
         }
         ISR_FINISHED = 0;
 
-        //TODO add locks for grabbing the timer and setting the timer
-        ts.tv_nsec = timer/2;
         i = timer * IO_QUANTUM_MULTIPLIER;
     }
 }
 
-// TODO: Check that we are correctly using locks for all vars shared by main thread
 void * io1_thread(void * s) {
-    struct timespec ts;
-    ts.tv_sec = 0;
-	ts.tv_nsec = IO_1_counter;
-
+    int i = IO_1_counter * IO_QUANTUM_MULTIPLIER;
     // Lock signal mutex
     pthread_mutex_lock(&IO_1_lock);
 
@@ -352,29 +340,27 @@ void * io1_thread(void * s) {
         while (!IO_1_activated) {
             pthread_cond_wait(&IO_1_active_cond, &IO_1_active_lock);
         }
-		ts.tv_nsec = IO_1_counter;
+		i = IO_1_counter * IO_QUANTUM_MULTIPLIER;
         pthread_mutex_unlock(&IO_1_active_lock);
 
-        // Sleep thread then unlock to signal IO 1 device is ready
-        nanosleep(&ts, NULL);
-        pthread_mutex_unlock(&IO_1_lock);
+        printf("IO 1 Loops = %d\n", i);
 
-        // Wait until Interupt Service completes
-       // pthread_mutex_lock(&IO_1_reset_lock);
+        // Sleep thread then unlock to signal IO 1 device is ready
+        for (int j = 0; j < i; j++) {}
+
+        // Wait until Interupt Service completes -- Unlocks(signals) IO_1_lock
         while (!IOSR_1_finished) {
             pthread_cond_wait(&IO_1_active_cond, &IO_1_lock);
         }
-        //pthread_mutex_lock(&IO_1_lock);
+        // IO_1_lock relocked after wait
+
         IOSR_1_finished = 0;
-        ts.tv_nsec = IO_1_counter;
-		//pthread_mutex_unlock(&IO_1_reset_lock);
+        i = IO_1_counter * IO_QUANTUM_MULTIPLIER;
     }
 }
 
 void * io2_thread(void * s) {
-    struct timespec ts;
-    ts.tv_sec = 0;
-    ts.tv_nsec = IO_2_counter;//(timer*1000);
+    int i = IO_2_counter * IO_QUANTUM_MULTIPLIER;
      // Lock signal mutex
     pthread_mutex_lock(&IO_2_lock);
 
@@ -390,21 +376,20 @@ void * io2_thread(void * s) {
         while (!IO_2_activated) {
             pthread_cond_wait(&IO_2_active_cond, &IO_2_active_lock);
         }
-		ts.tv_nsec = IO_2_counter;
+		i = IO_2_counter * IO_QUANTUM_MULTIPLIER;
         pthread_mutex_unlock(&IO_2_active_lock);
 
-        nanosleep(&ts, NULL);
-        pthread_mutex_unlock(&IO_2_lock);
+        printf("IO 2 Loops = %d\n", i);
+        for (int j = 0; j < i; j++) {}
 
-        // Wait until Interupt Service completes
-        pthread_mutex_lock(&IO_2_reset_lock);
+        // Wait until Interupt Service completes -- Unlocks(signals) IO_2_lock
         while (!IOSR_2_finished) {
-            pthread_cond_wait(&IO_2_active_cond, &IO_2_reset_lock);
+            pthread_cond_wait(&IO_2_active_cond, &IO_2_lock);
         }
-        pthread_mutex_lock(&IO_2_lock);
+        // IO_2_lock relocked after wait
+
         IOSR_2_finished = 0;
-        ts.tv_nsec = IO_2_counter;
-		pthread_mutex_unlock(&IO_2_reset_lock);
+        i = IO_2_counter * IO_QUANTUM_MULTIPLIER;
     }
 }
 
@@ -440,13 +425,9 @@ int IO_check() {
         printf("\nIO1 Interrupt Detected!\n");
         ss_push(sysStack,currentPC);
         IO_Interupt_Routine(IO_1_INTERUPT);
-        pthread_mutex_lock(&IO_1_global_lock);
-        if (q_is_empty(processes->IO_1_Processes)) {
-            IO_1_activated = 0;
-        }
-        pthread_mutex_unlock(&IO_1_global_lock);
+
         IOSR_1_finished = 1;
-        //pthread_cond_signal(&IO_1_active_cond);
+
         printInterupt(IO_1_INTERUPT);
         pthread_mutex_unlock(&IO_1_lock);
     }
@@ -455,13 +436,8 @@ int IO_check() {
         printf("\nIO2 Interrupt Detected!\n");
 		ss_push(sysStack, currentPC);
         IO_Interupt_Routine(IO_2_INTERUPT);
-        pthread_mutex_lock(&IO_2_global_lock);
-        if (q_is_empty(processes->IO_2_Processes)) {
-            IO_2_activated = 0;
-        }
-        pthread_mutex_unlock(&IO_2_global_lock);
+
         IOSR_2_finished = 1;
-       // pthread_cond_signal(&IO_2_active_cond);
 
         printInterupt(IO_2_INTERUPT);
         pthread_mutex_unlock(&IO_2_lock);
@@ -506,9 +482,30 @@ int IO_Interupt_Routine(int IO_interupt) {
     // scheduler up call
     scheduler(IO_interupt, NULL, NULL, NULL);
 
+    // Update IO delay and deactivate IO devices as needed
+    pthread_mutex_lock(&IO_1_active_lock);
+    if (q_is_empty(processes->IO_1_Processes)) {
+        IO_1_activated = 0;
+    } else {
+        IO_1_counter = getQuantum(processes->readyProcesses, getPriority(getHead(processes->IO_1_Processes)->pcb)) * (rand() % IO_COUNTER_MULT_RANGE);
+        pthread_cond_signal(&IO_1_active_cond);
+    }
+    pthread_mutex_unlock(&IO_1_active_lock);
+
+    pthread_mutex_lock(&IO_2_active_lock);
+    if (q_is_empty(processes->IO_2_Processes)) {
+        IO_2_activated = 0;
+    } else {
+        IO_2_counter = getQuantum(processes->readyProcesses, getPriority(getHead(processes->IO_2_Processes)->pcb)) * (rand() % IO_COUNTER_MULT_RANGE);
+        pthread_cond_signal(&IO_2_active_cond);
+    }
+    pthread_mutex_unlock(&IO_2_active_lock);
+
     // IRET (update current pc)
 	assert(!stack_is_empty(sysStack));
     currentPC = ss_pop(sysStack);
+    printf("IO 1 Quantum: %d\n", IO_1_counter);
+    printf("IO 2 Quantum: %d\n", IO_2_counter);
     return replaced;
 }
 
@@ -528,41 +525,22 @@ int pseudoTSR(int trap_interupt) {
 
     IO_check();
 
-	//TODO: Remove Dead Code
-	/*
-    // Activate counter if not in use (IO_Queue is empty)
-    // IO Traps only
-    if (trap_interupt == IO_1_TRAP && q_is_empty(processes->IO_1_Processes)) {
-		pthread_mutex_lock(&IO_1_reset_lock);
-        
-		pthread_mutex_unlock(&IO_1_reset_lock);
-    } else if (trap_interupt == IO_2_TRAP && q_is_empty(processes->IO_2_Processes)) {
-		pthread_mutex_lock(&IO_1_reset_lock);
-		
-		pthread_mutex_unlock(&IO_1_reset_lock);
-	}
-	*/
-
     // scheduler up call
     scheduler(trap_interupt, running, NULL, NULL);
 
     // activate IO devices as needed
     pthread_mutex_lock(&IO_1_active_lock);
-    if (q_is_empty(processes->IO_1_Processes)) {
-        IO_1_activated = 0;
-    } else {
+    if (!q_is_empty(processes->IO_1_Processes)) {
         IO_1_activated = 1;
-		IO_1_counter = getQuantum(processes->readyProcesses, getPriority(running)) * (rand() % IO_COUNTER_MULT_RANGE);
+		IO_1_counter = getQuantum(processes->readyProcesses, getPriority(getHead(processes->IO_1_Processes)->pcb)) * (rand() % IO_COUNTER_MULT_RANGE);
         pthread_cond_signal(&IO_1_active_cond);
     }
     pthread_mutex_unlock(&IO_1_active_lock);
 
     pthread_mutex_lock(&IO_2_active_lock);
-    if (q_is_empty(processes->IO_2_Processes)) {
-        IO_2_activated = 0;
-    } else {
+    if (!q_is_empty(processes->IO_2_Processes)) {
         IO_2_activated = 1;
-		IO_2_counter = getQuantum(processes->readyProcesses, getPriority(running)) * (rand() % IO_COUNTER_MULT_RANGE);
+		IO_2_counter = getQuantum(processes->readyProcesses, getPriority(getHead(processes->IO_2_Processes)->pcb)) * (rand() % IO_COUNTER_MULT_RANGE);
 		pthread_cond_signal(&IO_2_active_cond);
     }
     pthread_mutex_unlock(&IO_2_active_lock);
@@ -571,6 +549,8 @@ int pseudoTSR(int trap_interupt) {
     // IRET (update current pc)
 	assert(!stack_is_empty(sysStack));
     currentPC = ss_pop(sysStack);
+    printf("IO 1 Quantum: %d\n", IO_1_counter);
+    printf("IO 2 Quantum: %d\n", IO_2_counter);
     return SUCCESSFUL;
 }
 
