@@ -173,14 +173,17 @@ void check_for_syncro_trap(int syncro_flag) {
 		switch (syncro_flag) {
 		case LOCK_RESOURCE_1:
 			if (processes->runningProcess->pid == pair->producer->pid) {
-				printf("\nProcess %s requests lock M%c", pair->producer_name, pair->producer_name[0]); 
+				printf("\nProcess %s requests lock M%c\n", pair->producer_name, pair->producer_name[0]); 
 			}
 			else {
-				printf("\nProcess %s requests lock M%c", pair->consumer_name, pair->consumer_name[0]);
+				printf("\nProcess %s requests lock M%c\n", pair->consumer_name, pair->consumer_name[0]);
 			}		
 			lock_tsr(pair->mutex);
 			if (getState(processes->runningProcess) ==  INTERRUPTED) {
-				printf("Request on the lock was succesful\n");
+				printf("\nRequest on the lock was succesful\n");
+			}
+			else {
+				printf("\nRequest on the lock not succesful, owned by PID: %d", pair->mutex->owner->pid);
 			}
 			break;
 		case UNLOCK_RESOURCE_1:
@@ -225,38 +228,52 @@ void check_for_syncro_trap(int syncro_flag) {
 		RESOURCE_PAIR_p pair = getResourcePair(processes->runningProcess);
 		switch (syncro_flag) {
 		case LOCK_RESOURCE_1:
-			lock_tsr(pair->mutex_1);
 			if (processes->runningProcess->pid == pair->process_1->pid) {
-				printf("\nProcess %s requests lock %s - ", pair->process_1_name, pair->mutex_1_name);
+				printf("\nProcess %s requests lock %s\n", pair->process_1_name, pair->mutex_1_name);
 			}
 			else {
-				printf("\nProcess %s requests lock %s - ", pair->process_2_name, pair->mutex_1_name);
+				printf("\nProcess %s requests lock %s\n", pair->process_2_name, pair->mutex_1_name);
+			}
+			lock_tsr(pair->mutex_1);
+			if (getState(processes->runningProcess) == INTERRUPTED) {
+				printf("\nRequest on the lock was succesful\n");
+			}
+			else {
+				printf("\nRequest on the lock not succesful, owned by PID : %d\n", pair->mutex_1->owner->pid);
 			}
 			break;
 		case LOCK_RESOURCE_2:
-			lock_tsr(pair->mutex_2);
 			if (processes->runningProcess->pid == pair->process_1->pid) {
-				printf("\nProcess %s requests lock %s - ", pair->process_1_name, pair->mutex_2_name);
+				printf("\nProcess %s requests lock %s\n", pair->process_1_name, pair->mutex_2_name);
 			}
 			else {
-				printf("\nProcess %s requests lock %s - ", pair->process_2_name, pair->mutex_2_name);
+				printf("\nProcess %s requests lock %s\n", pair->process_2_name, pair->mutex_2_name);
 			}
+			lock_tsr(pair->mutex_2);
+
+			if (getState(processes->runningProcess) == INTERRUPTED) {
+				printf("\nRequest on the lock was succesful\n");
+			}
+			else {
+				printf("\nRequest on the lock not succesful , owned by PID : %d\n", pair->mutex_2->owner->pid);
+			}
+
 			break;
 		case UNLOCK_RESOURCE_1:
 			if (processes->runningProcess->pid == pair->process_1->pid) {
-				printf("\nProcess %s releases lock %s", pair->process_1_name, pair->mutex_1_name);
+				printf("\nProcess %s releases lock %s\n", pair->process_1_name, pair->mutex_1_name);
 			}
 			else {
-				printf("\nProcess %s releases lock %s", pair->process_2_name, pair->mutex_1_name);
+				printf("\nProcess %s releases lock %s\n", pair->process_2_name, pair->mutex_1_name);
 			}
 			unlock_tsr(pair->mutex_1);
 			break;
 		case UNLOCK_RESOURCE_2:
 			if (processes->runningProcess->pid == pair->process_1->pid) {
-				printf("\nProcess %s releases lock %s", pair->process_1_name, pair->mutex_2_name);
+				printf("\nProcess %s releases lock %s\n", pair->process_1_name, pair->mutex_2_name);
 			}
 			else {
-				printf("\nProcess %s releases lock %s ", pair->process_2_name, pair->mutex_2_name);
+				printf("\nProcess %s releases lock %s\n", pair->process_2_name, pair->mutex_2_name);
 			}
 			unlock_tsr(pair->mutex_2);
 			break;
@@ -264,7 +281,7 @@ void check_for_syncro_trap(int syncro_flag) {
 			break;
 		}
 		if (pair->mutex_1->owner && pair->mutex_2->owner) {
-			printf("Mutex's %s and %s are in use\n", pair->mutex_1_name, pair->mutex_2_name);
+			printf("\nMutex's %s and %s are in use\n", pair->mutex_1_name, pair->mutex_2_name);
 		}
 	}
 	else {
@@ -1585,17 +1602,26 @@ void destruct_Custom_Cond(CUSTOM_COND_p cond) {
 
 void check_for_deadlock() {
 
-	int deadlocks[CREATE_SHARED_RESOURCE_MAX];
+	int* deadlocks = (int*)malloc(sizeof(int) * SHARED_RESOURCE_MAX);
 	int deadlock_amount = 0;
 	int i = 0;
+
+	for (int j = 0; j < SHARED_RESOURCE_MAX; j++) {
+		deadlocks[j] = 0;
+	}
 
     printf("\nChecking for Deadlocks. . .\n");
 
 	testResourcePairs(resource_pairs, deadlocks, total_resource_pairs);
 	for (i = 0; i < total_resource_pairs; i++) {
 		if (deadlocks[i] == DEADLOCK_FOUND) {
-            printf("Deadlock: PID: %s PID: %s Mutex 1 Owner: %s Mutex 2 Owner %s\n", resource_pairs[i]->process_1_name, resource_pairs[i]->process_2_name,
-                resource_pairs[i]->mutex_1->owner->pid, resource_pairs[i]->mutex_2->owner->pid);
+			printf("Deadlock Found between  PID: %d and PID: %d\n", resource_pairs[i]->process_1->pid, resource_pairs[i]->process_2->pid);
+
+			printf("Process %s PID: %d\n", resource_pairs[i]->process_1_name, resource_pairs[i]->process_1->pid);
+			printf("Process %s PID: %d\n", resource_pairs[i]->process_2_name, resource_pairs[i]->process_2->pid);
+
+			printf("Mutex 1 owner PID: %d\n", resource_pairs[i]->mutex_1->owner->pid);
+			printf("Mutex 2 owner PID: %d\n", resource_pairs[i]->mutex_2->owner->pid);
 
 			destruct_Resource_Pair(resource_pairs[i]);
 			resource_pairs[i] = resource_pairs[total_resource_pairs - 1];
