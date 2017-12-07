@@ -5,8 +5,9 @@ Final Project
 Group Members:
 Shaun Coleman
 Joshua Meigs
+Ayub Tiba
+Kirtwinder Singh Gulati
 */
-
 #include <time.h>
 #include <pthread.h>
 #include <assert.h>

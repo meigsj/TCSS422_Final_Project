@@ -5,6 +5,8 @@ Final Project
 Group Members:
 Shaun Coleman
 Joshua Meigs
+Ayub Tiba
+Kirtwinder Singh Gulati
 */
 
 #include "Deadlock_Monitor.h"
