@@ -6,8 +6,10 @@ Group Members:
 Shaun Coleman
 Joshua Meigs
 Ayub Tiba
-Kirtwinder Singh Gulati
+Kirtwinder Gulati
 */
+
+
 
 #include <stdio.h>
 #include <stdlib.h>

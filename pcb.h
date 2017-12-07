@@ -6,8 +6,10 @@ Group Members:
 Shaun Coleman
 Joshua Meigs
 Ayub Tiba
-Kirtwinder Singh Gulati
+Kirtwinder Gulati
 */
+
+
 
 #ifndef PCB_H
 #define PCB_H

@@ -6,8 +6,10 @@ Group Members:
 Shaun Coleman
 Joshua Meigs
 Ayub Tiba
-Kirtwinder Singh Gulati
+Kirtwinder Gulati
 */
+
+
 #include <time.h>
 #include <pthread.h>
 #include <assert.h>

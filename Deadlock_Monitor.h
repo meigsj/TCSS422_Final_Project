@@ -6,8 +6,9 @@ Group Members:
 Shaun Coleman
 Joshua Meigs
 Ayub Tiba
-Kirtwinder Singh Gulati
+Kirtwinder Gulati
 */
+
 
 #pragma once
 //#include "OS.h" REMOVED
