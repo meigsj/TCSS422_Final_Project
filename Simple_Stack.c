@@ -5,7 +5,10 @@ Final Project
 Group Members:
 Shaun Coleman
 Joshua Meigs
+Ayub Tiba
+Kirtwinder Gulati
 */
+
 
 #include "Simple_Stack.h"
 

@@ -5,6 +5,8 @@ Final Project
 Group Members:
 Shaun Coleman
 Joshua Meigs
+Ayub Tiba
+Kirtwinder Gulati
 */
 
 #include "OS.h"
