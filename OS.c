@@ -7,16 +7,15 @@ Shaun Coleman
 Joshua Meigs
 */
 
-#include <time.h>
-#include <pthread.h>
-#include <assert.h>
 #include "OS.h"
 
+// Globals used to track the PC and iteration
 SIMPLE_STACK_p sysStack;
 unsigned int currentPC;
 unsigned int iterationCount;
 unsigned int quantum_post_reset;
 
+// Globals used for Timer and IO Devices
 int timer;
 int shutting_down;
 int IOSR_1_finished;
@@ -27,11 +26,16 @@ int IO_2_counter;
 
 int IO_1_activated;
 int IO_2_activated;
+
+// Globals to count total processes currently running
 int total_deadlock_pairs;
 int total_terminated;
 int total_blocked;
 int total_waiting;
+int total_comp_processes;
+int total_io_processes;
 
+// Globals to track overall process creation count
 int overall_processes_created;
 int overall_IO_processes_created;
 int overall_comp_processes_created;
@@ -41,38 +45,33 @@ int overall_timer_interrupts;
 
 int con_pro_name_starting_point;
 int resource_pair_starting_point;
-//Tests
+
+// Syncronization Variables for Timer
 pthread_mutex_t timer_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t timer_cond = PTHREAD_COND_INITIALIZER;
-
 pthread_mutex_t global_shutdown_lock = PTHREAD_MUTEX_INITIALIZER;
 
+// Syncronization Variables for IO
 pthread_mutex_t IO_1_lock = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t IO_1_reset_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t IO_1_cond = PTHREAD_COND_INITIALIZER;
 pthread_cond_t IO_1_active_cond = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t IO_1_active_lock = PTHREAD_MUTEX_INITIALIZER;
 
-pthread_mutex_t IO_2_reset_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t IO_2_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t IO_2_cond = PTHREAD_COND_INITIALIZER;
 pthread_cond_t IO_2_active_cond = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t IO_2_active_lock = PTHREAD_MUTEX_INITIALIZER;
 
-pthread_mutex_t IO_1_global_lock = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t IO_2_global_lock = PTHREAD_MUTEX_INITIALIZER;
-
+// Struct used to maintain all processes queues
 PROCESS_QUEUES_p processes;
 
+// Array used to track current Producer consumer pairs
 int total_cp_pairs;
 CP_PAIR_p cp_pairs[PRO_CON_MAX];
 
+// Array used to track current shared resource pairs
 int total_resource_pairs;
 RESOURCE_PAIR_p resource_pairs[SHARED_RESOURCE_MAX];
-
-int total_comp_processes;
-
-int total_io_processes;
 
 // A flag to signal that a TSR is in progress
 int trap_flag;
@@ -888,7 +887,6 @@ int dispatcherWait(PCB_p process, CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond) {
     q_enqueue(cond->waiting, node);
 	total_waiting++;
     
-    // unlock lock TODO: replace with lock tsr call?
     if (q_is_empty(mutex->blocked)) {
         mutex->owner = NULL;
     } else {
@@ -923,8 +921,7 @@ int dispatcherSignal(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond) {
     // update state to waiting for locked to unlock
     setState(wokePcb, WAITING);
 
-    // Try to grab lock used by wait (assumed to fail per CP_pair)
-    // TODO: use unlock TSR call instead?
+    // Try to grab lock used by wait
     setNodePCB(node, wokePcb);
     q_enqueue(mutex->blocked, node);
 	total_blocked++;
@@ -1073,7 +1070,7 @@ int createConsumerProducerPair() {
     Node_p con_code;
     CP_PAIR_p pair; 
 
-    if (total_cp_pairs >= PRO_CON_MAX) return 1; // MAGIC NUMBER
+    if (total_cp_pairs >= PRO_CON_MAX) return 1;
 
     producer = pcbConstruct();
     consumer = pcbConstruct();
@@ -1145,7 +1142,7 @@ int createSharedResourcePair() {
     Node_p node_2;
     RESOURCE_PAIR_p pair;
 
-    if (total_resource_pairs >= SHARED_RESOURCE_MAX) return 1; // MAGIC NUMBER
+    if (total_resource_pairs >= SHARED_RESOURCE_MAX) return 1;
 
     process_1 = pcbConstruct();
     process_2 = pcbConstruct();
@@ -1189,7 +1186,7 @@ int createSharedResourcePair() {
     resource_pairs[total_resource_pairs] = pair;
     total_resource_pairs++;
 
-	// give names to the pair //TODO MAGIC
+	// give names to the pair
 	if (resource_pair_starting_point > UPPERCASE_Z && resource_pair_starting_point < LOWERCASE_A) {
 		resource_pair_starting_point = LOWERCASE_A;
 	}

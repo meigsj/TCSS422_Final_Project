@@ -11,6 +11,8 @@ Joshua Meigs
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <time.h>
+#include <assert.h>
 #include "FIFOq.h"
 #include "pcb.h"
 #include "PQueue.h"
@@ -73,6 +75,7 @@ Joshua Meigs
 // The max number +1 of new computation intensive processes to make per process creation
 #define CREATE_CUMPUTE_PROCESS_MAX 4
 
+// The maximum number of characters used to name a consumer or producer process
 #define MAX_NAME_SIZE_CONPRO 3
 
 #define UPPERCASE_A 64
@@ -214,74 +217,108 @@ void initializeProcessQueues();
 // A function used to free the processes struct
 void freeProcessQueues();
 
+// A thread used to simulate the timer device
 void* timer_thread();
 
+// A thread used to simulate an IO device
 void* io1_thread();
 
+// A thread used to simulate an IO device
 void* io2_thread();
 
+// A function used to create a producer/consumer process pair
 int createConsumerProducerPair();
 
+// A function to initialize a consumer/producer pair struct
 void initialize_CP_Pair(CP_PAIR_p pair);
 
+// A function to initialize a Custum Mutex struct
 void initialize_Custom_Mutex(CUSTOM_MUTEX_p);
 
+// A function to initalize a Custom Condition struct
 void initialize_Custom_Cond(CUSTOM_COND_p);
 
+// A function to determin if a mutex is free
+// Returns 1 if free, and 0 if the process is owned
 int is_mutex_free(CUSTOM_MUTEX_p);
 
+// Returns a PC pair that the passed PCB_p belongs to
 CP_PAIR_p getPCPair(PCB_p);
 
-CP_PAIR_p getPCPair(PCB_p);
-
+// A function used to create an IO process
 int createIOProcess();
 
+// A function used to create a computationally intensive process
 int createComputeIntensiveProcess();
 
+// A function used to create a shared resource pair of processes
 int createSharedResourcePair();
 
+// A function used to initialize a shared resource process struct
 void initialize_Resource_Pair(RESOURCE_PAIR_p pair);
 
+// A function used to initialize a consumer/producer process struct
 void initialize_CP_Pair(CP_PAIR_p);
 
+// A function used to check for timer interrupts
 int timer_check();
 
+// A function used to check for IO interrupts
 int IO_check();
 
+// A function used to simulate a lock trap service routine
 int lock_tsr(CUSTOM_MUTEX_p);
 
+// A function used to simulate an unlock trap service routine
 int unlock_tsr(CUSTOM_MUTEX_p mutex);
 
+// A function used to simulate a wait trap service routine
 int wait_tsr(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond);
 
+// A function used to simulate a signal trap service routine
 int signal_tsr(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond);
 
+// A function used to simulate a lock dispatcher
 int dispatcherLock(PCB_p process, CUSTOM_MUTEX_p mutex);
 
+// A function used to simulate an unlock dispatcher
 int dispatcherUnlock(CUSTOM_MUTEX_p mutex);
 
+// A function used to simulate a wait dispatcher
 int dispatcherWait(PCB_p process, CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond);
 
+// A function used to simulate a signal dispatcher
 int dispatcherSignal(CUSTOM_MUTEX_p mutex, CUSTOM_COND_p cond);
 
+// A function used to check if a process is requesting a syncronization service
 int isAtSyncro(PCB_p pcb);
 
+// A function used to get a resource pair struct that the passed PCB_p belongs too
 RESOURCE_PAIR_p getResourcePair(PCB_p process);
 
+// A function used to free resources used for a shared resource pair struct
 void destruct_Resource_Pair(RESOURCE_PAIR_p the_pair);
 
+// A function used to free resources used for a consumer/producer pair struct
 void destruct_CP_Pair(CP_PAIR_p pair);
 
+// A function used to free resources used for a custom mutex struct
 void destruct_Custom_Mutex(CUSTOM_MUTEX_p mutex);
 
+// A function used to free resources used for a custom cond struct
 void destruct_Custom_Cond(CUSTOM_COND_p cond);
 
+// A function used to call the deadlock monitor and evaluate the results
 void check_for_deadlock();
 
+// A function used to return the type of interrupt currently being processed
 int getInterruptType(int);
 
+// A function used to count all processes in all queues and running
 int countAllNodes();
 
+// A function used to evaluate the current syncronization request based on the passed syncronization type
 void check_for_syncro_trap(int syncro_flag);
 
+// A function used to check if the current process is a producer in a CP Pair
 int isProducer(PCB_p process);

@@ -85,8 +85,13 @@ typedef struct dl_graph {
 
 typedef DL_GRAPH_s* DL_GRAPH_p;
 
+// Construct a DL_GRAPH_STRUCT based on the passed resource pair array
 DL_GRAPH_p setupDLGraph(RESOURCE_PAIR_p);
+// Connects edges based on Owner->mutex->blocked direction
 void connectDLGraph(DL_GRAPH_p);
+// Frees resources used by the baseed DL_GRAPH
 void destructDLGraph(DL_GRAPH_p);
+// Tests a single resource pair for deadlock
 int testResourcePair(RESOURCE_PAIR_p);
+// Tests an array of resource pairs for deadlock and reports the results in the passed integer array
 void testResourcePairs(RESOURCE_PAIR_p*, int*, int);
