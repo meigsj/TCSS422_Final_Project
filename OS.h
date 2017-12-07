@@ -95,7 +95,8 @@ enum interrupt_type { NO_INTERUPT, TIMER_INTERUPT, IO_1_INTERUPT, IO_2_INTERUPT,
 
 // An enum used to denote which syncronization services was requested
 enum syncro_code { NO_RESOURCE_SYNCRO, LOCK_RESOURCE_1, UNLOCK_RESOURCE_1, LOCK_RESOURCE_2, UNLOCK_RESOURCE_2
-                    , SIGNAL_RESOURCE_1, WAIT_RESOURCE_1};
+                    , SIGNAL_RESOURCE_1, WAIT_RESOURCE_1, TRYLOCK_RESOURCE
+};
 
 enum code_wait_code {EMPTY, FILLED};
 
@@ -272,6 +273,9 @@ int IO_check();
 
 // A function used to simulate a lock trap service routine
 int lock_tsr(CUSTOM_MUTEX_p);
+
+// A function used to simulate a trylock trap service routine
+int trylock_tsr(CUSTOM_MUTEX_p mutex);
 
 // A function used to simulate an unlock trap service routine
 int unlock_tsr(CUSTOM_MUTEX_p mutex);

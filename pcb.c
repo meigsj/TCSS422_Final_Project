@@ -92,6 +92,7 @@ int initialize_pcb(PCB_p my_pcb) {
 			my_pcb->unlock_2_pcs[i] = -1;
 			my_pcb->wait_1_pcs[i] = -1;
 			my_pcb->signal_1_pcs[i] = -1;
+            my_pcb->trylock_pcs[i] = -1;
 		}
     }
 }

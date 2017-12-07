@@ -775,6 +775,33 @@ int lock_tsr(CUSTOM_MUTEX_p mutex) {
     return SUCCESSFUL;
 }
 
+int trylock_tsr(CUSTOM_MUTEX_p mutex) {
+    PCB_p running = processes->runningProcess;
+    setPC(running, currentPC);
+
+    setState(running, INTERRUPTED);
+
+    timer_check();
+    IO_check();
+
+    ss_pop(sysStack);
+    ss_push(sysStack, getPC(processes->runningProcess));
+    syncro_flag = NO_RESOURCE_SYNCRO;
+
+    if (mutex->owner == NULL) {
+        mutex->owner = running;
+    } else {
+        assert(!stack_is_empty(sysStack));
+        currentPC = ss_pop(sysStack);
+        return 0; // report falled to grab lock
+    }
+    
+    // IRET (update current pc)
+    assert(!stack_is_empty(sysStack));
+    currentPC = ss_pop(sysStack);
+    return 1; // report grabbed lock
+}
+
 int unlock_tsr(CUSTOM_MUTEX_p mutex) {
     setPC(processes->runningProcess, currentPC);
     setState(processes->runningProcess, INTERRUPTED);

@@ -98,6 +98,7 @@ typedef struct pcb {
 	int wait_2_pcs[SYNCRO_SIZE]; // An array of PC values representing wait calls resource 2
 	int signal_1_pcs[SYNCRO_SIZE]; // An array of PC values representing signal calls resource 1
 	int signal_2_pcs[SYNCRO_SIZE]; // An array of PC values representing signal calls resource 2
+    int trylock_pcs[SYNCRO_SIZE]; // An array of PC values representing trylock calls resource 2
 
     CPU_context_p context; // set of cpu registers
     // other items to be added as needed.
